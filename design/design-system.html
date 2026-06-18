@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<!--
+  MenuApp — Mobile Design System
+  Filled from mobile-design-system-template v0.1
+  Owner: Andrew deVillier · atdevillier@gmail.com
+  Platform: Flutter · iOS · Android
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MenuApp — Mobile Design System</title>
+<style>
+/* ===========================================================================
+   FONTS
+   System font stack — Flutter renders SF Pro on iOS and Roboto on Android
+   automatically. The style guide uses the same system stack so it previews
+   accurately on any Mac.
+   =========================================================================== */
+
+:root{
+  --font:      -apple-system, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Roboto Mono', monospace;
+
+  /* ---- NEUTRALS & SURFACES  (warm-neutral ramp) ------------------------ */
+  --ink:#1C1917;        /* primary text / icons              Flutter 0xFF1C1917 */
+  --ink-2:#57534E;      /* secondary / body                  Flutter 0xFF57534E */
+  --ink-3:#A8A29E;      /* tertiary / captions               Flutter 0xFFA8A29E */
+  --ink-4:#D6D3D1;      /* placeholders / disabled           Flutter 0xFFD6D3D1 */
+  --bg:#FAFAF8;         /* app canvas                        Flutter 0xFFFAFAF8 */
+  --surface:#FFFFFF;    /* cards / sheets / menus            Flutter 0xFFFFFFFF */
+  --field:#F5F5F4;      /* inputs / tracks / wells           Flutter 0xFFF5F5F4 */
+  --line:#E7E5E4;       /* hairline borders / dividers       Flutter 0xFFE7E5E4 */
+  --line-2:#F2F0EF;     /* faint inner dividers              Flutter 0xFFF2F0EF */
+
+  /* ---- PRIMARY ACCENT — Warm Orange ------------------------------------- */
+  --accent:#F97316;     /* primary actions / focus / links   Flutter 0xFFF97316 */
+  --accent-deep:#C2570A;/* accent text on light / active     Flutter 0xFFC2570A */
+  --accent-50:#FFF7ED;  /* accent surfaces / selected rows   Flutter 0xFFFFF7ED */
+  --accent-200:#FED7AA; /* in-progress bars / muted accent   Flutter 0xFFFED7AA */
+
+  /* ---- SECONDARY ACCENT — Warm Teal ------------------------------------- */
+  --teal:#0D9488;       /* dietary tags, cuisine chips, info Flutter 0xFF0D9488 */
+  --teal-deep:#0F766E;  /* teal text on light                Flutter 0xFF0F766E */
+  --teal-50:#F0FDFA;    /* teal surfaces                     Flutter 0xFFF0FDFA */
+  --teal-200:#99F6E4;   /* muted teal                        Flutter 0xFF99F6E4 */
+
+  /* ---- DATA VIZ — categorical set -------------------------------------- */
+  --c-1:#F97316;  --c-2:#0EA5E9;  --c-3:#8B5CF6;  --c-4:#22C55E;  --c-5:#EF4444;  --c-6:#FED7AA;
+
+  /* ---- SEMANTIC STATES ------------------------------------------------- */
+  --ok:#16A34A;       --ok-bg:#DCFCE7;
+  --warn:#D97706;     --warn-bg:#FEF3C7;
+  --danger:#DC2626;   --danger-bg:#FEE2E2;
+  --info:#F97316;     --info-bg:#FFF7ED;
+  --muted:#A8A29E;    --muted-bg:#F5F5F4;
+
+  /* ---- RADIUS ---------------------------------------------------------- */
+  --r-xs:8px; --r-sm:12px; --r-md:16px; --r-lg:20px; --r-xl:26px; --r-2xl:32px; --r-full:999px;
+
+  /* ---- ELEVATION ------------------------------------------------------- */
+  --e0:0 1px 2px rgba(28,25,23,.05);
+  --e1:0 1px 2px rgba(28,25,23,.05), 0 2px 6px rgba(28,25,23,.05);
+  --e2:0 2px 6px rgba(28,25,23,.05), 0 10px 22px rgba(28,25,23,.06);
+  --e3:0 8px 24px rgba(28,25,23,.07), 0 22px 48px rgba(28,25,23,.09);
+
+  /* ---- MOTION ---------------------------------------------------------- */
+  --ease-enter:cubic-bezier(.22,1,.36,1);
+  --ease-move:cubic-bezier(.4,0,.2,1);
+  --dur-micro:120ms; --dur-base:200ms; --dur-enter:320ms;
+}
+
+@page{
+  size:A4; margin:16mm 15mm 18mm 15mm;
+  @bottom-left{ content:"MenuApp · Mobile Design System"; font-family:var(--font-mono); font-size:7.5pt; color:#A8A29E; }
+  @bottom-right{ content:counter(page)" / "counter(pages); font-family:var(--font-mono); font-size:7.5pt; color:#A8A29E; }
+}
+@page:first{ margin:0; @bottom-left{content:"";} @bottom-right{content:"";} }
+
+*{ box-sizing:border-box; }
+html{ -webkit-print-color-adjust:exact; print-color-adjust:exact; color-scheme:light only; background:#FAFAF8; }
+body{ font-family:var(--font); color:var(--ink); background:var(--bg); font-size:9.6pt; line-height:1.55; margin:0; letter-spacing:-0.05px; }
+.mono{ font-family:var(--font-mono); }
+
+h2{ font-size:17pt; font-weight:800; letter-spacing:-0.6px; margin:0 0 1mm 0; }
+h3{ font-size:11pt; font-weight:700; letter-spacing:-0.2px; margin:7mm 0 3mm 0; }
+h4{ font-size:8.4pt; font-weight:600; letter-spacing:0.3px; text-transform:uppercase; color:var(--ink-3); margin:0 0 2.5mm 0; }
+p{ margin:0 0 2.5mm 0; }
+.eyebrow{ font-size:7.5pt; font-weight:600; letter-spacing:1.8px; text-transform:uppercase; color:var(--accent-deep); margin-bottom:2.5mm; }
+.sec.page-break{ border-left:3px solid var(--accent); padding-left:6mm; margin-left:-6mm; }
+.lead{ font-size:10pt; color:var(--ink-2); margin:0 0 6mm 0; max-width:150mm; line-height:1.5; }
+.sec{ padding-top:4mm; }
+.page-break{ page-break-before:always; }
+.avoid{ page-break-inside:avoid; }
+.small{ font-size:8pt; color:var(--ink-3); line-height:1.45; }
+.hair{ height:1px; background:var(--line); border:0; margin:6mm 0; }
+
+.fill{ border:1px dashed #D9A33A; background:#FEFAF1; border-radius:var(--r-sm); padding:3mm 4mm; margin:2mm 0 4mm; font-size:8.4pt; color:#8A6314; }
+.fill b{ color:#5E430C; text-transform:uppercase; letter-spacing:.6px; font-size:7pt; display:block; margin-bottom:1mm; }
+.ph{ font-family:var(--font-mono); font-size:.92em; background:#EEF1F6; color:#3C4D68; padding:.3mm 1.4mm; border-radius:4px; }
+
+/* ===========================================================================   COVER   */
+.cover{ height:297mm; padding:26mm 24mm; position:relative; background:var(--surface); }
+.cover .top{ display:flex; align-items:center; gap:3.5mm; }
+.logo-slot{ width:11mm; height:11mm; border-radius:var(--r-sm); background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:7pt; font-weight:700; color:#fff; text-align:center; }
+.cover .topname{ font-size:8pt; font-weight:600; letter-spacing:1.4px; text-transform:uppercase; color:var(--ink-3); }
+.cover .center{ margin-top:30mm; }
+.cover h1{ font-size:40pt; font-weight:800; letter-spacing:-1.8px; line-height:1.04; margin:0 0 5mm 0; }
+.cover .sub{ font-size:12pt; color:var(--ink-2); max-width:140mm; line-height:1.5; }
+.specimen{ margin-top:11mm; border:1px solid var(--line); border-radius:var(--r-lg); padding:6mm; box-shadow:var(--e1); max-width:150mm; }
+.specimen .sw-strip{ display:flex; gap:0; border-radius:var(--r-sm); overflow:hidden; border:1px solid var(--line); }
+.specimen .sw-strip span{ flex:1; height:10mm; }
+.specimen .row2{ display:flex; align-items:center; gap:4mm; margin-top:5mm; }
+.cover .meta{ position:absolute; left:24mm; right:24mm; bottom:26mm; border-top:1px solid var(--line); padding-top:5mm; display:flex; gap:14mm; }
+.cover .meta .mk{ font-size:7pt; font-weight:600; letter-spacing:1.1px; text-transform:uppercase; color:var(--ink-3); margin-bottom:1.5mm; }
+.cover .meta .mv{ font-family:var(--font-mono); font-size:9pt; color:var(--ink); font-weight:500; }
+
+.toc{ display:flex; flex-wrap:wrap; gap:2mm 8mm; margin:2mm 0 8mm; }
+.toc div{ width:46%; font-size:9pt; display:flex; gap:3mm; }
+.toc .tn{ font-family:var(--font-mono); color:var(--accent-deep); font-weight:600; }
+.principles{ display:flex; flex-wrap:wrap; gap:4mm; }
+.principle{ width:calc(50% - 2mm); background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg); padding:5mm 5.5mm; box-shadow:var(--e1); }
+.principle .pn{ font-family:var(--font-mono); font-size:8pt; color:var(--accent-deep); font-weight:600; }
+.principle h5{ font-size:11pt; font-weight:700; margin:1mm 0 1.5mm; letter-spacing:-0.2px; }
+.principle p{ font-size:8.6pt; color:var(--ink-2); margin:0; line-height:1.5; }
+
+.sw-grid{ display:flex; flex-wrap:wrap; gap:3.5mm; }
+.sw{ width:calc(25% - 2.7mm); border:1px solid var(--line); border-radius:var(--r-md); overflow:hidden; box-shadow:var(--e0); background:var(--surface); }
+.sw .chip{ height:24mm; }
+.sw .meta{ padding:2.5mm 3mm 3mm; }
+.sw .nm{ font-size:8.6pt; font-weight:600; }
+.sw .hex{ font-family:var(--font-mono); font-size:7.6pt; color:var(--ink-3); margin-top:0.5mm; }
+.sw .use{ font-size:7.2pt; color:var(--ink-3); margin-top:1.5mm; line-height:1.35; }
+.sw.wide{ width:calc(33.333% - 2.4mm); }
+.ramp{ display:flex; border-radius:var(--r-md); overflow:hidden; border:1px solid var(--line); box-shadow:var(--e0); }
+.ramp span{ flex:1; height:14mm; display:flex; align-items:flex-end; padding:1.5mm; font-family:var(--font-mono); font-size:6.4pt; }
+
+.tok{ width:100%; border-collapse:collapse; font-size:8.6pt; }
+.tok th{ text-align:left; font-size:7.4pt; font-weight:600; letter-spacing:0.4px; text-transform:uppercase; color:var(--ink-3); padding:0 3mm 2mm; border-bottom:1px solid var(--line); }
+.tok td{ padding:2.4mm 3mm; border-bottom:1px solid var(--line-2); vertical-align:middle; }
+.tok td.mono{ font-family:var(--font-mono); font-size:8pt; color:var(--ink-2); }
+.tok tr:last-child td{ border-bottom:0; }
+
+.canvas{ background:var(--bg); box-shadow:inset 0 0 0 1px var(--line); border-radius:var(--r-lg); padding:7mm; margin-bottom:3mm; }
+.canvas.tight{ padding:5mm; }
+.row{ display:flex; flex-wrap:wrap; gap:4mm; align-items:center; }
+.row.top{ align-items:flex-start; }
+.stack{ display:flex; flex-direction:column; gap:3mm; }
+.spec{ font-size:7.6pt; color:var(--ink-3); margin-top:2mm; }
+.spec b{ color:var(--ink-2); font-weight:600; }
+
+.btn{ font-family:var(--font); font-weight:600; font-size:9pt; border-radius:var(--r-sm); padding:0 4mm; min-height:9mm; display:inline-flex; align-items:center; justify-content:center; gap:2mm; letter-spacing:-0.1px; white-space:nowrap; line-height:1.1; }
+.btn-primary{ background:var(--accent); color:#fff; box-shadow:0 1px 2px rgba(0,0,0,.12); }
+.btn-secondary{ background:var(--field); color:var(--ink-2); box-shadow:inset 0 0 0 1px var(--line); }
+.btn-ghost{ background:transparent; color:var(--ink-2); }
+.btn-danger{ background:var(--surface); color:var(--danger); box-shadow:inset 0 0 0 1px #FCA5A5; }
+.btn-disabled{ background:var(--field); color:var(--ink-4); box-shadow:none; }
+.btn-pill{ border-radius:var(--r-full); }
+.btn-icon{ width:9mm; height:9mm; border-radius:var(--r-full); background:var(--surface); box-shadow:inset 0 0 0 1px var(--line); display:inline-flex; align-items:center; justify-content:center; padding:0; }
+.btn-icon.accent{ background:var(--accent); box-shadow:none; color:#fff; }
+.btn svg{ width:4mm; height:4mm; }
+.btn-icon svg{ width:4mm; height:4mm; stroke-width:1.9; }
+
+.badge{ display:inline-flex; align-items:center; gap:1.8mm; font-size:8pt; font-weight:600; padding:1.4mm 3.2mm 1.4mm 2.6mm; border-radius:var(--r-full); letter-spacing:-0.1px; background:var(--surface); color:var(--ink); box-shadow:inset 0 0 0 1px var(--line); }
+.badge::before{ content:""; width:1.9mm; height:1.9mm; border-radius:var(--r-full); background:var(--dotc,#A8A29E); flex:none; }
+.b-ok{ --dotc:var(--ok); }
+.b-warn{ --dotc:#F59E0B; }
+.b-danger{ --dotc:var(--danger); }
+.b-info{ --dotc:var(--accent); }
+.b-teal{ --dotc:var(--teal); color:var(--teal-deep); }
+.b-muted{ --dotc:#D6D3D1; color:var(--ink-3); }
+.b-accent{ --dotc:var(--accent); }
+.dot{ width:1.8mm; height:1.8mm; border-radius:var(--r-full); display:inline-block; }
+/* Neutral tag — generic labels */
+.tag{ display:inline-flex; align-items:center; gap:1.6mm; font-size:8.2pt; font-weight:500; padding:1.4mm 3mm; border-radius:var(--r-full); background:var(--field); color:var(--ink-2); box-shadow:inset 0 0 0 1px var(--line); }
+/* Teal tag — dietary restrictions, cuisine labels */
+.tag-teal{ display:inline-flex; align-items:center; gap:1.6mm; font-size:8.2pt; font-weight:500; padding:1.4mm 3mm; border-radius:var(--r-full); background:var(--teal-50); color:var(--teal-deep); box-shadow:inset 0 0 0 1px var(--teal-200,#99F6E4); }
+.status-pill{ display:inline-flex; align-items:center; gap:2.4mm; background:var(--surface); box-shadow:inset 0 0 0 1px var(--line); border-radius:var(--r-full); padding:1.6mm 3.5mm 1.6mm 2.8mm; font-weight:600; font-size:9pt; }
+
+.field{ background:var(--field); box-shadow:inset 0 0 0 1px var(--line); border-radius:var(--r-sm); padding:2.8mm 3.5mm; font-size:9pt; color:var(--ink); display:flex; align-items:center; gap:2.5mm; min-width:55mm; }
+.field.is-ph{ color:var(--ink-4); }
+.field.focus{ background:#fff; box-shadow:0 0 0 2px color-mix(in srgb, var(--accent) 30%, transparent); }
+.field.error{ background:#fff; box-shadow:0 0 0 2px color-mix(in srgb, var(--danger) 30%, transparent); }
+.field-label{ font-size:7.6pt; font-weight:600; color:var(--ink-2); margin-bottom:1.5mm; }
+.field-help{ font-size:7.2pt; color:var(--ink-3); margin-top:1.4mm; }
+.field-help.err{ color:var(--danger); }
+.toggle{ width:11mm; height:6.2mm; border-radius:var(--r-full); background:var(--accent); position:relative; box-shadow:inset 0 1px 2px rgba(0,0,0,.08); display:inline-block; }
+.toggle::after{ content:""; position:absolute; width:5mm; height:5mm; border-radius:var(--r-full); background:#fff; top:0.6mm; right:0.6mm; box-shadow:var(--e1); }
+.toggle.off{ background:#D6D3D1; }
+.toggle.off::after{ right:auto; left:0.6mm; }
+.checkbox{ width:5mm; height:5mm; border-radius:6px; background:var(--accent); display:inline-flex; align-items:center; justify-content:center; }
+.checkbox.off{ background:#fff; box-shadow:inset 0 0 0 1px var(--ink-4); }
+.radio{ width:5mm; height:5mm; border-radius:var(--r-full); box-shadow:inset 0 0 0 1.6px var(--accent); display:inline-flex; align-items:center; justify-content:center; }
+.radio::after{ content:""; width:2.4mm; height:2.4mm; border-radius:var(--r-full); background:var(--accent); }
+.radio.off{ box-shadow:inset 0 0 0 1.6px var(--ink-4); }
+.radio.off::after{ display:none; }
+.segmented{ display:inline-flex; background:var(--field); border-radius:var(--r-sm); padding:0.8mm; gap:0.8mm; }
+.segmented .seg{ font-size:8.4pt; font-weight:600; padding:1.4mm 3mm; border-radius:8px; color:var(--ink-3); }
+.segmented .seg.active{ background:#fff; color:var(--ink); box-shadow:var(--e0); }
+.stepper{ display:inline-flex; align-items:center; gap:3mm; background:var(--field); box-shadow:inset 0 0 0 1px var(--line); border-radius:var(--r-full); padding:1mm 2mm; }
+.stepper .sv{ font-family:var(--font-mono); font-weight:600; min-width:8mm; text-align:center; }
+.stepper .sb{ width:6mm; height:6mm; border-radius:var(--r-full); background:#fff; box-shadow:var(--e0); display:inline-flex; align-items:center; justify-content:center; font-weight:700; color:var(--ink-2); }
+.search-m{ display:flex; align-items:center; gap:2.5mm; background:var(--field); box-shadow:inset 0 0 0 1px var(--line); border-radius:var(--r-sm); padding:2.2mm 3.2mm; font-size:8.6pt; color:var(--ink-4); }
+/* Filter chip — orange selected state for action filters (e.g. "Add to menu") */
+.chip-sel{ font-size:8pt; font-weight:600; padding:1.2mm 3mm; border-radius:var(--r-full); box-shadow:inset 0 0 0 1px var(--line); background:#fff; color:var(--ink-2); }
+.chip-sel.on{ background:var(--accent); color:#fff; box-shadow:none; }
+/* Filter chip — teal selected state for info filters (cuisine, dietary) */
+.chip-teal{ font-size:8pt; font-weight:600; padding:1.2mm 3mm; border-radius:var(--r-full); box-shadow:inset 0 0 0 1px var(--line); background:#fff; color:var(--ink-2); }
+.chip-teal.on{ background:var(--teal); color:#fff; box-shadow:none; }
+
+.card{ background:var(--surface); border:1px solid var(--line-2); border-radius:var(--r-lg); padding:5mm; box-shadow:var(--e1); }
+.kpi{ background:var(--surface); border:1px solid var(--line-2); border-radius:var(--r-lg); padding:4mm; box-shadow:var(--e1); width:calc(33.333% - 2.7mm); }
+.kpi .k-label{ font-size:8pt; color:var(--ink-3); font-weight:500; display:flex; align-items:center; gap:1.6mm; }
+.kpi .k-val{ font-size:20pt; font-weight:800; letter-spacing:-1px; margin:1mm 0 0.5mm; }
+.kpi .k-sub{ font-size:7.8pt; font-weight:600; }
+.up{ color:var(--ok); } .down{ color:var(--danger); }
+.listrow{ display:flex; align-items:center; gap:3mm; padding:2.6mm 0; border-bottom:1px solid var(--line-2); }
+.listrow:last-child{ border-bottom:0; }
+.avatar{ width:7.5mm; height:7.5mm; border-radius:var(--r-full); background:var(--accent-200); display:inline-flex; align-items:center; justify-content:center; font-size:7.5pt; font-weight:700; color:var(--accent-deep); flex:none; }
+.meter-row{ margin-bottom:3.5mm; }
+.meter-row:last-child{ margin-bottom:0; }
+.meter-top{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:1.6mm; }
+.meter-top .ml{ font-size:8.6pt; color:var(--ink-2); font-weight:500; display:flex; align-items:center; gap:1.8mm; }
+.meter-top .mv{ font-family:var(--font-mono); font-weight:600; font-size:9pt; }
+.track{ height:5mm; background:var(--field); border-radius:var(--r-full); overflow:hidden; }
+.fill-bar{ height:100%; border-radius:var(--r-full); }
+.barchart{ display:flex; align-items:flex-end; gap:2.4mm; height:30mm; }
+.barchart .bar{ flex:1; background:var(--accent); border-radius:5px 5px 2px 2px; }
+.barchart .bar.t{ background:var(--accent-200); }
+.bc-axis{ display:flex; gap:2.4mm; margin-top:1.8mm; }
+.bc-axis span{ flex:1; text-align:center; font-family:var(--font-mono); font-size:6.6pt; color:var(--ink-4); }
+
+.comp-cell{ box-shadow:inset 0 0 0 1px var(--line); border-radius:var(--r-md); background:#fff; padding:4mm; }
+.comp-cell .cc-h{ font-size:7.2pt; font-weight:600; letter-spacing:0.4px; text-transform:uppercase; color:var(--ink-3); margin-bottom:3mm; }
+.iconbtn-sm{ width:7.5mm; height:7.5mm; border-radius:var(--r-full); background:var(--field); display:inline-flex; align-items:center; justify-content:center; flex:none; }
+.snackbar{ background:#1C1917; color:#fff; border-radius:var(--r-md); padding:3mm 4mm; display:flex; align-items:center; gap:3mm; box-shadow:var(--e2); font-size:8.6pt; font-weight:500; }
+.snackbar .sb-a{ color:#FED7AA; font-weight:700; margin-left:auto; }
+.dialog{ background:#fff; border-radius:var(--r-lg); padding:4.5mm; box-shadow:inset 0 0 0 1px var(--line); }
+.empty{ text-align:center; padding:3mm 2mm; }
+.empty .e-ic{ width:13mm; height:13mm; border-radius:var(--r-lg); background:var(--accent-50); display:inline-flex; align-items:center; justify-content:center; margin-bottom:2.5mm; }
+.sk{ background:#ECEEF1; border-radius:5px; display:block; }
+
+.icon-grid{ display:flex; flex-wrap:wrap; gap:3mm; }
+.icon-cell{ width:calc(16.666% - 2.5mm); aspect-ratio:1; border-radius:var(--r-md); box-shadow:inset 0 0 0 1px var(--line); background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1.5mm; }
+.icon-cell svg{ width:6mm; height:6mm; color:var(--ink); }
+.icon-cell .il{ font-size:6.2pt; color:var(--ink-4); }
+
+.do-dont{ display:flex; gap:4mm; }
+.dd{ flex:1; border-radius:var(--r-md); padding:4mm 4.5mm; border:1px solid var(--line); background:var(--surface); box-shadow:var(--e1); }
+.dd h5{ margin:0 0 2.5mm; font-size:9pt; font-weight:700; display:flex; align-items:center; gap:2mm; color:var(--ink); }
+.dd .ic{ width:5mm; height:5mm; border-radius:var(--r-xs); display:inline-flex; align-items:center; justify-content:center; flex:none; }
+.dd.do .ic{ background:var(--ok); } .dd.dont .ic{ background:var(--danger); }
+.dd ul{ margin:0; padding-left:4mm; } .dd li{ font-size:8pt; color:var(--ink-2); margin-bottom:1.4mm; }
+
+.codeblock{ background:#1C1917; color:#E7E9EE; border-radius:var(--r-md); padding:4mm 4.5mm; font-family:var(--font-mono); font-size:7.8pt; line-height:1.6; white-space:pre; overflow-x:auto; }
+.codeblock .c{ color:#7E8794; } .codeblock .p{ color:#FED7AA; } .codeblock .s{ color:#A9C2A9; } .codeblock .k{ color:#F97316; }
+
+.phone{ width:74mm; height:152mm; background:#0E0F13; border-radius:13mm; padding:3.2mm; box-shadow:var(--e3); position:relative; }
+.screen{ width:100%; height:100%; border-radius:10mm; overflow:hidden; position:relative; background:var(--bg); }
+.island{ position:absolute; top:2.6mm; left:50%; transform:translateX(-50%); width:18mm; height:4.4mm; background:#0E0F13; border-radius:var(--r-full); z-index:5; }
+.statusbar{ display:flex; justify-content:space-between; align-items:center; padding:3mm 5mm 0; font-size:7pt; font-weight:600; }
+.m-h{ font-size:13pt; font-weight:800; letter-spacing:-0.6px; }
+.m-card{ background:#fff; border-radius:var(--r-lg); box-shadow:var(--e1); border:1px solid var(--line-2); }
+.tabbar{ position:absolute; bottom:4mm; left:5mm; right:5mm; height:11mm; background:#fff; border-radius:var(--r-full); box-shadow:var(--e2); border:1px solid var(--line); display:flex; align-items:center; justify-content:space-around; }
+.tabbar .tb{ width:4mm; height:4mm; }
+.action-sheet{ background:#fff; border-radius:var(--r-2xl) var(--r-2xl) 0 0; box-shadow:var(--e3); padding:5mm; border:1px solid var(--line); }
+.grab{ width:14mm; height:1.4mm; background:var(--line); border-radius:var(--r-full); margin:0 auto 4mm; }
+.screen-empty{ width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:var(--ink-4); font-size:8pt; text-align:center; padding:6mm; background:repeating-linear-gradient(45deg,#fff,#fff 6mm,#FAFAF8 6mm,#FAFAF8 12mm); }
+.screen-spec{ flex:1; min-width:60mm; }
+.screen-spec .sf{ display:flex; gap:3mm; font-size:8.4pt; padding:2mm 0; border-bottom:1px solid var(--line-2); }
+.screen-spec .sf .kk{ width:30mm; color:var(--ink-3); flex:none; }
+.screen-spec .sf .vv{ color:var(--ink-2); }
+</style>
+</head>
+<body>
+
+<!-- ======================= COVER ======================= -->
+<div class="cover">
+  <div class="top">
+    <div class="logo-slot">M</div>
+    <div class="topname">deVillier · Personal</div>
+  </div>
+
+  <div class="center">
+    <h1>MenuApp<br>Design System</h1>
+    <div class="sub">Visual language and component foundations for the MenuApp mobile app. Warm surfaces, generous rounding, single orange accent. Platform-agnostic — built for Flutter, renders identically on iOS &amp; Android.</div>
+
+    <div class="specimen">
+      <div class="sw-strip">
+        <span style="background:var(--accent)"></span>
+        <span style="background:var(--accent-200)"></span>
+        <span style="background:var(--accent-50)"></span>
+        <span style="background:var(--field)"></span>
+        <span style="background:var(--bg)"></span>
+        <span style="background:var(--surface); box-shadow:inset 0 0 0 1px var(--line)"></span>
+      </div>
+      <div class="row2">
+        <span class="btn btn-primary btn-pill" style="font-size:8pt">Add to menu</span>
+        <span class="badge b-ok">Approved</span>
+        <span class="tag-teal" style="font-size:7.6pt">Gluten-free</span>
+        <span class="mono" style="margin-left:auto; font-size:10pt; font-weight:600">3/5</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="meta">
+    <div><div class="mk">Version</div><div class="mv">0.1</div></div>
+    <div><div class="mk">Platform</div><div class="mv">Flutter · iOS · Android</div></div>
+    <div><div class="mk">Type</div><div class="mv">System UI · System Mono</div></div>
+    <div><div class="mk">Updated</div><div class="mv">2026-06</div></div>
+  </div>
+</div>
+
+<!-- ======================= OVERVIEW + PRINCIPLES ======================= -->
+<div class="sec">
+  <div class="eyebrow">Overview</div>
+  <h2>How to use this document</h2>
+  <p class="lead">This is the single source of truth for how MenuApp looks and feels on mobile. It is written for two audiences: <b>Andrew</b>, who should be able to understand the bar at a glance; and a <b>build agent</b>, who should be able to translate every page into Flutter without guessing. Every visual token maps 1:1 to Flutter — colors to <span class="mono">Color()</span>, radii to <span class="mono">BorderRadius.circular()</span>, elevation to <span class="mono">BoxShadow</span> lists, motion to <span class="mono">Duration</span> + <span class="mono">Curves</span>. Andrew owns changes; propose them in the conversation, update both CSS tokens and the Dart block in §15 together.</p>
+
+  <div class="toc">
+    <div><span class="tn">01</span> Design principles</div>
+    <div><span class="tn">09</span> Cards, lists &amp; data display</div>
+    <div><span class="tn">02</span> Brand</div>
+    <div><span class="tn">10</span> Navigation &amp; chrome</div>
+    <div><span class="tn">03</span> Color — neutrals &amp; surfaces</div>
+    <div><span class="tn">11</span> Sheets, dialogs &amp; feedback</div>
+    <div><span class="tn">04</span> Color — accent &amp; semantic states</div>
+    <div><span class="tn">12</span> Loading &amp; empty states</div>
+    <div><span class="tn">05</span> Typography</div>
+    <div><span class="tn">13</span> Component state matrix</div>
+    <div><span class="tn">06</span> Spacing, radius &amp; elevation</div>
+    <div><span class="tn">14</span> Accessibility</div>
+    <div><span class="tn">07</span> Iconography &amp; motion</div>
+    <div><span class="tn">15</span> Tokens &amp; Flutter theme</div>
+    <div><span class="tn">08</span> Buttons, inputs &amp; controls</div>
+    <div><span class="tn">16</span> Do &amp; Don't</div>
+    <div><span class="tn">A</span> Appendix — screen specs</div>
+    <div><span class="tn">B</span> Appendix — build-agent handoff brief</div>
+  </div>
+
+  <h3>Design principles</h3>
+  <div class="principles">
+    <div class="principle"><div class="pn">01</div><h5>Calm by default</h5><p>Color and weight are reserved for what matters — the meal, the vote, the threshold. Everything else recedes. The app should feel like a well-set table, not a notification feed.</p></div>
+    <div class="principle"><div class="pn">02</div><h5>One accent, used deliberately</h5><p>The warm orange carries every primary action. It appears once per screen — on the button the user is here to press. Never use it decoratively.</p></div>
+    <div class="principle"><div class="pn">03</div><h5>Thumb-first layouts</h5><p>Primary actions live in the bottom half of the screen. Nothing critical lives in the top corners. The tab bar is within reach at all times.</p></div>
+    <div class="principle"><div class="pn">04</div><h5>Platform-agnostic rendering</h5><p>Every effect must render identically on iOS and Android. No translucency, no blur, no platform-specific widgets. If it needs a conditional, it probably doesn't belong.</p></div>
+    <div class="principle"><div class="pn">05</div><h5>Soft depth, never heavy</h5><p>Elevation reads through low-alpha layered shadows and hairline borders — not hard outlines or colored fills. Cards should feel lifted, not boxed in.</p></div>
+    <div class="principle"><div class="pn">06</div><h5>Thin screens, shared components</h5><p>Screen files are routing + state only. Every visual element lives in <span class="mono">lib/widgets/</span>. If you're writing a Container with decoration in a screen file, extract it first.</p></div>
+  </div>
+</div>
+
+<!-- ======================= BRAND ======================= -->
+<div class="sec page-break">
+  <div class="eyebrow">Foundations · 02</div>
+  <h2>Brand</h2>
+  <p class="lead">MenuApp is a meal-planning tool for couples and small families. The brand is warm, approachable, and focused — like a good cookbook. The orange accent signals appetite and energy without feeling urgent. Voice is plain, warm, and direct.</p>
+
+  <div class="row top" style="gap:5mm">
+    <div class="card avoid" style="flex:1; min-width:70mm">
+      <h4>Wordmark &amp; app icon</h4>
+      <div style="display:flex; align-items:center; justify-content:center; height:34mm; background:var(--accent-50); border-radius:var(--r-md);">
+        <div style="text-align:center">
+          <div style="font-size:22pt; font-weight:800; letter-spacing:-1px; color:var(--accent);">MenuApp</div>
+          <div style="font-size:8pt; color:var(--accent-deep); margin-top:1mm; font-weight:500;">Meal planning, together.</div>
+        </div>
+      </div>
+      <div class="spec" style="margin-top:3mm"><b>App icon</b> · orange (#F97316) background, white fork+bowl mark, 20% padding. <b>Splash</b> · same treatment, centered on bg (#FAFAF8). <b>Min size</b> · 24px in nav bar. <b>Don't</b> · recolor, add gradients, place on low-contrast surfaces.</div>
+    </div>
+    <div class="card" style="flex:1; min-width:70mm">
+      <h4>Voice &amp; tone</h4>
+      <p style="font-size:8.6pt; color:var(--ink-2); margin-bottom:3mm"><b>Three words:</b> plain, warm, encouraging.</p>
+      <table class="tok">
+        <tr><th>We say</th><th>We don't say</th></tr>
+        <tr><td>"Add to this week's menu"</td><td>"Submit recipe to planning queue"</td></tr>
+        <tr><td>"3 of 5 people approved"</td><td>"Approval threshold reached: 60%"</td></tr>
+        <tr><td>"Nothing here yet — add a recipe"</td><td>"No data available"</td></tr>
+        <tr><td>"Removed from menu"</td><td>"Item deletion successful"</td></tr>
+      </table>
+      <div class="spec" style="margin-top:3mm"><b>Copy rules</b> · Sentence case everywhere (not Title Case). Errors blame the system, not the user. Buttons are verbs. Never use "please".</div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= COLOR: NEUTRALS ======================= -->
+<div class="sec page-break">
+  <div class="eyebrow">Foundations · 03</div>
+  <h2>Color — neutrals &amp; surfaces</h2>
+  <p class="lead">A warm-neutral ramp rooted in stone rather than grey. The background is barely-there warm white; surfaces are pure white lifted by shadow. These never change per screen — they are the constant canvas the brand accent rests on.</p>
+
+  <h4>Ink &amp; text</h4>
+  <div class="sw-grid">
+    <div class="sw"><div class="chip" style="background:var(--ink)"></div><div class="meta"><div class="nm">Ink</div><div class="hex">#1C1917</div><div class="use">Primary text, icons, key labels</div></div></div>
+    <div class="sw"><div class="chip" style="background:var(--ink-2)"></div><div class="meta"><div class="nm">Ink 2</div><div class="hex">#57534E</div><div class="use">Secondary text, body copy</div></div></div>
+    <div class="sw"><div class="chip" style="background:var(--ink-3)"></div><div class="meta"><div class="nm">Ink 3</div><div class="hex">#A8A29E</div><div class="use">Tertiary, captions, labels</div></div></div>
+    <div class="sw"><div class="chip" style="background:var(--ink-4)"></div><div class="meta"><div class="nm">Ink 4</div><div class="hex">#D6D3D1</div><div class="use">Placeholders, disabled, hints</div></div></div>
+  </div>
+
+  <h4 style="margin-top:6mm">Surfaces &amp; lines</h4>
+  <div class="sw-grid">
+    <div class="sw"><div class="chip" style="background:var(--bg)"></div><div class="meta"><div class="nm">Background</div><div class="hex">#FAFAF8</div><div class="use">App canvas behind cards</div></div></div>
+    <div class="sw"><div class="chip" style="background:var(--surface); box-shadow:inset 0 0 0 1px var(--line)"></div><div class="meta"><div class="nm">Surface</div><div class="hex">#FFFFFF</div><div class="use">Cards, sheets, menus</div></div></div>
+    <div class="sw"><div class="chip" style="background:var(--field)"></div><div class="meta"><div class="nm">Field</div><div class="hex">#F5F5F4</div><div class="use">Inputs, segmented controls, wells</div></div></div>
+    <div class="sw"><div class="chip" style="background:var(--line)"></div><div class="meta"><div class="nm">Line</div><div class="hex">#E7E5E4</div><div class="use">Hairline borders &amp; dividers</div></div></div>
+  </div>
+  <p class="small" style="margin-top:3mm"><b>Flutter:</b> every value is an opaque <span class="mono">Color(0xFF……)</span>. Background → <span class="mono">Scaffold.backgroundColor</span>; Surface → <span class="mono">BoxDecoration.color</span>; Field → <span class="mono">TextField.fillColor</span>; Line → <span class="mono">Border.all(color: AppColors.line)</span>. Never use <span class="mono">Colors.grey</span> — always use a named token.</p>
+</div>
+
+<!-- ======================= COLOR: ACCENT + SEMANTIC ======================= -->
+<div class="sec page-break">
+  <div class="eyebrow">Foundations · 04</div>
+  <h2>Color — accent &amp; semantic states</h2>
+  <p class="lead">One warm orange accent carries every primary action. A small semantic palette communicates vote outcomes and system states. If a color isn't on this page, it doesn't ship.</p>
+
+  <h4>Primary — Warm Orange</h4>
+  <div class="sw-grid">
+    <div class="sw wide"><div class="chip" style="background:var(--accent)"></div><div class="meta"><div class="nm">Accent</div><div class="hex">#F97316</div><div class="use">Primary actions, focus rings, selected toggles, FAB</div></div></div>
+    <div class="sw wide"><div class="chip" style="background:var(--accent-deep)"></div><div class="meta"><div class="nm">Accent Deep</div><div class="hex">#C2570A</div><div class="use">Accent text on light surfaces, eyebrows, active labels</div></div></div>
+    <div class="sw wide"><div class="chip" style="background:var(--accent-50)"></div><div class="meta"><div class="nm">Accent 50</div><div class="hex">#FFF7ED</div><div class="use">Accent surfaces, avatar backgrounds, selected rows</div></div></div>
+  </div>
+
+  <h4 style="margin-top:6mm">Secondary — Warm Teal</h4>
+  <p class="small" style="margin-bottom:3mm">Used for dietary tags, cuisine labels, and secondary info surfaces — never for primary CTAs. Teal is complementary to orange and reads as "fresh/healthy" in food contexts.</p>
+  <div class="sw-grid">
+    <div class="sw wide"><div class="chip" style="background:var(--teal)"></div><div class="meta"><div class="nm">Teal</div><div class="hex">#0D9488</div><div class="use">Dietary tags, cuisine chips, "in menu" info badge</div></div></div>
+    <div class="sw wide"><div class="chip" style="background:var(--teal-deep)"></div><div class="meta"><div class="nm">Teal Deep</div><div class="hex">#0F766E</div><div class="use">Teal text on light surfaces</div></div></div>
+    <div class="sw wide"><div class="chip" style="background:var(--teal-50); box-shadow:inset 0 0 0 1px var(--line)"></div><div class="meta"><div class="nm">Teal 50</div><div class="hex">#F0FDFA</div><div class="use">Teal tag backgrounds, info wells</div></div></div>
+  </div>
+  <p class="small" style="margin-top:3mm"><b>Rule:</b> orange = action (the user is about to do something). Teal = information (the app is telling the user something). Never use teal on a button.</p>
+
+  <h4 style="margin-top:6mm">Semantic states</h4>
+  <div class="row" style="margin-bottom:3mm">
+    <span class="badge b-ok">Approved</span>
+    <span class="badge b-warn">Pending votes</span>
+    <span class="badge b-danger">Rejected</span>
+    <span class="badge b-info">On menu</span>
+    <span class="badge b-teal">Gluten-free</span>
+    <span class="badge b-muted">Draft</span>
+  </div>
+  <table class="tok">
+    <tr><th>State</th><th>Color (dot / icon)</th><th>Tint (banners only)</th><th>Use in MenuApp</th></tr>
+    <tr><td>Success / Approved</td><td class="mono">#16A34A</td><td class="mono">#DCFCE7</td><td>Recipe approved, menu finalized, member added</td></tr>
+    <tr><td>Warning / Pending</td><td class="mono">#F59E0B</td><td class="mono">#FEF3C7</td><td>Awaiting more votes, threshold not yet reached</td></tr>
+    <tr><td>Danger / Rejected</td><td class="mono">#DC2626</td><td class="mono">#FEE2E2</td><td>Recipe rejected, destructive actions</td></tr>
+    <tr><td>Info / On menu</td><td class="mono">#F97316 (accent)</td><td class="mono">#FFF7ED</td><td>Recipe is currently on the active menu</td></tr>
+    <tr><td>Dietary / Cuisine</td><td class="mono">#0D9488 (teal)</td><td class="mono">#F0FDFA</td><td>Dietary restriction tags, cuisine labels — informational only, never on a CTA</td></tr>
+    <tr><td>Neutral / Draft</td><td class="mono">#D6D3D1</td><td class="mono">#F5F5F4</td><td>Not yet added, disabled, not set</td></tr>
+  </table>
+  <p class="small" style="margin-top:2.5mm">Badges are a <b>surface chip with ink text and one saturated dot</b> — never a tinted fill with same-hue text. Tints are reserved for full-width banners (e.g. a "menu is finalized" system notice at the top of a screen).</p>
+</div>
+
+<!-- ======================= TYPOGRAPHY ======================= -->
+<div class="sec page-break">
+  <div class="eyebrow">Foundations · 05</div>
+  <h2>Typography</h2>
+  <p class="lead">System UI fonts throughout — SF Pro on iOS, Roboto on Android. Flutter renders these automatically with no configuration. The system mono stack (<span class="mono">SF Mono / Roboto Mono</span>) is used for vote counts, thresholds, and any numeric value that needs tabular alignment.</p>
+
+  <div class="card avoid">
+    <div style="font-size:34pt; font-weight:800; letter-spacing:-1.6px; line-height:1.05;">Display</div>
+    <div class="small mono" style="margin-top:1mm">System UI · 34/40 · w800 · −1.6 tracking · hero numbers (vote counts, threshold progress)</div>
+    <hr class="hair">
+    <div style="font-size:22pt; font-weight:800; letter-spacing:-0.6px;">Heading 1 — screen titles</div>
+    <div class="small mono" style="margin-top:1mm">System UI · 22/26 · w800 · Flutter: headlineMedium</div>
+    <hr class="hair">
+    <div style="font-size:16pt; font-weight:700; letter-spacing:-0.2px;">Heading 2 — card &amp; section titles</div>
+    <div class="small mono" style="margin-top:1mm">System UI · 16/22 · w700 · Flutter: titleLarge</div>
+    <hr class="hair">
+    <div style="font-size:15pt; font-weight:400; color:var(--ink-2); line-height:1.5">Body — the default reading size for recipe descriptions, group member lists, and longer content. Comfortable measure with generous line-height.</div>
+    <div class="small mono" style="margin-top:1mm">System UI · 15/22 · w400 · ink-2 · Flutter: bodyMedium</div>
+    <hr class="hair">
+    <div style="font-size:12pt; font-weight:600; letter-spacing:0.3px; color:var(--ink-3);">Caption — metadata, timestamps</div>
+    <div class="small mono" style="margin-top:1mm">System UI · 12/16 · w600 · ink-3 · Flutter: bodySmall</div>
+    <hr class="hair">
+    <div style="font-size:11pt; font-weight:600; letter-spacing:0.4px; text-transform:uppercase; color:var(--ink-3);">Label — overlines &amp; field labels</div>
+    <div class="small mono" style="margin-top:1mm">System UI · 11/14 · w600 · uppercase · +0.4 tracking · Flutter: labelSmall</div>
+    <hr class="hair">
+    <div class="mono" style="font-size:11pt; font-weight:600; color:var(--accent-deep);">3/5 votes  ·  threshold: 4  ·  ID-8f21</div>
+    <div class="small mono" style="margin-top:1mm">System Mono · vote counts, thresholds, IDs, numeric data — always tabular, always mono</div>
+  </div>
+  <p class="small" style="margin-top:3mm"><b>Flutter:</b> override the default TextTheme in <span class="mono">app_typography.dart</span>. Set <span class="mono">height</span> from (line-height ÷ size). For mono: wrap in a <span class="mono">Text</span> with <span class="mono">style: AppTypography.mono</span> — a standalone <span class="mono">TextStyle</span> referencing <span class="mono">fontFamily: 'Courier'</span> (Flutter's cross-platform monospace fallback, or use <span class="mono">google_fonts</span> to load Roboto Mono explicitly).</p>
+</div>
+
+<!-- ======================= SPACING / RADIUS / ELEVATION ======================= -->
+<div class="sec page-break">
+  <div class="eyebrow">Foundations · 06</div>
+  <h2>Spacing, radius &amp; elevation</h2>
+  <p class="lead">A 4/8 spacing rhythm, a rounded radius scale that softens without going bubbly, and three elevation levels that let cards breathe without casting hard shadows.</p>
+
+  <div class="row top">
+    <div style="flex:1; min-width:78mm">
+      <h4>Spacing scale</h4>
+      <table class="tok">
+        <tr><th>Token</th><th>px</th><th>Use</th></tr>
+        <tr><td class="mono">space-1</td><td class="mono">4</td><td>Icon-to-label, tight inline gaps</td></tr>
+        <tr><td class="mono">space-2</td><td class="mono">8</td><td>Inside chips, between tags, badge padding</td></tr>
+        <tr><td class="mono">space-3</td><td class="mono">12</td><td>Card inner gaps, list row internal spacing</td></tr>
+        <tr><td class="mono">space-4</td><td class="mono">16</td><td>Card padding, screen gutters (horizontal)</td></tr>
+        <tr><td class="mono">space-5</td><td class="mono">20</td><td>Between cards in a list</td></tr>
+        <tr><td class="mono">space-6</td><td class="mono">24</td><td>Section top padding, large gaps</td></tr>
+        <tr><td class="mono">space-8</td><td class="mono">32</td><td>Major section breaks, sheet top padding</td></tr>
+      </table>
+      <p class="small" style="margin-top:2.5mm"><b>Layout:</b> screen gutter 16px · respect safe areas with <span class="mono">SafeArea</span> · min tap target 48×48px · list items min 56px tall.</p>
+    </div>
+    <div style="flex:1; min-width:78mm">
+      <h4>Radius scale</h4>
+      <div class="stack">
+        <div class="row" style="gap:3mm"><div style="width:14mm;height:9mm;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:var(--e0)"></div><span class="small"><b class="mono" style="color:var(--ink-2)">8px</b> &nbsp;xs — small tags, status chips</span></div>
+        <div class="row" style="gap:3mm"><div style="width:14mm;height:9mm;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--e0)"></div><span class="small"><b class="mono" style="color:var(--ink-2)">12px</b> &nbsp;sm — buttons, text fields</span></div>
+        <div class="row" style="gap:3mm"><div style="width:14mm;height:9mm;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--e0)"></div><span class="small"><b class="mono" style="color:var(--ink-2)">16px</b> &nbsp;md — icon containers, small cards</span></div>
+        <div class="row" style="gap:3mm"><div style="width:14mm;height:9mm;background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:var(--e0)"></div><span class="small"><b class="mono" style="color:var(--ink-2)">20px</b> &nbsp;lg — content cards (primary)</span></div>
+        <div class="row" style="gap:3mm"><div style="width:14mm;height:9mm;background:#fff;border:1px solid var(--line);border-radius:32px;box-shadow:var(--e0)"></div><span class="small"><b class="mono" style="color:var(--ink-2)">32px</b> &nbsp;2xl — bottom sheets, hero cards</span></div>
+        <div class="row" style="gap:3mm"><div style="width:14mm;height:9mm;background:#fff;border:1px solid var(--line);border-radius:999px;box-shadow:var(--e0)"></div><span class="small"><b class="mono" style="color:var(--ink-2)">full</b> &nbsp;pills, toggles, avatars, FAB</span></div>
+      </div>
+    </div>
+  </div>
+
+  <h4 style="margin-top:6mm">Elevation</h4>
+  <div class="row" style="gap:6mm">
+    <div style="text-align:center"><div style="width:34mm;height:20mm;background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--e1)"></div><div class="small mono" style="margin-top:2mm">e1 · resting cards</div></div>
+    <div style="text-align:center"><div style="width:34mm;height:20mm;background:#fff;border-radius:var(--r-lg);box-shadow:var(--e2)"></div><div class="small mono" style="margin-top:2mm">e2 · raised / tab bar</div></div>
+    <div style="text-align:center"><div style="width:34mm;height:20mm;background:#fff;border-radius:var(--r-lg);box-shadow:var(--e3)"></div><div class="small mono" style="margin-top:2mm">e3 · sheets / dialogs</div></div>
+  </div>
+  <p class="small" style="margin-top:3mm"><b>Flutter:</b> replicate each level as a 2-item <span class="mono">List&lt;BoxShadow&gt;</span> in <span class="mono">app_shadows.dart</span>. Do not use Material's <span class="mono">elevation</span> integer — it applies a platform-specific tint that differs between iOS and Android.</p>
+</div>
+
+<!-- ======================= ICONOGRAPHY + MOTION ======================= -->
+<div class="sec page-break">
+  <div class="eyebrow">Foundations · 07</div>
+  <h2>Iconography &amp; motion</h2>
+  <p class="lead">Lucide Icons — outline style, 2px stroke, round caps, 24px grid. Single family, never mixed with filled or other sets. Motion is functional and short: no decorative animation.</p>
+
+  <h4>Icon style</h4>
+  <div class="icon-grid">
+    <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="il">home</span></div>
+    <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span class="il">search</span></div>
+    <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="il">group</span></div>
+    <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span class="il">add</span></div>
+    <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span class="il">recipe</span></div>
+    <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span class="il">vote</span></div>
+    <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg><span class="il">chevron</span></div>
+    <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M5.34 18.66l-1.41 1.41M2 12h2M20 12h2M5.34 5.34L3.93 3.93M18.66 18.66l1.41 1.41M12 2v2M12 20v2"/></svg><span class="il">settings</span></div>
+    <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg><span class="il">delete</span></div>
+    <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><span class="il">edit</span></div>
+    <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg><span class="il">back</span></div>
+    <div class="icon-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span class="il">more</span></div>
+  </div>
+  <div class="spec" style="margin-top:3mm"><b>Source:</b> <span class="mono">lucide_icons_flutter</span> package (~1500 icons, outline style, 2px stroke, round caps &amp; joins, 24px grid). Uses standard Material <span class="mono">IconData</span> constants — no weight variants. <b>Active vs inactive:</b> color only — <span class="mono">ink</span> for active/selected, <span class="mono">ink4</span> for inactive. <b>Sizes:</b> 16 / 20 / 24px. <b>Color:</b> inherit from parent <span class="mono">IconTheme</span>. <b>Never</b> swap in a different icon style to imply state — use color exclusively.</div>
+
+  <h4 style="margin-top:7mm">Motion tokens</h4>
+  <table class="tok">
+    <tr><th>Token</th><th>Duration</th><th>Curve</th><th>Use → Flutter</th></tr>
+    <tr><td class="mono">dur-micro</td><td class="mono">120ms</td><td class="mono">easeOut</td><td>Taps, vote toggles, ripples → <span class="mono">Duration(milliseconds:120)</span></td></tr>
+    <tr><td class="mono">dur-base</td><td class="mono">200ms</td><td class="mono">easeInOut</td><td>State changes, badge updates → <span class="mono">Curves.easeInOut</span></td></tr>
+    <tr><td class="mono">dur-enter</td><td class="mono">320ms</td><td class="mono">easeOutCubic</td><td>Sheet entry, page transitions → <span class="mono">Curves.easeOutCubic</span></td></tr>
+  </table>
+  <p class="small" style="margin-top:2.5mm">Keep motion functional — it should confirm an action, not entertain. Honor <span class="mono">MediaQuery.disableAnimations</span>. No bounce, no spring, no overshoot.</p>
+</div>
+
+<!-- ======================= BUTTONS / INPUTS / CONTROLS ======================= -->
+<div class="sec page-break">
+  <div class="eyebrow">Components · 08</div>
+  <h2>Buttons, inputs &amp; controls</h2>
+  <p class="lead">One filled primary, a quiet secondary, a ghost, and an outline destructive. Plus the full set of input controls used in recipe filters and group settings.</p>
+
+  <div class="canvas">
+    <h4>Button variants</h4>
+    <div class="row">
+      <span class="btn btn-primary btn-pill">Add to menu</span>
+      <span class="btn btn-secondary btn-pill">Edit group</span>
+      <span class="btn btn-ghost btn-pill">Cancel</span>
+      <span class="btn btn-danger btn-pill">Remove member</span>
+      <span class="btn btn-disabled btn-pill">Disabled</span>
+    </div>
+    <div class="row" style="margin-top:5mm; align-items:center">
+      <span class="btn btn-primary" style="border-radius:12px">Squared 12px</span>
+      <span class="btn btn-secondary"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add recipe</span>
+      <span class="btn-icon accent"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+      <span class="btn-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#57534E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></span>
+    </div>
+    <div class="spec"><b>Anatomy</b> · height 48px (min 44) · padding 12×20px · primary radius full or 12px · label w600 · primary fill accent · secondary field + hairline · ghost text-only · destructive danger outline.<br><b>Flutter:</b> <span class="mono">AppButton</span> custom widget — not <span class="mono">ElevatedButton</span>. Pass <span class="mono">AppButtonStyle</span> enum (primary / secondary / ghost / destructive). Width is content-width; full-width via <span class="mono">expand: true</span>.</div>
+  </div>
+
+  <div class="canvas">
+    <h4>Text fields &amp; states</h4>
+    <div class="row top" style="gap:8mm">
+      <div><div class="field-label">Default</div><div class="field is-ph">Search recipes…</div></div>
+      <div><div class="field-label">Focused</div><div class="field focus">Pasta</div></div>
+      <div><div class="field-label">Error</div><div class="field error">abc</div><div class="field-help err">Threshold must be a number.</div></div>
+    </div>
+    <div class="spec" style="margin-top:3mm"><b>Flutter:</b> <span class="mono">AppTextField</span> custom widget wrapping <span class="mono">TextField</span>. Fill = field color, border = none, focus → 2px accent ring, error → 2px danger ring + inline helper text below. Never use <span class="mono">OutlineInputBorder</span> directly in screen files.</div>
+  </div>
+
+  <div class="canvas">
+    <h4>Filters, chips &amp; steppers</h4>
+    <div class="row" style="gap:8mm; align-items:center">
+      <div class="row" style="gap:2.5mm"><span class="toggle"></span><span class="small">Vegetarian ON</span></div>
+      <div class="row" style="gap:2.5mm"><span class="toggle off"></span><span class="small">Gluten-free OFF</span></div>
+    </div>
+    <div class="row" style="margin-top:5mm; gap:8mm; align-items:center">
+      <div class="segmented"><span class="seg active">Week</span><span class="seg">Month</span><span class="seg">All</span></div>
+      <div class="stepper"><span class="sb">−</span><span class="sv">3</span><span class="sb">+</span></div>
+    </div>
+    <div class="row" style="margin-top:5mm; gap:2mm">
+      <!-- Cuisine/dietary filters use teal; action filters use orange -->
+      <span class="chip-teal on">All cuisines</span><span class="chip-teal">Italian</span><span class="chip-teal">Asian</span><span class="chip-teal">Mexican</span>
+      <span class="chip-sel on" style="margin-left:3mm">Add to menu</span><span class="chip-sel">Favourites</span>
+    </div>
+    <div class="spec" style="margin-top:3mm">Filter chips, toggles and steppers are the primary controls for the recipe filter sheet and group settings. Stepper is used for vote threshold selection.</div>
+  </div>
+</div>
+
+<!-- ======================= CARDS / LISTS / DATA ======================= -->
+<div class="sec page-break">
+  <div class="eyebrow">Components · 09</div>
+  <h2>Cards, lists &amp; data display</h2>
+  <p class="lead">The card is the atom of every screen. Groups, recipes, and menu items each have a named card variant. Vote progress uses a linear meter — never a radial gauge.</p>
+
+  <div class="row top" style="gap:5mm; margin-bottom:5mm">
+    <div class="card" style="flex:1">
+      <h4>Group card</h4>
+      <div class="listrow" style="border:0; padding:0">
+        <div class="avatar" style="width:10mm; height:10mm; font-size:10pt; border-radius:var(--r-full);">S</div>
+        <div style="flex:1">
+          <div style="font-weight:700; font-size:10pt;">Sunday Dinners</div>
+          <div class="small">4 members · threshold: 3</div>
+        </div>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--ink-4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+      </div>
+    </div>
+    <div class="card" style="flex:1">
+      <h4>Recipe card</h4>
+      <div style="font-weight:700; font-size:10pt; margin-bottom:1mm">Chicken Tikka Masala</div>
+      <div class="small" style="margin-bottom:3mm">Indian · 45 min · 520 cal</div>
+      <div class="row" style="gap:2mm; flex-wrap:wrap">
+        <span class="badge b-info">On menu</span>
+        <span class="tag-teal" style="font-size:7.5pt">Gluten-free</span>
+        <span class="tag-teal" style="font-size:7.5pt">Indian</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:5mm">
+    <h4>Vote progress — menu recipe row</h4>
+    <div style="font-weight:700; font-size:10pt; margin-bottom:2mm">Spaghetti Carbonara</div>
+    <div class="meter-top" style="margin-bottom:1.5mm">
+      <span class="ml"><span class="dot" style="background:var(--ok)"></span>3 of 5 approved</span>
+      <span class="mv mono">threshold: 4</span>
+    </div>
+    <div class="track"><div class="fill-bar" style="width:60%; background:var(--accent)"></div></div>
+    <div class="spec" style="margin-top:2mm">Progress bar fill = accent. When threshold is met, fill = ok-color. Threshold marker can be shown as a hairline on the track.</div>
+  </div>
+
+  <div class="card">
+    <h4>List rows</h4>
+    <div class="listrow"><div class="avatar">A</div><div style="flex:1"><div style="font-weight:600;font-size:9pt">Alice Fontaine</div><div class="small">Owner</div></div><span class="badge b-accent">You</span></div>
+    <div class="listrow"><div class="avatar">M</div><div style="flex:1"><div style="font-weight:600;font-size:9pt">Marcus Webb</div><div class="small">Member</div></div><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--ink-4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></div>
+    <div class="listrow"><div class="avatar" style="background:var(--field); color:var(--ink-4)">+</div><div style="flex:1; color:var(--ink-3); font-size:9pt">Add member…</div></div>
+  </div>
+</div>
+
+<!-- ======================= NAVIGATION & CHROME ======================= -->
+<div class="sec page-break">
+  <div class="eyebrow">Components · 10</div>
+  <h2>Navigation &amp; chrome</h2>
+  <p class="lead">A collapsing large-title top bar (HIG-aligned, implemented as a custom widget — not Material AppBar) and a pill-shaped bottom tab bar. Both stay quiet so content leads.</p>
+
+  <div class="row top" style="gap:5mm">
+    <div class="comp-cell" style="flex:1; min-width:75mm">
+      <div class="cc-h">Large title bar (collapsed scroll state)</div>
+      <div class="row" style="justify-content:space-between; padding:2mm 0">
+        <span class="iconbtn-sm"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#1C1917" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></span>
+        <span style="font-weight:700; font-size:10pt">Sunday Dinners</span>
+        <span class="iconbtn-sm"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#1C1917" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></span>
+      </div>
+      <div class="spec"><b>Flutter:</b> custom <span class="mono">AppPageHeader</span> widget. Large title visible when scrolled to top (<span class="mono">SliverPersistentHeader</span>), collapses to compact on scroll. Background: surface, no elevation until scrolled (then e1). ≤2 trailing actions.</div>
+    </div>
+    <div style="flex:1; min-width:70mm">
+      <div class="cc-h" style="font-size:7.2pt; font-weight:600; letter-spacing:.4px; text-transform:uppercase; color:var(--ink-3); margin-bottom:3mm">Bottom tab bar</div>
+      <div class="tabbar" style="position:static; height:14mm; padding:0 5mm;">
+        <div style="display:flex; flex-direction:column; align-items:center; gap:1mm">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span style="font-size:6pt; font-weight:600; color:var(--accent)">Groups</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:1mm">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--ink-4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          <span style="font-size:6pt; font-weight:600; color:var(--ink-4)">Recipes</span>
+        </div>
+      </div>
+      <div class="spec" style="margin-top:3mm"><b>Flutter:</b> <span class="mono">AppNavBar</span> custom widget. White pill, e2 shadow, border. Active = ink icon + accent label dot indicator. Inactive = ink-4 icon. 2–3 destinations for v1.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= SHEETS / DIALOGS / FEEDBACK ======================= -->
+<div class="sec page-break">
+  <div class="eyebrow">Components · 11</div>
+  <h2>Sheets, dialogs &amp; feedback</h2>
+  <p class="lead">Bottom sheets for contextual actions (vote, add to menu), dialogs for destructive confirmations, snackbars for transient results. All opaque — no blur or translucency.</p>
+
+  <div class="row top" style="gap:5mm">
+    <div style="flex:1; min-width:72mm">
+      <h4>Bottom action sheet</h4>
+      <div class="action-sheet">
+        <div class="grab"></div>
+        <div style="font-weight:700; font-size:9.5pt; margin-bottom:3mm">Chicken Tikka Masala</div>
+        <div class="listrow"><span class="iconbtn-sm"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="var(--ok)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/></svg></span><span style="flex:1; font-weight:600; font-size:9pt">Approve</span></div>
+        <div class="listrow"><span class="iconbtn-sm"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#1C1917" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/></svg></span><span style="flex:1; font-weight:600; font-size:9pt">View recipe</span></div>
+        <div class="listrow" style="border-bottom:0"><span class="iconbtn-sm"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="var(--danger)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></span><span style="flex:1; font-weight:600; font-size:9pt; color:var(--danger)">Remove from menu</span></div>
+      </div>
+    </div>
+
+    <div style="flex:1; min-width:62mm">
+      <h4>Confirm dialog</h4>
+      <div class="dialog">
+        <div style="font-weight:700;font-size:9.5pt">Remove from menu?</div>
+        <div class="small" style="margin:1.5mm 0 3.5mm">This recipe will be removed and all votes will be cleared.</div>
+        <div class="row" style="justify-content:flex-end; gap:2.5mm">
+          <span class="btn btn-secondary btn-pill" style="font-size:8pt">Cancel</span>
+          <span class="btn btn-danger btn-pill" style="font-size:8pt">Remove</span>
+        </div>
+      </div>
+      <h4 style="margin-top:6mm">Snackbar</h4>
+      <div class="snackbar">Recipe added to menu<span class="sb-a">Undo</span></div>
+      <div style="height:3mm"></div>
+      <div class="snackbar" style="background:#fff;color:var(--ink);box-shadow:var(--e1),inset 0 0 0 1px var(--line)"><span class="dot" style="background:var(--ok)"></span>Vote recorded<span class="sb-a" style="color:var(--accent-deep)">View</span></div>
+      <div class="spec" style="margin-top:2mm"><b>Flutter:</b> <span class="mono">ScaffoldMessenger.showSnackBar</span> · floating · one optional action · auto-dismiss 4s.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= LOADING / EMPTY ======================= -->
+<div class="sec page-break">
+  <div class="eyebrow">Components · 12</div>
+  <h2>Loading &amp; empty states</h2>
+  <p class="lead">Every screen has three states beyond the happy path: loading, empty, and error. Design all three alongside the content. Skeletons over spinners for list content; spinners only for blocking actions (vote submit, group create).</p>
+
+  <div class="row top" style="gap:5mm">
+    <div class="comp-cell" style="flex:1; min-width:72mm">
+      <div class="cc-h">Skeleton — groups list loading</div>
+      <div class="row" style="gap:3mm; align-items:center"><div class="sk" style="width:10mm;height:10mm;border-radius:999px"></div><div style="flex:1"><div class="sk" style="height:3mm;width:60%"></div><div class="sk" style="height:2.4mm;width:40%;margin-top:2mm"></div></div><div class="sk" style="height:3mm;width:8mm"></div></div>
+      <div class="row" style="gap:3mm; align-items:center; margin-top:4mm"><div class="sk" style="width:10mm;height:10mm;border-radius:999px"></div><div style="flex:1"><div class="sk" style="height:3mm;width:50%"></div><div class="sk" style="height:2.4mm;width:30%;margin-top:2mm"></div></div><div class="sk" style="height:3mm;width:8mm"></div></div>
+      <div class="spec" style="margin-top:3mm"><b>Rule:</b> skeletons mirror the real layout exactly. Subtle fade shimmer via <span class="mono">AnimatedOpacity</span> cycling 40%→100%. One skeleton widget per list-item shape.</div>
+    </div>
+    <div class="comp-cell" style="flex:1; min-width:62mm">
+      <div class="cc-h">Empty state — no groups</div>
+      <div class="empty">
+        <div class="e-ic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="23" y1="11" x2="17" y2="11"/><line x1="20" y1="8" x2="20" y2="14"/></svg></div>
+        <div style="font-weight:700;font-size:9pt">No groups yet</div>
+        <div class="small" style="margin:1mm 0 3mm">Create a group to start planning meals together.</div>
+        <span class="btn btn-primary btn-pill" style="font-size:8pt">Create group</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:5mm">
+    <h4>Error state</h4>
+    <div class="empty">
+      <div class="e-ic" style="background:var(--danger-bg)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--danger)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+      <div style="font-weight:700;font-size:9pt">Couldn't load groups</div>
+      <div class="small" style="margin:1mm 0 3mm">Check your connection and try again.</div>
+      <span class="btn btn-secondary btn-pill" style="font-size:8pt">Try again</span>
+    </div>
+    <div class="spec">Error state always shows inline — never a full-screen modal. Includes a retry button that re-runs the Cubit's load method.</div>
+  </div>
+</div>
+
+<!-- ======================= STATE MATRIX ======================= -->
+<div class="sec page-break">
+  <div class="eyebrow">Reference · 13</div>
+  <h2>Component state matrix</h2>
+  <p class="lead">Every interactive component implements these states. This table is the contract a build agent implements against — use <span class="mono">WidgetStateProperty.resolveWith</span>, not duplicate widgets.</p>
+
+  <table class="tok">
+    <tr><th>Component</th><th>Default</th><th>Pressed</th><th>Focused</th><th>Disabled</th><th>Selected / Active</th></tr>
+    <tr><td>AppButton primary</td><td>accent fill</td><td>accent darken 8% + e0</td><td>2px accent ring</td><td>field + ink-4</td><td>—</td></tr>
+    <tr><td>AppButton secondary</td><td>field + hairline</td><td>line fill</td><td>2px accent ring</td><td>field + ink-4</td><td>—</td></tr>
+    <tr><td>AppTextField</td><td>field fill, no ring</td><td>—</td><td>white + 2px accent ring</td><td>field + ink-4 text</td><td>— / danger ring + helper</td></tr>
+    <tr><td>FilterChip</td><td>surface + hairline, ink-2</td><td>field fill</td><td>2px accent ring</td><td>field + ink-4</td><td>accent fill + white text</td></tr>
+    <tr><td>Toggle (Switch)</td><td>ink-4 track, white thumb</td><td>—</td><td>2px ring</td><td>50% opacity</td><td>accent track</td></tr>
+    <tr><td>GroupCard / RecipeCard</td><td>surface + e1 + hairline</td><td>field fill</td><td>2px accent ring</td><td>—</td><td>accent-50 background</td></tr>
+    <tr><td>ListRow</td><td>surface</td><td>field fill</td><td>2px accent ring</td><td>ink-4 text</td><td>accent-50 background</td></tr>
+    <tr><td>NavTab</td><td>ink-4 icon + no label</td><td>—</td><td>—</td><td>—</td><td>ink icon + accent dot + accent-deep label</td></tr>
+  </table>
+</div>
+
+<!-- ======================= ACCESSIBILITY ======================= -->
+<div class="sec page-break">
+  <div class="eyebrow">Reference · 14</div>
+  <h2>Accessibility</h2>
+  <p class="lead">The bar every screen must clear before it ships. Target: WCAG AA, iOS 16+, Android 10+.</p>
+
+  <table class="tok">
+    <tr><th>Area</th><th>Requirement</th><th>How to verify / Flutter</th></tr>
+    <tr><td>Text contrast</td><td>≥ 4.5:1 body, ≥ 3:1 large text</td><td>ink-2 (#57534E) on bg (#FAFAF8) = 6.3:1 ✓. Accent on white = 3.1:1 — use accent-deep (#C2570A) for text.</td></tr>
+    <tr><td>Tap targets</td><td>≥ 48×48dp, ≥ 8dp apart</td><td>Wrap icon buttons in <span class="mono">GestureDetector</span> with 48px <span class="mono">hitTestBehavior</span> padding.</td></tr>
+    <tr><td>Text scaling</td><td>Layouts survive 200% font scale</td><td>Test with <span class="mono">MediaQuery.textScaler</span>; no fixed-height text rows anywhere.</td></tr>
+    <tr><td>Semantics</td><td>Every control has a label</td><td><span class="mono">Semantics(label:…)</span> on all icon buttons, vote toggles, filter chips.</td></tr>
+    <tr><td>Color independence</td><td>Never color-only meaning</td><td>Every status badge has a dot + text label. Vote state uses icon + color + count.</td></tr>
+    <tr><td>Reduced motion</td><td>Respect system preference</td><td>Check <span class="mono">MediaQuery.of(context).disableAnimations</span> in all animated widgets.</td></tr>
+    <tr><td>Focus order</td><td>Logical, visible focus</td><td>Test with iOS Switch Control and Android TalkBack before each release.</td></tr>
+  </table>
+</div>
+
+<!-- ======================= TOKENS + FLUTTER THEME ======================= -->
+<div class="sec page-break">
+  <div class="eyebrow">Reference · 15</div>
+  <h2>Tokens &amp; Flutter theme</h2>
+  <p class="lead">Copy-paste foundations. The CSS variables above drive this document; the Dart block below is the exact same values for the app. When a token changes, change both.</p>
+
+  <h4>Flutter — <span class="mono">lib/theme/app_colors.dart</span></h4>
+  <div class="codeblock"><span class="k">class</span> <span class="p">AppColors</span> {
+  <span class="c">// Neutrals</span>
+  <span class="k">static const</span> ink      = Color(<span class="p">0xFF1C1917</span>);  <span class="c">// primary text</span>
+  <span class="k">static const</span> ink2     = Color(<span class="p">0xFF57534E</span>);  <span class="c">// secondary text</span>
+  <span class="k">static const</span> ink3     = Color(<span class="p">0xFFA8A29E</span>);  <span class="c">// captions</span>
+  <span class="k">static const</span> ink4     = Color(<span class="p">0xFFD6D3D1</span>);  <span class="c">// disabled / placeholder</span>
+  <span class="k">static const</span> bg       = Color(<span class="p">0xFFFAFAF8</span>);  <span class="c">// scaffold background</span>
+  <span class="k">static const</span> surface  = Color(<span class="p">0xFFFFFFFF</span>);  <span class="c">// cards / sheets</span>
+  <span class="k">static const</span> field    = Color(<span class="p">0xFFF5F5F4</span>);  <span class="c">// inputs / wells</span>
+  <span class="k">static const</span> line     = Color(<span class="p">0xFFE7E5E4</span>);  <span class="c">// borders / dividers</span>
+  <span class="k">static const</span> line2    = Color(<span class="p">0xFFF2F0EF</span>);  <span class="c">// faint inner dividers</span>
+
+  <span class="c">// Primary accent — Warm Orange</span>
+  <span class="k">static const</span> accent      = Color(<span class="p">0xFFF97316</span>);
+  <span class="k">static const</span> accentDeep  = Color(<span class="p">0xFFC2570A</span>);
+  <span class="k">static const</span> accent50    = Color(<span class="p">0xFFFFF7ED</span>);
+  <span class="k">static const</span> accent200   = Color(<span class="p">0xFFFED7AA</span>);
+
+  <span class="c">// Secondary accent — Warm Teal (info / dietary / cuisine)</span>
+  <span class="k">static const</span> teal        = Color(<span class="p">0xFF0D9488</span>);
+  <span class="k">static const</span> tealDeep    = Color(<span class="p">0xFF0F766E</span>);
+  <span class="k">static const</span> teal50      = Color(<span class="p">0xFFF0FDFA</span>);
+
+  <span class="c">// Semantic states</span>
+  <span class="k">static const</span> ok       = Color(<span class="p">0xFF16A34A</span>);
+  <span class="k">static const</span> okBg     = Color(<span class="p">0xFFDCFCE7</span>);
+  <span class="k">static const</span> warn     = Color(<span class="p">0xFFD97706</span>);
+  <span class="k">static const</span> warnBg   = Color(<span class="p">0xFFFEF3C7</span>);
+  <span class="k">static const</span> danger   = Color(<span class="p">0xFFDC2626</span>);
+  <span class="k">static const</span> dangerBg = Color(<span class="p">0xFFFEE2E2</span>);
+}</div>
+
+  <h4 style="margin-top:6mm">Flutter — <span class="mono">lib/theme/app_radii.dart</span></h4>
+  <div class="codeblock"><span class="k">class</span> <span class="p">AppRadii</span> {
+  <span class="k">static const</span> xs   = <span class="p"> 8.0</span>;  <span class="c">// tags, small chips</span>
+  <span class="k">static const</span> sm   = <span class="p">12.0</span>;  <span class="c">// buttons, text fields</span>
+  <span class="k">static const</span> md   = <span class="p">16.0</span>;  <span class="c">// icon containers</span>
+  <span class="k">static const</span> lg   = <span class="p">20.0</span>;  <span class="c">// content cards</span>
+  <span class="k">static const</span> xxl  = <span class="p">32.0</span>;  <span class="c">// sheets, hero cards</span>
+  <span class="k">static const</span> full = <span class="p">999.0</span>; <span class="c">// pills, avatars, FAB</span>
+}</div>
+
+  <h4 style="margin-top:6mm">Flutter — <span class="mono">lib/theme/app_shadows.dart</span></h4>
+  <div class="codeblock"><span class="c">// Use BoxDecoration.boxShadow — never Material elevation int.</span>
+<span class="k">const</span> e0 = [BoxShadow(color: Color(<span class="p">0x0D1C1917</span>), offset: Offset(<span class="p">0</span>,<span class="p">1</span>), blurRadius: <span class="p">2</span>)];
+<span class="k">const</span> e1 = [
+  BoxShadow(color: Color(<span class="p">0x0D1C1917</span>), offset: Offset(<span class="p">0</span>,<span class="p">1</span>), blurRadius: <span class="p">2</span>),
+  BoxShadow(color: Color(<span class="p">0x0D1C1917</span>), offset: Offset(<span class="p">0</span>,<span class="p">2</span>), blurRadius: <span class="p">6</span>),
+];
+<span class="k">const</span> e2 = [
+  BoxShadow(color: Color(<span class="p">0x0D1C1917</span>), offset: Offset(<span class="p">0</span>,<span class="p">2</span>), blurRadius: <span class="p">6</span>),
+  BoxShadow(color: Color(<span class="p">0x0F1C1917</span>), offset: Offset(<span class="p">0</span>,<span class="p">10</span>), blurRadius: <span class="p">22</span>),
+];
+<span class="k">const</span> e3 = [
+  BoxShadow(color: Color(<span class="p">0x121C1917</span>), offset: Offset(<span class="p">0</span>,<span class="p">8</span>), blurRadius: <span class="p">24</span>),
+  BoxShadow(color: Color(<span class="p">0x171C1917</span>), offset: Offset(<span class="p">0</span>,<span class="p">22</span>), blurRadius: <span class="p">48</span>),
+];</div>
+
+  <h4 style="margin-top:6mm">Flutter — <span class="mono">lib/theme/app_theme.dart</span></h4>
+  <div class="codeblock">ThemeData buildTheme() => ThemeData(
+  useMaterial3: <span class="k">true</span>,
+  scaffoldBackgroundColor: AppColors.bg,
+  <span class="c">// ColorScheme.fromSeed only used as a base — override individual widget
+  // themes below. Never rely on seed-derived tones in widget files.</span>
+  colorScheme: ColorScheme.fromSeed(
+    seedColor: AppColors.accent,
+    surface: AppColors.surface,
+  ),
+  <span class="c">// Disable default Material styling — all widgets use custom AppXxx classes.</span>
+  cardTheme: <span class="k">const</span> CardTheme(elevation: <span class="p">0</span>, color: Colors.transparent),
+  appBarTheme: <span class="k">const</span> AppBarTheme(backgroundColor: Colors.transparent, elevation: <span class="p">0</span>),
+);</div>
+</div>
+
+<!-- ======================= DO / DON'T ======================= -->
+<div class="sec page-break">
+  <div class="eyebrow">Reference · 16</div>
+  <h2>Do &amp; Don't</h2>
+  <div class="do-dont">
+    <div class="dd do">
+      <h5><span class="ic"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Do</h5>
+      <ul>
+        <li>All colors from <span class="mono">AppColors</span>. Zero hard-coded hex anywhere in widget files.</li>
+        <li>All radii from <span class="mono">AppRadii</span>. All shadows from <span class="mono">AppShadows</span>.</li>
+        <li>Use <span class="mono">AppButton</span>, <span class="mono">AppCard</span>, <span class="mono">AppTextField</span> — not Material equivalents.</li>
+        <li>Skeleton for list loading; spinner only for blocking actions.</li>
+        <li>Pair every status color with a dot or icon — never color alone.</li>
+        <li>Keep screens thin: BlocBuilder + layout only. Logic in Cubit.</li>
+        <li>Use accent-deep (#C2570A) for accent text on light surfaces.</li>
+        <li>Respect safe areas with <span class="mono">SafeArea</span> on every screen root.</li>
+      </ul>
+    </div>
+    <div class="dd dont">
+      <h5><span class="ic"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#fff" stroke-width="3"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg></span>Don't</h5>
+      <ul>
+        <li>No <span class="mono">ElevatedButton</span>, <span class="mono">FloatingActionButton</span>, <span class="mono">AppBar</span>, <span class="mono">BottomNavigationBar</span> from Material.</li>
+        <li>No inline <span class="mono">BoxDecoration</span> in screen files — extract to a named widget.</li>
+        <li>No blur, no translucency, no <span class="mono">BackdropFilter</span>.</li>
+        <li>No single-offset or colored drop shadows — always 2-layer, low alpha.</li>
+        <li>No tinted pill with same-hue text — neutral surface + dot badge only.</li>
+        <li>No <span class="mono">Colors.grey</span>, <span class="mono">Colors.orange</span>, or any un-tokenized color.</li>
+        <li>No radial gauges — use linear meters for all progress.</li>
+        <li>Don't put business logic or HTTP calls in widget files.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= APPENDIX A — SCREEN SPECS ======================= -->
+<div class="sec page-break">
+  <div class="eyebrow">Appendix · A</div>
+  <h2>Screen specs — v1</h2>
+  <p class="lead">The screens that must exist before v1 ships. Each is a build ticket. Add renders as they're designed.</p>
+
+  <div class="row top avoid" style="gap:8mm; margin-bottom:8mm">
+    <div><div class="phone"><div class="island"></div><div class="screen"><div class="screen-empty">Groups list</div></div></div><div class="small" style="text-align:center;margin-top:2.5mm">Groups list</div></div>
+    <div class="screen-spec">
+      <h4>Screen spec</h4>
+      <div class="sf"><span class="kk">Route</span><span class="vv">/groups</span></div>
+      <div class="sf"><span class="kk">Purpose</span><span class="vv">Show all groups the user belongs to</span></div>
+      <div class="sf"><span class="kk">Entry</span><span class="vv">Tab 0 (default tab)</span></div>
+      <div class="sf"><span class="kk">Components</span><span class="vv">AppPageHeader · GroupCard · AppNavBar · empty state</span></div>
+      <div class="sf"><span class="kk">Primary action</span><span class="vv">Tap card → group detail</span></div>
+      <div class="sf"><span class="kk">States</span><span class="vv">Loading (skeleton) · empty · error · loaded</span></div>
+      <div class="sf"><span class="kk">Data</span><span class="vv">GET /groups</span></div>
+    </div>
+  </div>
+
+  <div class="row top avoid" style="gap:8mm; margin-bottom:8mm">
+    <div><div class="phone"><div class="island"></div><div class="screen"><div class="screen-empty">Group detail + current menu</div></div></div><div class="small" style="text-align:center;margin-top:2.5mm">Group detail</div></div>
+    <div class="screen-spec">
+      <h4>Screen spec</h4>
+      <div class="sf"><span class="kk">Route</span><span class="vv">/groups/:id</span></div>
+      <div class="sf"><span class="kk">Purpose</span><span class="vv">Show current menu, vote progress, and member list</span></div>
+      <div class="sf"><span class="kk">Entry</span><span class="vv">GroupCard tap</span></div>
+      <div class="sf"><span class="kk">Components</span><span class="vv">AppPageHeader · VoteProgressCard · MemberListRow · AppNavBar</span></div>
+      <div class="sf"><span class="kk">Primary action</span><span class="vv">Vote on recipe / add recipe to menu</span></div>
+      <div class="sf"><span class="kk">States</span><span class="vv">Loading · empty (no active menu) · loaded</span></div>
+      <div class="sf"><span class="kk">Data</span><span class="vv">GET /groups/:id · GET /menus/:id (with recipes)</span></div>
+    </div>
+  </div>
+
+  <div class="row top avoid" style="gap:8mm">
+    <div><div class="phone"><div class="island"></div><div class="screen"><div class="screen-empty">Recipe library</div></div></div><div class="small" style="text-align:center;margin-top:2.5mm">Recipe library</div></div>
+    <div class="screen-spec">
+      <h4>Screen spec</h4>
+      <div class="sf"><span class="kk">Route</span><span class="vv">/recipes</span></div>
+      <div class="sf"><span class="kk">Purpose</span><span class="vv">Browse and filter the full recipe library</span></div>
+      <div class="sf"><span class="kk">Entry</span><span class="vv">Tab 1</span></div>
+      <div class="sf"><span class="kk">Components</span><span class="vv">AppPageHeader · SearchField · FilterChips · RecipeCard</span></div>
+      <div class="sf"><span class="kk">Primary action</span><span class="vv">Tap recipe → detail / add to menu</span></div>
+      <div class="sf"><span class="kk">States</span><span class="vv">Loading (skeleton) · empty (no results) · error · loaded</span></div>
+      <div class="sf"><span class="kk">Data</span><span class="vv">GET /recipes?cuisine_id=&amp;tag_id=</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= APPENDIX B — BUILD-AGENT HANDOFF ======================= -->
+<div class="sec page-break">
+  <div class="eyebrow">Appendix · B</div>
+  <h2>Build-agent handoff brief</h2>
+  <p class="lead">Read this if you are a coding agent turning this document into Flutter. It tells you exactly what to build, where to put it, and how "done" is judged.</p>
+
+  <h3>Goal</h3>
+  <p>Produce a <b>custom Flutter component library</b> that renders the specimens above pixel-for-token. Every widget reads its color, radius, shadow, typography, and motion from the central theme — no inline literals anywhere in widget files. No screens are in scope for this task; build the kit, then compose screens from it.</p>
+
+  <h3>File structure</h3>
+  <div class="codeblock">lib/
+  theme/
+    app_colors.dart      <span class="c">// §15 — AppColors class</span>
+    app_radii.dart       <span class="c">// §15 — AppRadii class</span>
+    app_shadows.dart     <span class="c">// §15 — e0/e1/e2/e3 BoxShadow lists</span>
+    app_typography.dart  <span class="c">// §05 — AppTextStyles, AppTypography.mono</span>
+    app_theme.dart       <span class="c">// §15 — buildTheme() wiring everything together</span>
+  widgets/
+    buttons/
+      app_button.dart    <span class="c">// primary / secondary / ghost / destructive</span>
+    inputs/
+      app_text_field.dart
+      app_toggle.dart
+      app_filter_chip.dart
+      app_segmented.dart
+      app_stepper.dart
+    cards/
+      app_card.dart      <span class="c">// base card with e1 + hairline + lg radius</span>
+      group_card.dart    <span class="c">// avatar + name + threshold + chevron</span>
+      recipe_card.dart   <span class="c">// name + cuisine + tags + status badge</span>
+    badges/
+      app_badge.dart     <span class="c">// dot + label, enum for ok/warn/danger/info/muted</span>
+      app_tag.dart       <span class="c">// outline chip, dietary tags</span>
+    lists/
+      app_list_row.dart  <span class="c">// avatar + title + subtitle + trailing</span>
+    progress/
+      vote_meter.dart    <span class="c">// linear bar + threshold marker + vote count</span>
+    nav/
+      app_nav_bar.dart   <span class="c">// pill bottom nav, 2–3 tabs</span>
+      app_page_header.dart <span class="c">// large-title collapsing header</span>
+    feedback/
+      app_snackbar.dart  <span class="c">// dark + light variants</span>
+      app_dialog.dart    <span class="c">// title + body + cancel/confirm</span>
+      app_sheet.dart     <span class="c">// modal bottom sheet with grab handle</span>
+    states/
+      skeleton_list_item.dart
+      empty_state.dart   <span class="c">// icon + title + body + optional action button</span>
+      error_state.dart   <span class="c">// inline error with retry</span>
+  gallery/
+    component_gallery.dart <span class="c">// scrollable screen showing every widget + all states</span></div>
+
+  <h3>Rules of engagement</h3>
+  <div class="dd do" style="margin-top:2mm">
+    <ul style="columns:2; column-gap:8mm">
+      <li>One source of truth: all values from <span class="mono">theme/</span>. Zero hard-coded hex, radius, or shadow in widget files.</li>
+      <li>Implement every state in §13 via <span class="mono">WidgetStateProperty.resolveWith</span> — no duplicate widgets for pressed/disabled states.</li>
+      <li>Opaque surfaces only — no blur, no translucency.</li>
+      <li>Elevation via 2-layer <span class="mono">BoxShadow</span> lists — never Material <span class="mono">elevation</span> int.</li>
+      <li>Every widget exposes a named, minimal API. No positional styling params.</li>
+      <li>Meet all §14 accessibility requirements: 48px tap targets, Semantics labels, text scaling.</li>
+      <li>Honor <span class="mono">MediaQuery.disableAnimations</span> in all animated widgets.</li>
+      <li>Add a gallery entry per component showing all states before marking done.</li>
+    </ul>
+  </div>
+
+  <h3>Definition of done — v1 widget kit</h3>
+  <p style="font-size:8.6pt; color:var(--ink-2)">All of the following exist, render correctly in the gallery, have no inline style literals, and pass <span class="mono">flutter analyze</span> with zero warnings: AppButton (4 variants), AppTextField, AppToggle, AppFilterChip, AppSegmented, AppStepper, AppCard, GroupCard, RecipeCard, AppBadge (5 states), AppTag, AppListRow, VoteMeter, AppNavBar, AppPageHeader, AppSnackbar, AppDialog, AppSheet, SkeletonListItem, EmptyState, ErrorState. Target: Flutter 3.x, Dart 3.x, no deprecated APIs.</p>
+</div>
+
+</body>
+</html>
