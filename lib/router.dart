@@ -2,14 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'cubits/group_detail/group_detail_cubit.dart';
+import 'cubits/menu_detail/menu_detail_cubit.dart';
+import 'cubits/recipe_detail/recipe_detail_cubit.dart';
 import 'data/api_client.dart';
 import 'data/groups_data_source.dart';
+import 'data/menus_data_source.dart';
+import 'data/recipes_data_source.dart';
 import 'ui/groups/group_detail_screen.dart';
 import 'ui/groups/groups_screen.dart';
+import 'ui/menus/menu_detail_screen.dart';
+import 'ui/recipes/recipe_detail_screen.dart';
 import 'ui/recipes/recipes_screen.dart';
 import 'widgets/nav/app_nav_bar.dart';
 
-final _dataSource = GroupsDataSource(ApiClient(baseUrl: 'http://192.168.1.105:8000'));
+final _apiClient = ApiClient(baseUrl: 'http://192.168.1.105:8000');
+final _dataSource = GroupsDataSource(_apiClient);
+final _menusDataSource = MenusDataSource(_apiClient);
+final _recipesDataSource = RecipesDataSource(_apiClient);
 
 final router = GoRouter(
   initialLocation: '/groups',
@@ -56,6 +65,32 @@ final router = GoRouter(
             groupId: groupId,
           ),
           child: GroupDetailScreen(groupId: groupId),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/menus/:id',
+      builder: (context, state) {
+        final menuId = int.parse(state.pathParameters['id']!);
+        return BlocProvider(
+          create: (_) => MenuDetailCubit(
+            dataSource: _menusDataSource,
+            menuId: menuId,
+          ),
+          child: MenuDetailScreen(menuId: menuId),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/recipes/:id',
+      builder: (context, state) {
+        final recipeId = int.parse(state.pathParameters['id']!);
+        return BlocProvider(
+          create: (_) => RecipeDetailCubit(
+            dataSource: _recipesDataSource,
+            recipeId: recipeId,
+          ),
+          child: RecipeDetailScreen(recipeId: recipeId),
         );
       },
     ),

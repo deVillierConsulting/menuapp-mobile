@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../cubits/group_detail/group_detail_cubit.dart';
 import '../../cubits/group_detail/group_detail_state.dart';
@@ -200,9 +201,7 @@ class _MenuCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppCard(
       padding: EdgeInsets.zero,
-      onTap: () {
-        // TODO: navigate to menu detail
-      },
+      onTap: () => context.push('/menus/${menu.menuId}'),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
