@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../cubits/groups/groups_cubit.dart';
 import '../../cubits/groups/groups_state.dart';
@@ -66,9 +67,7 @@ class _GroupsList extends StatelessWidget {
                       name: g.name,
                       memberCount: 0,
                       threshold: g.threshold,
-                      onTap: () {
-                        // TODO: navigate to group detail
-                      },
+                      onTap: () => context.push('/groups/${g.groupId}'),
                     );
                   },
                 ),

@@ -1,5 +1,7 @@
 import 'api_client.dart';
 import 'models/group.dart';
+import 'models/group_detail.dart';
+import 'models/menu.dart';
 
 class GroupsDataSource {
   final ApiClient _client;
@@ -22,5 +24,15 @@ class GroupsDataSource {
       'owner_id': ownerId,
     });
     return Group.fromJson(json as Map<String, dynamic>);
+  }
+
+  Future<GroupDetail> getGroupDetail(int groupId) async {
+    final json = await _client.get('/groups/$groupId');
+    return GroupDetail.fromJson(json as Map<String, dynamic>);
+  }
+
+  Future<List<Menu>> getMenusForGroup(int groupId) async {
+    final json = await _client.get('/menus/group/$groupId') as List<dynamic>;
+    return json.map((e) => Menu.fromJson(e as Map<String, dynamic>)).toList();
   }
 }

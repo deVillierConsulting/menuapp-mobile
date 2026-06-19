@@ -26,17 +26,12 @@ class AppCard extends StatelessWidget {
         ),
         boxShadow: e1,
       ),
-      // ClipRRect keeps the tap ripple (if onTap is set) inside the rounded corners.
       child: ClipRRect(
         borderRadius: AppRadii.lgAll,
-        child: onTap != null
-            ? InkWell(
-                onTap: onTap,
-                splashColor: AppColors.field,
-                highlightColor: AppColors.field,
-                child: Padding(padding: padding, child: child),
-              )
-            : Padding(padding: padding, child: child),
+        child: GestureDetector(
+          onTap: onTap,
+          child: Padding(padding: padding, child: child),
+        ),
       ),
     );
   }

@@ -24,7 +24,7 @@ class GroupCard extends StatelessWidget {
       onTap: onTap,
       child: AppListRow(
         title: name,
-        subtitle: '$memberCount members · threshold: $threshold',
+        subtitle: null,
         leading: AppAvatar(initials: name.isNotEmpty ? name[0] : '?'),
         trailing: const Icon(Icons.chevron_right, color: AppColors.ink4, size: 20),
         showDivider: false,
