@@ -7,16 +7,21 @@ class AppFilterChip extends StatelessWidget {
   final String label;
   final bool selected;
   final ValueChanged<bool> onChanged;
+  final Color? selectedColor;
+  final double verticalPadding;
 
   const AppFilterChip({
     super.key,
     required this.label,
     required this.selected,
     required this.onChanged,
+    this.selectedColor,
+    this.verticalPadding = 8,
   });
 
   @override
   Widget build(BuildContext context) {
+    final fill = selectedColor ?? AppColors.accent;
     return Semantics(
       selected: selected,
       button: true,
@@ -25,12 +30,12 @@ class AppFilterChip extends StatelessWidget {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 150),
           curve: Curves.easeOut,
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          padding: EdgeInsets.symmetric(horizontal: 14, vertical: verticalPadding),
           decoration: BoxDecoration(
-            color: selected ? AppColors.accent : AppColors.surface,
+            color: selected ? fill : AppColors.surface,
             borderRadius: AppRadii.fullAll,
             border: Border.all(
-              color: selected ? AppColors.accent : AppColors.line,
+              color: selected ? fill : AppColors.line,
             ),
           ),
           child: Text(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -9,7 +10,6 @@ import '../../data/models/menu_detail.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radii.dart';
 import '../../theme/app_typography.dart';
-import '../../widgets/cards/app_card.dart';
 import '../../widgets/nav/app_page_header.dart';
 import '../../widgets/states/empty_state.dart';
 import '../../widgets/states/error_state.dart';
@@ -184,15 +184,148 @@ class _CompletenessBar extends StatelessWidget {
   }
 }
 
-class _RecipeCard extends StatelessWidget {
+// Swipe right → yes, swipe left → no, veto button explicit on card.
+// Drag past _kThreshold to commit a vote; release before it to snap back.
+const double _kThreshold = 100.0;
+
+class _RecipeCard extends StatefulWidget {
   final MenuRecipe menuRecipe;
   const _RecipeCard({required this.menuRecipe});
 
   @override
+  State<_RecipeCard> createState() => _RecipeCardState();
+}
+
+class _RecipeCardState extends State<_RecipeCard>
+    with SingleTickerProviderStateMixin {
+  double _dragX = 0;
+  late final AnimationController _snapCtrl;
+  late Animation<double> _snapAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _snapCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 250),
+    );
+  }
+
+  @override
+  void dispose() {
+    _snapCtrl.dispose();
+    super.dispose();
+  }
+
+  void _onDragUpdate(DragUpdateDetails d) {
+    setState(() => _dragX += d.delta.dx);
+  }
+
+  void _onDragEnd(DragEndDetails d) {
+    if (_dragX.abs() >= _kThreshold) {
+      final vote = _dragX > 0 ? VoteValue.yes : VoteValue.no;
+      HapticFeedback.mediumImpact();
+      context.read<MenuDetailCubit>().castVote(
+            widget.menuRecipe.menuRecipeId,
+            vote,
+          );
+    }
+    // Snap back to centre regardless.
+    _snapAnim = Tween<double>(begin: _dragX, end: 0).animate(
+      CurvedAnimation(parent: _snapCtrl, curve: Curves.elasticOut),
+    )..addListener(() => setState(() => _dragX = _snapAnim.value));
+    _snapCtrl.forward(from: 0);
+  }
+
+  // How far along (0→1) the drag is toward the threshold.
+  double get _progress => (_dragX.abs() / _kThreshold).clamp(0.0, 1.0);
+  bool get _goingRight => _dragX >= 0;
+
+  @override
   Widget build(BuildContext context) {
-    return AppCard(
-      padding: EdgeInsets.zero,
-      onTap: () => context.push('/recipes/${menuRecipe.recipe.recipeId}'),
+    final userVote = widget.menuRecipe.voteSummary.userVote;
+
+    return GestureDetector(
+      onHorizontalDragUpdate: _onDragUpdate,
+      onHorizontalDragEnd: _onDragEnd,
+      // Tap still navigates to recipe detail.
+      onTap: () => context.push('/recipes/${widget.menuRecipe.recipe.recipeId}'),
+      child: Transform.translate(
+        offset: Offset(_dragX, 0),
+        child: Stack(
+          children: [
+            // Base card
+            _CardContent(
+              menuRecipe: widget.menuRecipe,
+              userVote: userVote,
+            ),
+
+            // Coloured overlay fades in as you drag.
+            if (_dragX != 0)
+              Positioned.fill(
+                child: ClipRRect(
+                  borderRadius: AppRadii.lgAll,
+                  child: AnimatedContainer(
+                    duration: Duration.zero,
+                    color: (_goingRight ? AppColors.ok : AppColors.danger)
+                        .withValues(alpha: _progress * 0.18),
+                    child: Align(
+                      alignment: _goingRight
+                          ? Alignment.centerLeft
+                          : Alignment.centerRight,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 18),
+                        child: Icon(
+                          _goingRight
+                              ? LucideIcons.check
+                              : LucideIcons.x,
+                          color: (_goingRight ? AppColors.ok : AppColors.danger)
+                              .withValues(alpha: _progress),
+                          size: 28,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CardContent extends StatelessWidget {
+  final MenuRecipe menuRecipe;
+  final VoteValue? userVote;
+  const _CardContent({required this.menuRecipe, required this.userVote});
+
+  // Border tint shows the user's committed vote at rest.
+  Color? get _voteBorderColor => switch (userVote) {
+        VoteValue.yes  => AppColors.ok,
+        VoteValue.no   => AppColors.ink3,
+        VoteValue.veto => AppColors.danger,
+        null           => null,
+      };
+
+  @override
+  Widget build(BuildContext context) {
+    final border = _voteBorderColor;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: AppRadii.lgAll,
+        border: Border.all(
+          color: border ?? AppColors.line,
+          width: border != null ? 1.5 : 1.0,
+        ),
+        boxShadow: const [
+          BoxShadow(
+              color: Color(0x0D1C1917), offset: Offset(0, 1), blurRadius: 2),
+          BoxShadow(
+              color: Color(0x0D1C1917), offset: Offset(0, 2), blurRadius: 6),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Row(
@@ -226,8 +359,46 @@ class _RecipeCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            Icon(Icons.chevron_right_rounded, color: AppColors.ink4, size: 20),
+            // Veto is intentional — keep it as an explicit tap, not a swipe.
+            _VetoButton(
+              active: userVote == VoteValue.veto,
+              onTap: () => context
+                  .read<MenuDetailCubit>()
+                  .castVote(menuRecipe.menuRecipeId, VoteValue.veto),
+            ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _VetoButton extends StatelessWidget {
+  final bool active;
+  final VoidCallback onTap;
+  const _VetoButton({required this.active, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.heavyImpact();
+        onTap();
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        width: 32,
+        height: 32,
+        decoration: BoxDecoration(
+          color: active ? AppColors.dangerBg : AppColors.field,
+          shape: BoxShape.circle,
+        ),
+        child: Center(
+          child: Icon(
+            LucideIcons.ban,
+            size: 15,
+            color: active ? AppColors.danger : AppColors.ink4,
+          ),
         ),
       ),
     );

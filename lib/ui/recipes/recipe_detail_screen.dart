@@ -95,6 +95,15 @@ class _Loaded extends StatelessWidget {
               ),
             ],
 
+            // Ingredients
+            if (recipe.ingredients.isNotEmpty) ...[
+              const SizedBox(height: 28),
+              Text('Ingredients',
+                  style: AppTextStyles.label.copyWith(color: AppColors.ink3)),
+              const SizedBox(height: 12),
+              ...recipe.ingredients.map((i) => _IngredientRow(ingredient: i)),
+            ],
+
             // Steps
             if (recipe.steps.isNotEmpty) ...[
               const SizedBox(height: 28),
@@ -156,8 +165,9 @@ class _MetaRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final parts = [
-      if (recipe.cuisine != null) recipe.cuisine!.name,
+      // if (recipe.cuisine != null) recipe.cuisine!.name,
       if (recipe.calorieCount != null) '${recipe.calorieCount} cal',
+      if (recipe.proteinCount != null) '${recipe.proteinCount}g protein',
     ];
     if (parts.isEmpty) return const SizedBox.shrink();
     return Text(
@@ -181,6 +191,50 @@ class _TagChip extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         child: Text(label, style: AppTextStyles.caption.copyWith(color: AppColors.ink2)),
+      ),
+    );
+  }
+}
+
+class _IngredientRow extends StatelessWidget {
+  final RecipeIngredient ingredient;
+  const _IngredientRow({required this.ingredient});
+
+  String get _amount {
+    if (ingredient.portionSize == null && ingredient.portionUnit == null) {
+      return '';
+    }
+    final size = ingredient.portionSize != null
+        ? (ingredient.portionSize! % 1 == 0
+            ? ingredient.portionSize!.toInt().toString()
+            : ingredient.portionSize!.toString())
+        : '';
+    final unit = ingredient.portionUnit ?? '';
+    return '$size $unit'.trim();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        children: [
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: AppColors.line2,
+              shape: BoxShape.circle,
+            ),
+            child: const SizedBox(width: 6, height: 6),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(ingredient.name,
+                style: AppTextStyles.body.copyWith(color: AppColors.ink)),
+          ),
+          if (_amount.isNotEmpty)
+            Text(_amount,
+                style: AppTextStyles.body.copyWith(color: AppColors.ink3)),
+        ],
       ),
     );
   }

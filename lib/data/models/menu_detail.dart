@@ -97,6 +97,40 @@ class MenuDetail extends Equatable {
         _ => MenuStatus.draft,
       };
 
+  // Returns a copy with one recipe's VoteSummary updated optimistically.
+  MenuDetail copyWithUpdatedVote(int menuRecipeId, VoteValue newVote) {
+    return MenuDetail(
+      menuId: menuId,
+      groupId: groupId,
+      startDate: startDate,
+      endDate: endDate,
+      status: status,
+      recipes: recipes.map((mr) {
+        if (mr.menuRecipeId != menuRecipeId) return mr;
+        final old = mr.voteSummary;
+        final prev = old.userVote;
+        // Decrement the old vote bucket, increment the new one.
+        int yes = old.yes + (newVote == VoteValue.yes ? 1 : 0)
+                            - (prev == VoteValue.yes ? 1 : 0);
+        int no  = old.no  + (newVote == VoteValue.no  ? 1 : 0)
+                            - (prev == VoteValue.no  ? 1 : 0);
+        int veto = old.veto + (newVote == VoteValue.veto ? 1 : 0)
+                              - (prev == VoteValue.veto ? 1 : 0);
+        return MenuRecipe(
+          menuRecipeId: mr.menuRecipeId,
+          recipe: mr.recipe,
+          addedAt: mr.addedAt,
+          voteSummary: VoteSummary(
+            yes: yes.clamp(0, 999),
+            no: no.clamp(0, 999),
+            veto: veto.clamp(0, 999),
+            userVote: newVote,
+          ),
+        );
+      }).toList(),
+    );
+  }
+
   // Days in the menu range, inclusive.
   int get totalDays {
     final start = DateTime.parse(startDate);

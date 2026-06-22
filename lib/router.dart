@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'cubits/group_detail/group_detail_cubit.dart';
 import 'cubits/menu_detail/menu_detail_cubit.dart';
 import 'cubits/recipe_detail/recipe_detail_cubit.dart';
+import 'cubits/recipes/recipes_cubit.dart';
 import 'data/api_client.dart';
 import 'data/groups_data_source.dart';
 import 'data/menus_data_source.dart';
@@ -48,7 +49,10 @@ final router = GoRouter(
           routes: [
             GoRoute(
               path: '/recipes',
-              builder: (context, state) => const RecipesScreen(),
+              builder: (context, state) => BlocProvider(
+                create: (_) => RecipesCubit(dataSource: _recipesDataSource),
+                child: const RecipesScreen(),
+              ),
             ),
           ],
         ),

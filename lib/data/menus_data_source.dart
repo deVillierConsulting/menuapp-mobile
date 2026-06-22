@@ -12,4 +12,16 @@ class MenusDataSource {
     final json = await _client.get('/menus/$menuId$query');
     return MenuDetail.fromJson(json as Map<String, dynamic>);
   }
+
+  Future<void> castVote({
+    required int menuId,
+    required int menuRecipeId,
+    required int userId,
+    required VoteValue value,
+  }) async {
+    await _client.post(
+      '/menus/$menuId/recipes/$menuRecipeId/vote',
+      {'user_id': userId, 'vote_value': value.name},
+    );
+  }
 }
