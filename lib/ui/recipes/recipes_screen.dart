@@ -11,11 +11,14 @@ import '../../theme/app_shadows.dart';
 import '../../theme/app_typography.dart';
 import '../../widgets/cards/app_card.dart';
 import '../../widgets/inputs/app_filter_chip.dart';
+import '../../data/menus_data_source.dart';
 import '../../widgets/states/empty_state.dart';
 import '../../widgets/states/error_state.dart';
+import '../menus/pick_menu_sheet.dart';
 
 class RecipesScreen extends StatefulWidget {
-  const RecipesScreen({super.key});
+  final MenusDataSource menusDataSource;
+  const RecipesScreen({super.key, required this.menusDataSource});
 
   @override
   State<RecipesScreen> createState() => _RecipesScreenState();
@@ -64,6 +67,7 @@ class _RecipesScreenState extends State<RecipesScreen> {
               searchOpen: _searchOpen,
               searchController: _searchController,
               onToggleSearch: _toggleSearch,
+              menusDataSource: widget.menusDataSource,
             );
           }
           return const SizedBox.shrink();
@@ -78,12 +82,14 @@ class _Loaded extends StatelessWidget {
   final bool searchOpen;
   final TextEditingController searchController;
   final VoidCallback onToggleSearch;
+  final MenusDataSource menusDataSource;
 
   const _Loaded({
     required this.state,
     required this.searchOpen,
     required this.searchController,
     required this.onToggleSearch,
+    required this.menusDataSource,
   });
 
   @override
@@ -197,7 +203,10 @@ class _Loaded extends StatelessWidget {
             sliver: SliverList.separated(
               itemCount: recipes.length,
               separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, i) => _RecipeCard(recipe: recipes[i]),
+              itemBuilder: (context, i) => _RecipeCard(
+                recipe: recipes[i],
+                menusDataSource: menusDataSource,
+              ),
             ),
           ),
       ],
@@ -346,7 +355,8 @@ class _ActiveTagChip extends StatelessWidget {
 
 class _RecipeCard extends StatelessWidget {
   final Recipe recipe;
-  const _RecipeCard({required this.recipe});
+  final MenusDataSource menusDataSource;
+  const _RecipeCard({required this.recipe, required this.menusDataSource});
 
   @override
   Widget build(BuildContext context) {
@@ -356,19 +366,45 @@ class _RecipeCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Photo area
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(AppRadii.lg),
-            ),
-            child: recipe.photoKey != null
-                ? Image.network(
-                    recipe.photoKey!,
-                    height: 180,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  )
-                : _PhotoPlaceholder(name: recipe.name),
+          // Photo area with "add to menu" button overlaid.
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(AppRadii.lg),
+                ),
+                child: recipe.photoKey != null
+                    ? Image.network(
+                        recipe.photoKey!,
+                        height: 180,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      )
+                    : _PhotoPlaceholder(name: recipe.name),
+              ),
+              Positioned(
+                top: 10,
+                right: 10,
+                child: GestureDetector(
+                  onTap: () => showPickMenuSheet(
+                    context,
+                    recipeId: recipe.recipeId,
+                    menusDataSource: menusDataSource,
+                  ),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      shape: BoxShape.circle,
+                      boxShadow: e1,
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.all(6),
+                      child: Icon(Icons.playlist_add_rounded, size: 20),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
 
           Padding(

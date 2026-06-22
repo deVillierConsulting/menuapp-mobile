@@ -5,6 +5,7 @@ enum MenuStatus { draft, active, final_ }
 class Menu extends Equatable {
   final int menuId;
   final int groupId;
+  final String? name;
   final String startDate;
   final String endDate;
   final MenuStatus status;
@@ -12,6 +13,7 @@ class Menu extends Equatable {
   const Menu({
     required this.menuId,
     required this.groupId,
+    this.name,
     required this.startDate,
     required this.endDate,
     required this.status,
@@ -20,6 +22,7 @@ class Menu extends Equatable {
   factory Menu.fromJson(Map<String, dynamic> json) => Menu(
         menuId: json['menu_id'] as int,
         groupId: json['group_id'] as int,
+        name: json['name'] as String?,
         startDate: json['start_date'] as String,
         endDate: json['end_date'] as String,
         status: _statusFromString(json['status'] as String),
@@ -35,5 +38,5 @@ class Menu extends Equatable {
   bool get isFinal  => status == MenuStatus.final_;
 
   @override
-  List<Object?> get props => [menuId, groupId, startDate, endDate, status];
+  List<Object?> get props => [menuId, groupId, name, startDate, endDate, status];
 }

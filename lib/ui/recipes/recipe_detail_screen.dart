@@ -6,11 +6,18 @@ import '../../data/models/recipe.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radii.dart';
 import '../../theme/app_typography.dart';
+import '../../data/menus_data_source.dart';
 import '../../widgets/states/error_state.dart';
+import '../menus/pick_menu_sheet.dart';
 
 class RecipeDetailScreen extends StatefulWidget {
   final int recipeId;
-  const RecipeDetailScreen({super.key, required this.recipeId});
+  final MenusDataSource menusDataSource;
+  const RecipeDetailScreen({
+    super.key,
+    required this.recipeId,
+    required this.menusDataSource,
+  });
 
   @override
   State<RecipeDetailScreen> createState() => _RecipeDetailScreenState();
@@ -36,7 +43,10 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
               onRetry: () => context.read<RecipeDetailCubit>().load(),
             );
           }
-          if (state is RecipeDetailLoaded) return _Loaded(recipe: state.recipe);
+          if (state is RecipeDetailLoaded) return _Loaded(
+            recipe: state.recipe,
+            menusDataSource: widget.menusDataSource,
+          );
           return const SizedBox.shrink();
         },
       ),
@@ -46,7 +56,8 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
 
 class _Loaded extends StatelessWidget {
   final Recipe recipe;
-  const _Loaded({required this.recipe});
+  final MenusDataSource menusDataSource;
+  const _Loaded({required this.recipe, required this.menusDataSource});
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +73,18 @@ class _Loaded extends StatelessWidget {
             color: AppColors.accent,
             onPressed: () => Navigator.of(context).pop(),
           ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.playlist_add_rounded),
+              color: AppColors.accent,
+              tooltip: 'Add to menu',
+              onPressed: () => showPickMenuSheet(
+                context,
+                recipeId: recipe.recipeId,
+                menusDataSource: menusDataSource,
+              ),
+            ),
+          ],
           flexibleSpace: FlexibleSpaceBar(
             background: recipe.photoKey != null
                 ? Image.network(recipe.photoKey!, fit: BoxFit.cover)

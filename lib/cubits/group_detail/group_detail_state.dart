@@ -18,11 +18,13 @@ class GroupDetailLoaded extends GroupDetailState {
 
   const GroupDetailLoaded({required this.group, required this.menus});
 
-  Menu? get activeMenu =>
+  // The menu being voted on and built out right now.
+  Menu? get planningMenu =>
       menus.where((m) => m.isActive).firstOrNull;
 
-  List<Menu> get pastMenus =>
-      menus.where((m) => m.isFinal).toList();
+  // The finalized menu the group is cooking from this week.
+  Menu? get currentMenu =>
+      menus.where((m) => m.isFinal).firstOrNull;
 
   @override
   List<Object?> get props => [group, menus];

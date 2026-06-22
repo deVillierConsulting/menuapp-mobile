@@ -4,8 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../cubits/group_detail/group_detail_cubit.dart';
 import '../../cubits/group_detail/group_detail_state.dart';
+import '../../data/menus_data_source.dart';
 import '../../data/models/menu.dart';
 import '../../data/models/user.dart';
+import '../menus/create_menu_sheet.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radii.dart';
 import '../../theme/app_typography.dart';
@@ -16,7 +18,12 @@ import '../../widgets/states/error_state.dart';
 
 class GroupDetailScreen extends StatefulWidget {
   final int groupId;
-  const GroupDetailScreen({super.key, required this.groupId});
+  final MenusDataSource menusDataSource;
+  const GroupDetailScreen({
+    super.key,
+    required this.groupId,
+    required this.menusDataSource,
+  });
 
   @override
   State<GroupDetailScreen> createState() => _GroupDetailScreenState();
@@ -42,7 +49,11 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
               onRetry: () => context.read<GroupDetailCubit>().load(),
             );
           }
-          if (state is GroupDetailLoaded) return _Loaded(state: state);
+          if (state is GroupDetailLoaded) return _Loaded(
+            state: state,
+            menusDataSource: widget.menusDataSource,
+            groupId: widget.groupId,
+          );
           return const SizedBox.shrink();
         },
       ),
@@ -52,13 +63,38 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
 
 class _Loaded extends StatelessWidget {
   final GroupDetailLoaded state;
-  const _Loaded({required this.state});
+  final MenusDataSource menusDataSource;
+  final int groupId;
+  const _Loaded({
+    required this.state,
+    required this.menusDataSource,
+    required this.groupId,
+  });
 
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
       slivers: [
-        AppPageHeader(title: state.group.name, showBack: true),
+        AppPageHeader(
+          title: state.group.name,
+          showBack: true,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.add_rounded),
+              color: AppColors.accent,
+              onPressed: () async {
+                await showCreateMenuSheet(
+                  context,
+                  groupId: groupId,
+                  dataSource: menusDataSource,
+                );
+                if (context.mounted) {
+                  context.read<GroupDetailCubit>().load();
+                }
+              },
+            ),
+          ],
+        ),
         SliverPadding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
           sliver: SliverList.list(children: [
@@ -68,21 +104,19 @@ class _Loaded extends StatelessWidget {
               showThreshold: state.group.showThreshold,
             ),
             const SizedBox(height: 24),
-            if (state.activeMenu != null) ...[
+            if (state.currentMenu != null) ...[
               Text('This week', style: AppTextStyles.label.copyWith(color: AppColors.ink3)),
               const SizedBox(height: 8),
-              _MenuCard(menu: state.activeMenu!),
+              _MenuCard(menu: state.currentMenu!),
               const SizedBox(height: 24),
             ],
-            if (state.pastMenus.isNotEmpty) ...[
-              Text('Past menus', style: AppTextStyles.label.copyWith(color: AppColors.ink3)),
+            if (state.planningMenu != null) ...[
+              Text('Planning', style: AppTextStyles.label.copyWith(color: AppColors.ink3)),
               const SizedBox(height: 8),
-              ...state.pastMenus.map((m) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: _MenuCard(menu: m),
-                  )),
+              _MenuCard(menu: state.planningMenu!),
+              const SizedBox(height: 24),
             ],
-            if (state.activeMenu == null && state.pastMenus.isEmpty)
+            if (state.currentMenu == null && state.planningMenu == null)
               EmptyState(
                 icon: LucideIcons.calendarDays,
                 title: 'No menus yet',
@@ -192,8 +226,8 @@ class _MenuCard extends StatelessWidget {
       };
 
   String get _statusLabel => switch (menu.status) {
-        MenuStatus.active => 'Active',
-        MenuStatus.final_ => 'Finalized',
+        MenuStatus.active => 'Planning',
+        MenuStatus.final_ => 'This week',
         MenuStatus.draft  => 'Draft',
       };
 
@@ -213,7 +247,12 @@ class _MenuCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(_dateRange, style: AppTextStyles.bodyMedium),
+                  Text(
+                    menu.name ?? _dateRange,
+                    style: AppTextStyles.bodyMedium,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(_dateRange, style: AppTextStyles.caption.copyWith(color: AppColors.ink3)),
                   const SizedBox(height: 4),
                   Row(
                     children: [

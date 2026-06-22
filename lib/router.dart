@@ -51,7 +51,7 @@ final router = GoRouter(
               path: '/recipes',
               builder: (context, state) => BlocProvider(
                 create: (_) => RecipesCubit(dataSource: _recipesDataSource),
-                child: const RecipesScreen(),
+                child: RecipesScreen(menusDataSource: _menusDataSource),
               ),
             ),
           ],
@@ -68,7 +68,10 @@ final router = GoRouter(
             dataSource: _dataSource,
             groupId: groupId,
           ),
-          child: GroupDetailScreen(groupId: groupId),
+          child: GroupDetailScreen(
+            groupId: groupId,
+            menusDataSource: _menusDataSource,
+          ),
         );
       },
     ),
@@ -81,7 +84,11 @@ final router = GoRouter(
             dataSource: _menusDataSource,
             menuId: menuId,
           ),
-          child: MenuDetailScreen(menuId: menuId),
+          child: MenuDetailScreen(
+            menuId: menuId,
+            menusDataSource: _menusDataSource,
+            recipesDataSource: _recipesDataSource,
+          ),
         );
       },
     ),
@@ -94,7 +101,10 @@ final router = GoRouter(
             dataSource: _recipesDataSource,
             recipeId: recipeId,
           ),
-          child: RecipeDetailScreen(recipeId: recipeId),
+          child: RecipeDetailScreen(
+            recipeId: recipeId,
+            menusDataSource: _menusDataSource,
+          ),
         );
       },
     ),

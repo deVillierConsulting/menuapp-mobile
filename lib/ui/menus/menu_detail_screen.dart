@@ -10,13 +10,23 @@ import '../../data/models/menu_detail.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radii.dart';
 import '../../theme/app_typography.dart';
+import '../../data/menus_data_source.dart';
+import '../../data/recipes_data_source.dart';
 import '../../widgets/nav/app_page_header.dart';
 import '../../widgets/states/empty_state.dart';
 import '../../widgets/states/error_state.dart';
+import 'add_recipe_sheet.dart';
 
 class MenuDetailScreen extends StatefulWidget {
   final int menuId;
-  const MenuDetailScreen({super.key, required this.menuId});
+  final MenusDataSource menusDataSource;
+  final RecipesDataSource recipesDataSource;
+  const MenuDetailScreen({
+    super.key,
+    required this.menuId,
+    required this.menusDataSource,
+    required this.recipesDataSource,
+  });
 
   @override
   State<MenuDetailScreen> createState() => _MenuDetailScreenState();
@@ -45,9 +55,40 @@ class _MenuDetailScreenState extends State<MenuDetailScreen> {
             );
           }
           if (state is MenuDetailLoaded) {
-            return _Loaded(menu: state.menu);
+            return _Loaded(
+              menu: state.menu,
+              menusDataSource: widget.menusDataSource,
+              recipesDataSource: widget.recipesDataSource,
+            );
           }
           return const SizedBox.shrink();
+        },
+      ),
+      floatingActionButton: BlocBuilder<MenuDetailCubit, MenuDetailState>(
+        builder: (context, state) {
+          if (state is! MenuDetailLoaded) return const SizedBox.shrink();
+          if (state.menu.status != MenuStatus.active) return const SizedBox.shrink();
+          return FloatingActionButton.extended(
+            onPressed: () async {
+              final alreadyAdded = state.menu.recipes
+                  .map((mr) => mr.recipe.recipeId)
+                  .toSet();
+              await showAddRecipeSheet(
+                context,
+                menuId: widget.menuId,
+                alreadyAddedRecipeIds: alreadyAdded,
+                recipesDataSource: widget.recipesDataSource,
+                menusDataSource: widget.menusDataSource,
+              );
+              if (context.mounted) {
+                context.read<MenuDetailCubit>().load();
+              }
+            },
+            backgroundColor: AppColors.accent,
+            icon: const Icon(Icons.add, color: Colors.white),
+            label: Text('Add recipe',
+                style: AppTextStyles.bodyMedium.copyWith(color: Colors.white)),
+          );
         },
       ),
     );
@@ -56,7 +97,13 @@ class _MenuDetailScreenState extends State<MenuDetailScreen> {
 
 class _Loaded extends StatelessWidget {
   final MenuDetail menu;
-  const _Loaded({required this.menu});
+  final MenusDataSource menusDataSource;
+  final RecipesDataSource recipesDataSource;
+  const _Loaded({
+    required this.menu,
+    required this.menusDataSource,
+    required this.recipesDataSource,
+  });
 
   String get _title {
     final start = _fmt(menu.startDate);
@@ -153,7 +200,7 @@ class _CompletenessBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final pct = (menu.completeness * 100).round();
     final added = menu.recipes.length;
-    final total = menu.totalDays;
+    final total = menu.mealTarget;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

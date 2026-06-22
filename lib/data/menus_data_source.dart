@@ -1,4 +1,5 @@
 import 'api_client.dart';
+import 'models/active_menu_summary.dart';
 import 'models/menu_detail.dart';
 
 class MenusDataSource {
@@ -11,6 +12,45 @@ class MenusDataSource {
     final query = userId != null ? '?user_id=$userId' : '';
     final json = await _client.get('/menus/$menuId$query');
     return MenuDetail.fromJson(json as Map<String, dynamic>);
+  }
+
+  Future<Map<String, dynamic>> createMenu({
+    required int groupId,
+    String? name,
+    required DateTime startDate,
+    required DateTime endDate,
+    required int plannedMealCount,
+  }) async {
+    String fmt(DateTime d) =>
+        '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+    final body = <String, dynamic>{
+      'group_id': groupId,
+      'start_date': fmt(startDate),
+      'end_date': fmt(endDate),
+      'planned_meal_count': plannedMealCount,
+    };
+    if (name != null) body['name'] = name;
+    final json = await _client.post('/menus/', body);
+    return json as Map<String, dynamic>;
+  }
+
+  Future<List<ActiveMenuSummary>> listActiveMenus({int userId = 1}) async {
+    final json = await _client.get('/menus/active?user_id=$userId') as List<dynamic>;
+    return json
+        .map((e) => ActiveMenuSummary.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<MenuRecipe> addRecipeToMenu({
+    required int menuId,
+    required int recipeId,
+    int userId = 1,
+  }) async {
+    final json = await _client.post('/menus/$menuId/recipes', {
+      'recipe_id': recipeId,
+      'added_by_user_id': userId,
+    });
+    return MenuRecipe.fromJson(json as Map<String, dynamic>);
   }
 
   Future<void> castVote({

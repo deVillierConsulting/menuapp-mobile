@@ -68,6 +68,7 @@ class MenuDetail extends Equatable {
   final int groupId;
   final String startDate;
   final String endDate;
+  final int? plannedMealCount;
   final MenuStatus status;
   final List<MenuRecipe> recipes;
 
@@ -76,6 +77,7 @@ class MenuDetail extends Equatable {
     required this.groupId,
     required this.startDate,
     required this.endDate,
+    this.plannedMealCount,
     required this.status,
     required this.recipes,
   });
@@ -85,6 +87,7 @@ class MenuDetail extends Equatable {
         groupId: json['group_id'] as int,
         startDate: json['start_date'] as String,
         endDate: json['end_date'] as String,
+        plannedMealCount: json['planned_meal_count'] as int?,
         status: _statusFromString(json['status'] as String),
         recipes: (json['recipes'] as List<dynamic>)
             .map((e) => MenuRecipe.fromJson(e as Map<String, dynamic>))
@@ -131,15 +134,17 @@ class MenuDetail extends Equatable {
     );
   }
 
-  // Days in the menu range, inclusive.
+  // Days in the menu range, inclusive (fallback if plannedMealCount absent).
   int get totalDays {
     final start = DateTime.parse(startDate);
     final end = DateTime.parse(endDate);
     return end.difference(start).inDays + 1;
   }
 
+  int get mealTarget => plannedMealCount ?? totalDays;
+
   // How full the menu is — capped at 1.0.
-  double get completeness => (recipes.length / totalDays).clamp(0.0, 1.0);
+  double get completeness => (recipes.length / mealTarget).clamp(0.0, 1.0);
 
   @override
   List<Object?> get props => [menuId, groupId, startDate, endDate, status, recipes];
