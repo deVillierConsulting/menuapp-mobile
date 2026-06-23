@@ -105,11 +105,7 @@ class _Loaded extends StatelessWidget {
     required this.recipesDataSource,
   });
 
-  String get _title {
-    final start = _fmt(menu.startDate);
-    final end = _fmt(menu.endDate);
-    return '$start – $end';
-  }
+  String get _title => menu.name ?? '${_fmt(menu.startDate)} – ${_fmt(menu.endDate)}';
 
   String _fmt(String iso) {
     final d = DateTime.parse(iso);
@@ -127,6 +123,32 @@ class _Loaded extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
           sliver: SliverList.list(children: [
             _StatusRow(menu: menu),
+            if (menu.status == MenuStatus.final_) ...[
+              const SizedBox(height: 12),
+              GestureDetector(
+                onTap: () => context.push('/menus/${menu.menuId}/grocery-list'),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: AppColors.ok.withValues(alpha: 0.1),
+                    borderRadius: AppRadii.smAll,
+                    border: Border.all(color: AppColors.ok.withValues(alpha: 0.3)),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    child: Row(
+                      children: [
+                        Icon(Icons.shopping_cart_outlined, color: AppColors.ok, size: 18),
+                        const SizedBox(width: 10),
+                        Text('View grocery list',
+                            style: AppTextStyles.bodyMedium.copyWith(color: AppColors.ok)),
+                        const Spacer(),
+                        Icon(Icons.chevron_right_rounded, color: AppColors.ok, size: 18),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(height: 20),
             _CompletenessBar(menu: menu),
             const SizedBox(height: 24),
@@ -141,7 +163,10 @@ class _Loaded extends StatelessWidget {
               const SizedBox(height: 8),
               ...menu.recipes.map((mr) => Padding(
                     padding: const EdgeInsets.only(bottom: 10),
-                    child: _RecipeCard(menuRecipe: mr),
+                    child: _RecipeCard(
+                      menuRecipe: mr,
+                      votingEnabled: menu.status == MenuStatus.active,
+                    ),
                   )),
             ],
           ]),
@@ -162,8 +187,8 @@ class _StatusRow extends StatelessWidget {
       };
 
   String get _label => switch (menu.status) {
-        MenuStatus.active => 'Active',
-        MenuStatus.final_ => 'Finalized',
+        MenuStatus.active => 'Planning',
+        MenuStatus.final_ => 'This week',
         MenuStatus.draft  => 'Draft',
       };
 
@@ -198,9 +223,10 @@ class _CompletenessBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pct = (menu.completeness * 100).round();
     final added = menu.recipes.length;
-    final total = menu.mealTarget;
+    final target = menu.mealTarget;
+    final isComplete = added >= target;
+    final extra = added - target;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -208,25 +234,94 @@ class _CompletenessBar extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('$added of $total meals planned',
-                style: AppTextStyles.body.copyWith(color: AppColors.ink2)),
-            Text('$pct%',
-                style: AppTextStyles.bodyMedium.copyWith(color: AppColors.ink2)),
+            Text(
+              isComplete
+                  ? (extra > 0 ? '$target meals planned · +$extra extra' : '$target meals planned')
+                  : '$added of $target meals planned',
+              style: AppTextStyles.body.copyWith(color: AppColors.ink2),
+            ),
+            if (isComplete)
+              Text('✓', style: AppTextStyles.bodyMedium.copyWith(color: AppColors.ok))
+            else
+              Text(
+                '${((added / target) * 100).round()}%',
+                style: AppTextStyles.bodyMedium.copyWith(color: AppColors.ink2),
+              ),
           ],
         ),
         const SizedBox(height: 8),
         ClipRRect(
           borderRadius: AppRadii.fullAll,
           child: LinearProgressIndicator(
-            value: menu.completeness,
+            value: isComplete ? 1.0 : added / target,
             minHeight: 6,
             backgroundColor: AppColors.line2,
             valueColor: AlwaysStoppedAnimation(
-              menu.completeness >= 1.0 ? AppColors.ok : AppColors.accent,
+              isComplete ? AppColors.ok : AppColors.accent,
             ),
           ),
         ),
+        if (isComplete && menu.status == MenuStatus.active) ...[
+          const SizedBox(height: 16),
+          _FinalizeButton(),
+        ],
       ],
+    );
+  }
+}
+
+class _FinalizeButton extends StatelessWidget {
+  const _FinalizeButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () async {
+        final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Finalize this menu?'),
+            content: const Text(
+              'This locks in the recipes and generates your grocery list. You won\'t be able to add or remove recipes after this.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(false),
+                child: const Text('Not yet'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(true),
+                child: Text('Finalize',
+                    style: TextStyle(color: AppColors.accent)),
+              ),
+            ],
+          ),
+        );
+        if (confirmed == true && context.mounted) {
+          await context.read<MenuDetailCubit>().finalizeMenu();
+          if (context.mounted) {
+            context.push('/menus/${context.read<MenuDetailCubit>().menuId}/grocery-list');
+          }
+        }
+      },
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: AppColors.accent,
+          borderRadius: AppRadii.smAll,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.check_rounded, color: Colors.white, size: 18),
+              const SizedBox(width: 8),
+              Text('Finalize menu & get grocery list',
+                  style: AppTextStyles.bodyMedium.copyWith(color: Colors.white)),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -237,7 +332,8 @@ const double _kThreshold = 100.0;
 
 class _RecipeCard extends StatefulWidget {
   final MenuRecipe menuRecipe;
-  const _RecipeCard({required this.menuRecipe});
+  final bool votingEnabled;
+  const _RecipeCard({required this.menuRecipe, this.votingEnabled = true});
 
   @override
   State<_RecipeCard> createState() => _RecipeCardState();
@@ -293,18 +389,17 @@ class _RecipeCardState extends State<_RecipeCard>
     final userVote = widget.menuRecipe.voteSummary.userVote;
 
     return GestureDetector(
-      onHorizontalDragUpdate: _onDragUpdate,
-      onHorizontalDragEnd: _onDragEnd,
-      // Tap still navigates to recipe detail.
+      onHorizontalDragUpdate: widget.votingEnabled ? _onDragUpdate : null,
+      onHorizontalDragEnd: widget.votingEnabled ? _onDragEnd : null,
       onTap: () => context.push('/recipes/${widget.menuRecipe.recipe.recipeId}'),
       child: Transform.translate(
         offset: Offset(_dragX, 0),
         child: Stack(
           children: [
-            // Base card
             _CardContent(
               menuRecipe: widget.menuRecipe,
               userVote: userVote,
+              votingEnabled: widget.votingEnabled,
             ),
 
             // Coloured overlay fades in as you drag.
@@ -345,7 +440,12 @@ class _RecipeCardState extends State<_RecipeCard>
 class _CardContent extends StatelessWidget {
   final MenuRecipe menuRecipe;
   final VoteValue? userVote;
-  const _CardContent({required this.menuRecipe, required this.userVote});
+  final bool votingEnabled;
+  const _CardContent({
+    required this.menuRecipe,
+    required this.userVote,
+    this.votingEnabled = true,
+  });
 
   // Border tint shows the user's committed vote at rest.
   Color? get _voteBorderColor => switch (userVote) {
@@ -405,14 +505,15 @@ class _CardContent extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: 8),
-            // Veto is intentional — keep it as an explicit tap, not a swipe.
-            _VetoButton(
-              active: userVote == VoteValue.veto,
-              onTap: () => context
-                  .read<MenuDetailCubit>()
-                  .castVote(menuRecipe.menuRecipeId, VoteValue.veto),
-            ),
+            if (votingEnabled) ...[
+              const SizedBox(width: 8),
+              _VetoButton(
+                active: userVote == VoteValue.veto,
+                onTap: () => context
+                    .read<MenuDetailCubit>()
+                    .castVote(menuRecipe.menuRecipeId, VoteValue.veto),
+              ),
+            ],
           ],
         ),
       ),

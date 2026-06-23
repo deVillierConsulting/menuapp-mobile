@@ -66,6 +66,7 @@ class MenuRecipe extends Equatable {
 class MenuDetail extends Equatable {
   final int menuId;
   final int groupId;
+  final String? name;
   final String startDate;
   final String endDate;
   final int? plannedMealCount;
@@ -75,6 +76,7 @@ class MenuDetail extends Equatable {
   const MenuDetail({
     required this.menuId,
     required this.groupId,
+    this.name,
     required this.startDate,
     required this.endDate,
     this.plannedMealCount,
@@ -85,6 +87,7 @@ class MenuDetail extends Equatable {
   factory MenuDetail.fromJson(Map<String, dynamic> json) => MenuDetail(
         menuId: json['menu_id'] as int,
         groupId: json['group_id'] as int,
+        name: json['name'] as String?,
         startDate: json['start_date'] as String,
         endDate: json['end_date'] as String,
         plannedMealCount: json['planned_meal_count'] as int?,

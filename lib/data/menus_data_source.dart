@@ -1,5 +1,6 @@
 import 'api_client.dart';
 import 'models/active_menu_summary.dart';
+import 'models/grocery_list.dart';
 import 'models/menu_detail.dart';
 
 class MenusDataSource {
@@ -32,6 +33,20 @@ class MenusDataSource {
     if (name != null) body['name'] = name;
     final json = await _client.post('/menus/', body);
     return json as Map<String, dynamic>;
+  }
+
+  Future<void> finalizeMenu(int menuId) async {
+    await _client.patch('/menus/$menuId/status', {'status': 'final'});
+  }
+
+  Future<GroceryList> generateGroceryList(int menuId) async {
+    final json = await _client.post('/menus/$menuId/grocery-list', {});
+    return GroceryList.fromJson(json as Map<String, dynamic>);
+  }
+
+  Future<GroceryList> getGroceryList(int menuId) async {
+    final json = await _client.get('/menus/$menuId/grocery-list');
+    return GroceryList.fromJson(json as Map<String, dynamic>);
   }
 
   Future<List<ActiveMenuSummary>> listActiveMenus({int userId = 1}) async {

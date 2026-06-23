@@ -22,6 +22,18 @@ class MenuDetailCubit extends Cubit<MenuDetailState> {
     }
   }
 
+  Future<void> finalizeMenu() async {
+    final current = state;
+    if (current is! MenuDetailLoaded) return;
+    try {
+      await _dataSource.finalizeMenu(menuId);
+      await _dataSource.generateGroceryList(menuId);
+      await load(); // reload so status flips to final in the UI
+    } catch (e) {
+      emit(MenuDetailError(e.toString()));
+    }
+  }
+
   Future<void> castVote(int menuRecipeId, VoteValue value) async {
     final current = state;
     if (current is! MenuDetailLoaded) return;

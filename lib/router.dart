@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'cubits/grocery_list/grocery_list_cubit.dart';
 import 'cubits/group_detail/group_detail_cubit.dart';
 import 'cubits/menu_detail/menu_detail_cubit.dart';
 import 'cubits/recipe_detail/recipe_detail_cubit.dart';
@@ -11,6 +12,7 @@ import 'data/menus_data_source.dart';
 import 'data/recipes_data_source.dart';
 import 'ui/groups/group_detail_screen.dart';
 import 'ui/groups/groups_screen.dart';
+import 'ui/menus/grocery_list_screen.dart';
 import 'ui/menus/menu_detail_screen.dart';
 import 'ui/recipes/recipe_detail_screen.dart';
 import 'ui/recipes/recipes_screen.dart';
@@ -89,6 +91,19 @@ final router = GoRouter(
             menusDataSource: _menusDataSource,
             recipesDataSource: _recipesDataSource,
           ),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/menus/:id/grocery-list',
+      builder: (context, state) {
+        final menuId = int.parse(state.pathParameters['id']!);
+        return BlocProvider(
+          create: (_) => GroceryListCubit(
+            dataSource: _menusDataSource,
+            menuId: menuId,
+          ),
+          child: GroceryListScreen(menuId: menuId),
         );
       },
     ),
