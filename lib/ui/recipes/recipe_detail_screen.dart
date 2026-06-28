@@ -7,16 +7,19 @@ import '../../theme/app_colors.dart';
 import '../../theme/app_radii.dart';
 import '../../theme/app_typography.dart';
 import '../../data/menus_data_source.dart';
+import '../../session/app_session.dart';
 import '../../widgets/states/error_state.dart';
 import '../menus/pick_menu_sheet.dart';
 
 class RecipeDetailScreen extends StatefulWidget {
   final int recipeId;
   final MenusDataSource menusDataSource;
+  final AppSession session;
   const RecipeDetailScreen({
     super.key,
     required this.recipeId,
     required this.menusDataSource,
+    required this.session,
   });
 
   @override
@@ -46,6 +49,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
           if (state is RecipeDetailLoaded) return _Loaded(
             recipe: state.recipe,
             menusDataSource: widget.menusDataSource,
+            session: widget.session,
           );
           return const SizedBox.shrink();
         },
@@ -57,7 +61,8 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
 class _Loaded extends StatelessWidget {
   final Recipe recipe;
   final MenusDataSource menusDataSource;
-  const _Loaded({required this.recipe, required this.menusDataSource});
+  final AppSession session;
+  const _Loaded({required this.recipe, required this.menusDataSource, required this.session});
 
   @override
   Widget build(BuildContext context) {
@@ -82,6 +87,7 @@ class _Loaded extends StatelessWidget {
                 context,
                 recipeId: recipe.recipeId,
                 menusDataSource: menusDataSource,
+                session: session,
               ),
             ),
           ],

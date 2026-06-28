@@ -11,6 +11,7 @@ import '../../theme/app_colors.dart';
 import '../../theme/app_radii.dart';
 import '../../theme/app_typography.dart';
 import '../../data/menus_data_source.dart';
+import '../../session/app_session.dart';
 import '../../data/recipes_data_source.dart';
 import '../../widgets/nav/app_page_header.dart';
 import '../../widgets/states/empty_state.dart';
@@ -21,11 +22,13 @@ class MenuDetailScreen extends StatefulWidget {
   final int menuId;
   final MenusDataSource menusDataSource;
   final RecipesDataSource recipesDataSource;
+  final AppSession session;
   const MenuDetailScreen({
     super.key,
     required this.menuId,
     required this.menusDataSource,
     required this.recipesDataSource,
+    required this.session,
   });
 
   @override
@@ -79,6 +82,7 @@ class _MenuDetailScreenState extends State<MenuDetailScreen> {
                 alreadyAddedRecipeIds: alreadyAdded,
                 recipesDataSource: widget.recipesDataSource,
                 menusDataSource: widget.menusDataSource,
+                session: widget.session,
               );
               if (context.mounted) {
                 context.read<MenuDetailCubit>().load();

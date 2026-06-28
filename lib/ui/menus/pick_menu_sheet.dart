@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../cubits/pick_menu/pick_menu_cubit.dart';
 import '../../data/menus_data_source.dart';
+import '../../session/app_session.dart';
 import '../../data/models/active_menu_summary.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radii.dart';
@@ -12,6 +13,7 @@ Future<void> showPickMenuSheet(
   BuildContext context, {
   required int recipeId,
   required MenusDataSource menusDataSource,
+  required AppSession session,
 }) {
   return showModalBottomSheet(
     context: context,
@@ -23,6 +25,7 @@ Future<void> showPickMenuSheet(
     builder: (_) => BlocProvider(
       create: (_) => PickMenuCubit(
         dataSource: menusDataSource,
+        session: session,
         recipeId: recipeId,
       )..load(),
       child: const _PickMenuSheetBody(),

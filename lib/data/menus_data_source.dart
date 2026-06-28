@@ -49,7 +49,7 @@ class MenusDataSource {
     return GroceryList.fromJson(json as Map<String, dynamic>);
   }
 
-  Future<List<ActiveMenuSummary>> listActiveMenus({int userId = 1}) async {
+  Future<List<ActiveMenuSummary>> listActiveMenus({required int userId}) async {
     final json = await _client.get('/menus/active?user_id=$userId') as List<dynamic>;
     return json
         .map((e) => ActiveMenuSummary.fromJson(e as Map<String, dynamic>))
@@ -59,7 +59,7 @@ class MenusDataSource {
   Future<MenuRecipe> addRecipeToMenu({
     required int menuId,
     required int recipeId,
-    int userId = 1,
+    required int userId,
   }) async {
     final json = await _client.post('/menus/$menuId/recipes', {
       'recipe_id': recipeId,

@@ -1,21 +1,26 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../data/menus_data_source.dart';
 import '../../data/models/menu_detail.dart';
+import '../../session/app_session.dart';
 import 'menu_detail_state.dart';
 
 class MenuDetailCubit extends Cubit<MenuDetailState> {
   final MenusDataSource _dataSource;
+  final AppSession _session;
   final int menuId;
 
-  MenuDetailCubit({required MenusDataSource dataSource, required this.menuId})
-      : _dataSource = dataSource,
+  MenuDetailCubit({
+    required MenusDataSource dataSource,
+    required AppSession session,
+    required this.menuId,
+  })  : _dataSource = dataSource,
+        _session = session,
         super(const MenuDetailLoading());
 
   Future<void> load() async {
     emit(const MenuDetailLoading());
     try {
-      // user_id 1 = Andrew (hardcoded until auth lands — Task #20)
-      final menu = await _dataSource.getMenuDetail(menuId, userId: 1);
+      final menu = await _dataSource.getMenuDetail(menuId, userId: _session.userId);
       emit(MenuDetailLoaded(menu));
     } catch (e) {
       emit(MenuDetailError(e.toString()));
@@ -46,7 +51,7 @@ class MenuDetailCubit extends Cubit<MenuDetailState> {
       await _dataSource.castVote(
         menuId: menuId,
         menuRecipeId: menuRecipeId,
-        userId: 1,
+        userId: _session.userId,
         value: value,
       );
       // Server confirmed — optimistic state already matches, nothing to do.

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -6,10 +7,10 @@ import 'cubits/group_detail/group_detail_cubit.dart';
 import 'cubits/menu_detail/menu_detail_cubit.dart';
 import 'cubits/recipe_detail/recipe_detail_cubit.dart';
 import 'cubits/recipes/recipes_cubit.dart';
-import 'data/api_client.dart';
 import 'data/groups_data_source.dart';
 import 'data/menus_data_source.dart';
 import 'data/recipes_data_source.dart';
+import 'session/app_session.dart';
 import 'ui/groups/group_detail_screen.dart';
 import 'ui/groups/groups_screen.dart';
 import 'ui/menus/grocery_list_screen.dart';
@@ -18,12 +19,16 @@ import 'ui/recipes/recipe_detail_screen.dart';
 import 'ui/recipes/recipes_screen.dart';
 import 'widgets/nav/app_nav_bar.dart';
 
-final _apiClient = ApiClient(baseUrl: 'http://192.168.1.105:8000');
-final _dataSource = GroupsDataSource(_apiClient);
-final _menusDataSource = MenusDataSource(_apiClient);
-final _recipesDataSource = RecipesDataSource(_apiClient);
-
-final router = GoRouter(
+/// Builds the app's router. All dependencies are passed in from app.dart —
+/// nothing is instantiated here. This keeps the router a pure description
+/// of navigation structure with no hidden state.
+GoRouter buildRouter({
+  required AppSession session,
+  required GroupsDataSource groupsDataSource,
+  required MenusDataSource menusDataSource,
+  required RecipesDataSource recipesDataSource,
+}) =>
+    GoRouter(
   initialLocation: '/groups',
   routes: [
     // StatefulShellRoute keeps each branch's Navigator alive independently,
@@ -32,7 +37,7 @@ final router = GoRouter(
     // so we can drive our own transition between them.
     StatefulShellRoute(
       builder: (context, state, navigationShell) =>
-          AppShell(navigationShell: navigationShell),
+          AppShell(navigationShell: navigationShell, session: session),
       navigatorContainerBuilder: (context, navigationShell, children) =>
           AnimatedBranchContainer(
             currentIndex: navigationShell.currentIndex,
@@ -52,8 +57,8 @@ final router = GoRouter(
             GoRoute(
               path: '/recipes',
               builder: (context, state) => BlocProvider(
-                create: (_) => RecipesCubit(dataSource: _recipesDataSource),
-                child: RecipesScreen(menusDataSource: _menusDataSource),
+                create: (_) => RecipesCubit(dataSource: recipesDataSource),
+                child: RecipesScreen(menusDataSource: menusDataSource, session: session),
               ),
             ),
           ],
@@ -67,12 +72,12 @@ final router = GoRouter(
         final groupId = int.parse(state.pathParameters['id']!);
         return BlocProvider(
           create: (_) => GroupDetailCubit(
-            dataSource: _dataSource,
+            dataSource: groupsDataSource,
             groupId: groupId,
           ),
           child: GroupDetailScreen(
             groupId: groupId,
-            menusDataSource: _menusDataSource,
+            menusDataSource: menusDataSource,
           ),
         );
       },
@@ -83,13 +88,15 @@ final router = GoRouter(
         final menuId = int.parse(state.pathParameters['id']!);
         return BlocProvider(
           create: (_) => MenuDetailCubit(
-            dataSource: _menusDataSource,
+            dataSource: menusDataSource,
             menuId: menuId,
+            session: session,
           ),
           child: MenuDetailScreen(
             menuId: menuId,
-            menusDataSource: _menusDataSource,
-            recipesDataSource: _recipesDataSource,
+            menusDataSource: menusDataSource,
+            recipesDataSource: recipesDataSource,
+            session: session,
           ),
         );
       },
@@ -100,7 +107,7 @@ final router = GoRouter(
         final menuId = int.parse(state.pathParameters['id']!);
         return BlocProvider(
           create: (_) => GroceryListCubit(
-            dataSource: _menusDataSource,
+            dataSource: menusDataSource,
             menuId: menuId,
           ),
           child: GroceryListScreen(menuId: menuId),
@@ -113,12 +120,13 @@ final router = GoRouter(
         final recipeId = int.parse(state.pathParameters['id']!);
         return BlocProvider(
           create: (_) => RecipeDetailCubit(
-            dataSource: _recipesDataSource,
+            dataSource: recipesDataSource,
             recipeId: recipeId,
           ),
           child: RecipeDetailScreen(
             recipeId: recipeId,
-            menusDataSource: _menusDataSource,
+            menusDataSource: menusDataSource,
+            session: session,
           ),
         );
       },
@@ -130,15 +138,69 @@ final router = GoRouter(
 // Direction tracking lives in AnimatedBranchContainer where it belongs.
 class AppShell extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
-  const AppShell({super.key, required this.navigationShell});
+  final AppSession session;
+  const AppShell({super.key, required this.navigationShell, required this.session});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: navigationShell,
-      bottomNavigationBar: AppNavBar(
-        currentIndex: navigationShell.currentIndex,
-        onTap: (i) => navigationShell.goBranch(i),
+      bottomNavigationBar: GestureDetector(
+        // Long-press the nav bar to open the dev user switcher (debug builds only).
+        onLongPress: kDebugMode
+            ? () => _showUserSwitcher(context, session)
+            : null,
+        child: AppNavBar(
+          currentIndex: navigationShell.currentIndex,
+          onTap: (i) => navigationShell.goBranch(i),
+        ),
+      ),
+    );
+  }
+
+  void _showUserSwitcher(BuildContext context, AppSession session) {
+    // Seeded dev users — replace with real user list once auth lands.
+    const users = [
+      (id: 1, name: 'Andrew'),
+      (id: 2, name: 'Claire'),
+      (id: 3, name: 'Matt'),
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 16, 20, 8),
+              child: Row(
+                children: [
+                  Icon(Icons.bug_report_outlined, size: 18),
+                  SizedBox(width: 8),
+                  Text('Dev user switcher',
+                      style: TextStyle(fontWeight: FontWeight.w600)),
+                ],
+              ),
+            ),
+            ...users.map((u) => ListTile(
+                  title: Text(u.name),
+                  subtitle: Text('user_id: ${u.id}'),
+                  leading: CircleAvatar(child: Text(u.name[0])),
+                  trailing: session.userId == u.id
+                      ? const Icon(Icons.check, color: Colors.green)
+                      : null,
+                  onTap: () {
+                    session.switchUser(userId: u.id, userName: u.name);
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Switched to ${u.name}')),
+                    );
+                  },
+                )),
+            const SizedBox(height: 8),
+          ],
+        ),
       ),
     );
   }

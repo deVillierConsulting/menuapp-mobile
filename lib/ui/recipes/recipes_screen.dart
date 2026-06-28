@@ -12,13 +12,15 @@ import '../../theme/app_typography.dart';
 import '../../widgets/cards/app_card.dart';
 import '../../widgets/inputs/app_filter_chip.dart';
 import '../../data/menus_data_source.dart';
+import '../../session/app_session.dart';
 import '../../widgets/states/empty_state.dart';
 import '../../widgets/states/error_state.dart';
 import '../menus/pick_menu_sheet.dart';
 
 class RecipesScreen extends StatefulWidget {
   final MenusDataSource menusDataSource;
-  const RecipesScreen({super.key, required this.menusDataSource});
+  final AppSession session;
+  const RecipesScreen({super.key, required this.menusDataSource, required this.session});
 
   @override
   State<RecipesScreen> createState() => _RecipesScreenState();
@@ -68,6 +70,7 @@ class _RecipesScreenState extends State<RecipesScreen> {
               searchController: _searchController,
               onToggleSearch: _toggleSearch,
               menusDataSource: widget.menusDataSource,
+              session: widget.session,
             );
           }
           return const SizedBox.shrink();
@@ -83,6 +86,7 @@ class _Loaded extends StatelessWidget {
   final TextEditingController searchController;
   final VoidCallback onToggleSearch;
   final MenusDataSource menusDataSource;
+  final AppSession session;
 
   const _Loaded({
     required this.state,
@@ -90,6 +94,7 @@ class _Loaded extends StatelessWidget {
     required this.searchController,
     required this.onToggleSearch,
     required this.menusDataSource,
+    required this.session,
   });
 
   @override
@@ -206,6 +211,7 @@ class _Loaded extends StatelessWidget {
               itemBuilder: (context, i) => _RecipeCard(
                 recipe: recipes[i],
                 menusDataSource: menusDataSource,
+                session: session,
               ),
             ),
           ),
@@ -356,7 +362,8 @@ class _ActiveTagChip extends StatelessWidget {
 class _RecipeCard extends StatelessWidget {
   final Recipe recipe;
   final MenusDataSource menusDataSource;
-  const _RecipeCard({required this.recipe, required this.menusDataSource});
+  final AppSession session;
+  const _RecipeCard({required this.recipe, required this.menusDataSource, required this.session});
 
   @override
   Widget build(BuildContext context) {
@@ -390,6 +397,7 @@ class _RecipeCard extends StatelessWidget {
                     context,
                     recipeId: recipe.recipeId,
                     menusDataSource: menusDataSource,
+                    session: session,
                   ),
                   child: DecoratedBox(
                     decoration: BoxDecoration(
