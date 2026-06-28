@@ -1,6 +1,16 @@
 import 'package:equatable/equatable.dart';
 
-enum MenuStatus { draft, active, final_ }
+enum MenuStatus {
+  draft,
+  active,
+  final_;
+
+  static MenuStatus fromString(String s) => switch (s) {
+        'active' => MenuStatus.active,
+        'final'  => MenuStatus.final_,
+        _        => MenuStatus.draft,
+      };
+}
 
 class Menu extends Equatable {
   final int menuId;
@@ -25,14 +35,8 @@ class Menu extends Equatable {
         name: json['name'] as String?,
         startDate: json['start_date'] as String,
         endDate: json['end_date'] as String,
-        status: _statusFromString(json['status'] as String),
+        status: MenuStatus.fromString(json['status'] as String),
       );
-
-  static MenuStatus _statusFromString(String s) => switch (s) {
-        'active' => MenuStatus.active,
-        'final'  => MenuStatus.final_,
-        _        => MenuStatus.draft,
-      };
 
   bool get isActive => status == MenuStatus.active;
   bool get isFinal  => status == MenuStatus.final_;

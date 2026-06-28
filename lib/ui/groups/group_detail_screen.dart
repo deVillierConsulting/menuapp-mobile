@@ -6,6 +6,7 @@ import '../../cubits/group_detail/group_detail_cubit.dart';
 import '../../cubits/group_detail/group_detail_state.dart';
 import '../../data/menus_data_source.dart';
 import '../../data/models/menu.dart';
+import '../../session/app_session.dart';
 import '../../data/models/user.dart';
 import '../menus/create_menu_sheet.dart';
 import '../../theme/app_colors.dart';
@@ -19,10 +20,12 @@ import '../../widgets/states/error_state.dart';
 class GroupDetailScreen extends StatefulWidget {
   final int groupId;
   final MenusDataSource menusDataSource;
+  final AppSession session;
   const GroupDetailScreen({
     super.key,
     required this.groupId,
     required this.menusDataSource,
+    required this.session,
   });
 
   @override
@@ -53,6 +56,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             state: state,
             menusDataSource: widget.menusDataSource,
             groupId: widget.groupId,
+            session: widget.session,
           );
           return const SizedBox.shrink();
         },
@@ -65,10 +69,12 @@ class _Loaded extends StatelessWidget {
   final GroupDetailLoaded state;
   final MenusDataSource menusDataSource;
   final int groupId;
+  final AppSession session;
   const _Loaded({
     required this.state,
     required this.menusDataSource,
     required this.groupId,
+    required this.session,
   });
 
   @override

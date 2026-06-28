@@ -91,25 +91,21 @@ class MenuDetail extends Equatable {
         startDate: json['start_date'] as String,
         endDate: json['end_date'] as String,
         plannedMealCount: json['planned_meal_count'] as int?,
-        status: _statusFromString(json['status'] as String),
+        status: MenuStatus.fromString(json['status'] as String),
         recipes: (json['recipes'] as List<dynamic>)
             .map((e) => MenuRecipe.fromJson(e as Map<String, dynamic>))
             .toList(),
       );
-
-  static MenuStatus _statusFromString(String s) => switch (s) {
-        'active' => MenuStatus.active,
-        'final' => MenuStatus.final_,
-        _ => MenuStatus.draft,
-      };
 
   // Returns a copy with one recipe's VoteSummary updated optimistically.
   MenuDetail copyWithUpdatedVote(int menuRecipeId, VoteValue newVote) {
     return MenuDetail(
       menuId: menuId,
       groupId: groupId,
+      name: name,
       startDate: startDate,
       endDate: endDate,
+      plannedMealCount: plannedMealCount,
       status: status,
       recipes: recipes.map((mr) {
         if (mr.menuRecipeId != menuRecipeId) return mr;
@@ -150,5 +146,5 @@ class MenuDetail extends Equatable {
   double get completeness => (recipes.length / mealTarget).clamp(0.0, 1.0);
 
   @override
-  List<Object?> get props => [menuId, groupId, startDate, endDate, status, recipes];
+  List<Object?> get props => [menuId, groupId, name, startDate, endDate, plannedMealCount, status, recipes];
 }
