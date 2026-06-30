@@ -52,12 +52,14 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
               onRetry: () => context.read<GroupDetailCubit>().load(),
             );
           }
-          if (state is GroupDetailLoaded) return _Loaded(
-            state: state,
-            menusDataSource: widget.menusDataSource,
-            groupId: widget.groupId,
-            session: widget.session,
-          );
+          if (state is GroupDetailLoaded) {
+            return _Loaded(
+              state: state,
+              menusDataSource: widget.menusDataSource,
+              groupId: widget.groupId,
+              session: widget.session,
+            );
+          }
           return const SizedBox.shrink();
         },
       ),

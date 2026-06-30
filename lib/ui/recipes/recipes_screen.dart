@@ -148,7 +148,7 @@ class _Loaded extends StatelessWidget {
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     itemCount: state.cuisines.length,
-                    separatorBuilder: (_, __) => const SizedBox(width: 8),
+                    separatorBuilder: (_, _) => const SizedBox(width: 8),
                     itemBuilder: (context, i) {
                       final cuisine = state.cuisines[i];
                       return AppFilterChip(
@@ -207,7 +207,7 @@ class _Loaded extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
             sliver: SliverList.separated(
               itemCount: recipes.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              separatorBuilder: (_, _) => const SizedBox(height: 12),
               itemBuilder: (context, i) => _RecipeCard(
                 recipe: recipes[i],
                 menusDataSource: menusDataSource,

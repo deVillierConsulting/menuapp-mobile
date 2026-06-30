@@ -32,11 +32,16 @@ class MenuDetailCubit extends Cubit<MenuDetailState> {
     if (current is! MenuDetailLoaded) return;
     try {
       await _dataSource.finalizeMenu(menuId);
-      await _dataSource.generateGroceryList(menuId);
-      await load(); // reload so status flips to final in the UI
     } catch (e) {
       emit(MenuDetailError(e.toString()));
+      return;
     }
+    // Grocery list generation is best-effort — if it fails, the menu is still
+    // finalized. The GET endpoint will auto-generate on next visit.
+    try {
+      await _dataSource.generateGroceryList(menuId);
+    } catch (_) {}
+    await load();
   }
 
   Future<void> castVote(int menuRecipeId, VoteValue value) async {
@@ -54,9 +59,7 @@ class MenuDetailCubit extends Cubit<MenuDetailState> {
         userId: _session.userId,
         value: value,
       );
-      // Server confirmed — optimistic state already matches, nothing to do.
     } catch (_) {
-      // Revert to the pre-vote state on failure.
       emit(current);
     }
   }

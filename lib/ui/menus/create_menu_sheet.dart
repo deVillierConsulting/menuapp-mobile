@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../cubits/create_menu/create_menu_cubit.dart';
+import '../../cubits/create_menu/create_menu_state.dart';
 import '../../data/menus_data_source.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radii.dart';
@@ -316,7 +317,7 @@ class _MealStepper extends StatelessWidget {
         ),
         const SizedBox(width: 12),
         Text(
-          '${count == 1 ? 'meal' : 'meals'}',
+          count == 1 ? 'meal' : 'meals',
           style: AppTextStyles.body.copyWith(color: AppColors.ink2),
         ),
       ],

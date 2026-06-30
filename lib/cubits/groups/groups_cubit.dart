@@ -5,7 +5,7 @@ import 'groups_state.dart';
 class GroupsCubit extends Cubit<GroupsState> {
   final GroupsDataSource _dataSource;
 
-  GroupsCubit(this._dataSource) : super(const GroupsInitial());
+  GroupsCubit(this._dataSource) : super(const GroupsLoading());
 
   Future<void> loadGroups() async {
     emit(const GroupsLoading());

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../cubits/add_recipe/add_recipe_cubit.dart';
+import '../../cubits/add_recipe/add_recipe_state.dart';
 import '../../data/menus_data_source.dart';
 import '../../data/models/recipe.dart';
 import '../../data/recipes_data_source.dart';
@@ -136,7 +137,7 @@ class _AddRecipeSheetBodyState extends State<_AddRecipeSheetBody> {
                     controller: scrollController,
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
                     itemCount: recipes.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 8),
+                    separatorBuilder: (_, _) => const SizedBox(height: 8),
                     itemBuilder: (context, i) => _RecipeRow(
                       recipe: recipes[i],
                       added: state.addedRecipeIds.contains(recipes[i].recipeId),

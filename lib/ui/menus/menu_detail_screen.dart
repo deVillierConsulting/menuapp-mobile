@@ -127,7 +127,7 @@ class _Loaded extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
           sliver: SliverList.list(children: [
             _StatusRow(menu: menu),
-            if (menu.status == MenuStatus.final_) ...[
+            if (menu.status == MenuStatus.final_ && menu.recipes.isNotEmpty) ...[
               const SizedBox(height: 12),
               GestureDetector(
                 onTap: () => context.push('/menus/${menu.menuId}/grocery-list'),

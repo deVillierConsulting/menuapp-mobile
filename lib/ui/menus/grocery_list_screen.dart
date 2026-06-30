@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../cubits/grocery_list/grocery_list_cubit.dart';
+import '../../cubits/grocery_list/grocery_list_state.dart';
 import '../../data/models/grocery_list.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radii.dart';
@@ -77,7 +78,7 @@ class _Loaded extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 48),
           sliver: SliverList.separated(
             itemCount: items.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 8),
+            separatorBuilder: (_, _) => const SizedBox(height: 8),
             itemBuilder: (context, i) {
               final item = items[i];
               final isChecked = checked.contains(item.groceryListItemId);

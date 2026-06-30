@@ -46,7 +46,10 @@ GoRouter buildRouter({
           routes: [
             GoRoute(
               path: '/groups',
-              builder: (context, state) => const GroupsScreen(),
+              builder: (context, state) => GroupsScreen(
+                dataSource: groupsDataSource,
+                session: session,
+              ),
             ),
           ],
         ),

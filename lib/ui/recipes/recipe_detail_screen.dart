@@ -46,11 +46,13 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
               onRetry: () => context.read<RecipeDetailCubit>().load(),
             );
           }
-          if (state is RecipeDetailLoaded) return _Loaded(
-            recipe: state.recipe,
-            menusDataSource: widget.menusDataSource,
-            session: widget.session,
-          );
+          if (state is RecipeDetailLoaded) {
+            return _Loaded(
+              recipe: state.recipe,
+              menusDataSource: widget.menusDataSource,
+              session: widget.session,
+            );
+          }
           return const SizedBox.shrink();
         },
       ),

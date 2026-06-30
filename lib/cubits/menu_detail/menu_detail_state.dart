@@ -14,7 +14,6 @@ class MenuDetailLoading extends MenuDetailState {
 class MenuDetailLoaded extends MenuDetailState {
   final MenuDetail menu;
   const MenuDetailLoaded(this.menu);
-
   @override
   List<Object?> get props => [menu];
 }
