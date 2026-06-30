@@ -8,11 +8,8 @@ class MenusDataSource {
   final ApiClient _client;
   MenusDataSource(this._client);
 
-  // user_id is passed so the backend can populate vote_summary.user_vote.
-  // Until auth lands, caller passes the hardcoded dev user id.
-  Future<MenuDetail> getMenuDetail(int menuId, {int? userId}) async {
-    final query = userId != null ? '?user_id=$userId' : '';
-    final json = await _client.get('/menus/$menuId$query');
+  Future<MenuDetail> getMenuDetail(int menuId) async {
+    final json = await _client.get('/menus/$menuId');
     return MenuDetail.fromJson(json as Map<String, dynamic>);
   }
 
@@ -50,8 +47,8 @@ class MenusDataSource {
     return GroceryList.fromJson(json as Map<String, dynamic>);
   }
 
-  Future<List<ActiveMenuSummary>> listActiveMenus({required int userId}) async {
-    final json = await _client.get('/menus/active?user_id=$userId') as List<dynamic>;
+  Future<List<ActiveMenuSummary>> listActiveMenus() async {
+    final json = await _client.get('/menus/active') as List<dynamic>;
     return json
         .map((e) => ActiveMenuSummary.fromJson(e as Map<String, dynamic>))
         .toList();
@@ -60,11 +57,9 @@ class MenusDataSource {
   Future<MenuRecipe> addRecipeToMenu({
     required int menuId,
     required int recipeId,
-    required int userId,
   }) async {
     final json = await _client.post('/menus/$menuId/recipes', {
       'recipe_id': recipeId,
-      'added_by_user_id': userId,
     });
     return MenuRecipe.fromJson(json as Map<String, dynamic>);
   }
@@ -72,12 +67,11 @@ class MenusDataSource {
   Future<void> castVote({
     required int menuId,
     required int menuRecipeId,
-    required int userId,
     required VoteValue value,
   }) async {
     await _client.post(
       '/menus/$menuId/recipes/$menuRecipeId/vote',
-      {'user_id': userId, 'vote_value': value.name},
+      {'vote_value': value.name},
     );
   }
 }

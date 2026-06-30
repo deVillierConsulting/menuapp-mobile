@@ -5,6 +5,8 @@ import 'cubits/group_detail/group_detail_cubit.dart';
 import 'cubits/menu_detail/menu_detail_cubit.dart';
 import 'cubits/recipe_detail/recipe_detail_cubit.dart';
 import 'cubits/recipes/recipes_cubit.dart';
+import 'data/api_client.dart';
+import 'data/auth_data_source.dart';
 import 'data/groups_data_source.dart';
 import 'data/menus_data_source.dart';
 import 'data/recipes_data_source.dart';
@@ -22,6 +24,8 @@ import 'ui/recipes/recipes_screen.dart';
 /// of navigation structure with no hidden state.
 GoRouter buildRouter({
   required AppSession session,
+  required ApiClient apiClient,
+  required AuthDataSource authDataSource,
   required GroupsDataSource groupsDataSource,
   required MenusDataSource menusDataSource,
   required RecipesDataSource recipesDataSource,
@@ -35,7 +39,12 @@ GoRouter buildRouter({
     // so we can drive our own transition between them.
     StatefulShellRoute(
       builder: (context, state, navigationShell) =>
-          AppShell(navigationShell: navigationShell, session: session),
+          AppShell(
+            navigationShell: navigationShell,
+            session: session,
+            apiClient: apiClient,
+            authDataSource: authDataSource,
+          ),
       navigatorContainerBuilder: (context, navigationShell, children) =>
           AnimatedBranchContainer(
             currentIndex: navigationShell.currentIndex,
@@ -48,7 +57,6 @@ GoRouter buildRouter({
               path: '/groups',
               builder: (context, state) => GroupsScreen(
                 dataSource: groupsDataSource,
-                session: session,
               ),
             ),
           ],
@@ -59,7 +67,7 @@ GoRouter buildRouter({
               path: '/recipes',
               builder: (context, state) => BlocProvider(
                 create: (_) => RecipesCubit(dataSource: recipesDataSource),
-                child: RecipesScreen(menusDataSource: menusDataSource, session: session),
+                child: RecipesScreen(menusDataSource: menusDataSource),
               ),
             ),
           ],
@@ -79,6 +87,7 @@ GoRouter buildRouter({
           child: GroupDetailScreen(
             groupId: groupId,
             menusDataSource: menusDataSource,
+            groupsDataSource: groupsDataSource,
             session: session,
           ),
         );
@@ -92,13 +101,11 @@ GoRouter buildRouter({
           create: (_) => MenuDetailCubit(
             dataSource: menusDataSource,
             menuId: menuId,
-            session: session,
           ),
           child: MenuDetailScreen(
             menuId: menuId,
             menusDataSource: menusDataSource,
             recipesDataSource: recipesDataSource,
-            session: session,
           ),
         );
       },
@@ -128,7 +135,6 @@ GoRouter buildRouter({
           child: RecipeDetailScreen(
             recipeId: recipeId,
             menusDataSource: menusDataSource,
-            session: session,
           ),
         );
       },

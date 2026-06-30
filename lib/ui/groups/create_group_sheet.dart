@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import '../../cubits/create_group/create_group_cubit.dart';
 import '../../cubits/create_group/create_group_state.dart';
 import '../../data/groups_data_source.dart';
-import '../../session/app_session.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radii.dart';
 import '../../theme/app_typography.dart';
@@ -12,7 +11,6 @@ import '../../theme/app_typography.dart';
 Future<void> showCreateGroupSheet(
   BuildContext context, {
   required GroupsDataSource dataSource,
-  required AppSession session,
 }) {
   return showModalBottomSheet(
     context: context,
@@ -22,7 +20,7 @@ Future<void> showCreateGroupSheet(
       borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadii.xxl)),
     ),
     builder: (_) => BlocProvider(
-      create: (_) => CreateGroupCubit(dataSource: dataSource, session: session),
+      create: (_) => CreateGroupCubit(dataSource: dataSource),
       child: const _CreateGroupSheetBody(),
     ),
   );

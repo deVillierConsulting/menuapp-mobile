@@ -6,7 +6,6 @@ import '../../cubits/groups/groups_cubit.dart';
 import '../../cubits/groups/groups_state.dart';
 import '../../data/groups_data_source.dart';
 import '../../data/models/group.dart';
-import '../../session/app_session.dart';
 import '../../widgets/cards/group_card.dart';
 import '../../widgets/states/empty_state.dart';
 import '../../widgets/states/error_state.dart';
@@ -15,14 +14,12 @@ import 'create_group_sheet.dart';
 
 class GroupsScreen extends StatelessWidget {
   final GroupsDataSource dataSource;
-  final AppSession session;
-  const GroupsScreen({super.key, required this.dataSource, required this.session});
+  const GroupsScreen({super.key, required this.dataSource});
 
   void _openCreateSheet(BuildContext context) async {
     await showCreateGroupSheet(
       context,
       dataSource: dataSource,
-      session: session,
     );
     if (context.mounted) {
       context.read<GroupsCubit>().loadGroups();

@@ -1,17 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../data/groups_data_source.dart';
-import '../../session/app_session.dart';
 import 'create_group_state.dart';
 
 class CreateGroupCubit extends Cubit<CreateGroupState> {
   final GroupsDataSource _dataSource;
-  final AppSession _session;
 
-  CreateGroupCubit({
-    required GroupsDataSource dataSource,
-    required AppSession session,
-  })  : _dataSource = dataSource,
-        _session = session,
+  CreateGroupCubit({required GroupsDataSource dataSource})
+      : _dataSource = dataSource,
         super(const CreateGroupIdle());
 
   void setName(String value) {
@@ -28,7 +23,6 @@ class CreateGroupCubit extends Cubit<CreateGroupState> {
       final group = await _dataSource.createGroup(
         name: current.name.trim(),
         threshold: 1,
-        ownerId: _session.userId,
       );
       emit(CreateGroupSuccess(group.groupId));
     } catch (e) {

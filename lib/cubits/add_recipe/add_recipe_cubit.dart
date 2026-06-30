@@ -1,13 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../data/menus_data_source.dart';
 import '../../data/recipes_data_source.dart';
-import '../../session/app_session.dart';
 import 'add_recipe_state.dart';
 
 class AddRecipeCubit extends Cubit<AddRecipeState> {
   final RecipesDataSource _recipesDataSource;
   final MenusDataSource _menusDataSource;
-  final AppSession _session;
   final int menuId;
   final Set<int> _initiallyAdded;
 
@@ -15,11 +13,9 @@ class AddRecipeCubit extends Cubit<AddRecipeState> {
     required this.menuId,
     required RecipesDataSource recipesDataSource,
     required MenusDataSource menusDataSource,
-    required AppSession session,
     required Set<int> alreadyAddedRecipeIds,
   })  : _recipesDataSource = recipesDataSource,
         _menusDataSource = menusDataSource,
-        _session = session,
         _initiallyAdded = alreadyAddedRecipeIds,
         super(const AddRecipeLoading());
 
@@ -50,7 +46,6 @@ class AddRecipeCubit extends Cubit<AddRecipeState> {
       await _menusDataSource.addRecipeToMenu(
         menuId: menuId,
         recipeId: recipeId,
-        userId: _session.userId,
       );
     } catch (_) {
       final ids = {...current.addedRecipeIds}..remove(recipeId);

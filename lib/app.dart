@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'data/api_client.dart';
+import 'data/auth_data_source.dart';
 import 'data/groups_data_source.dart';
 import 'data/menus_data_source.dart';
 import 'data/recipes_data_source.dart';
@@ -22,6 +23,7 @@ class _MenuAppState extends State<MenuApp> {
   // If they lived in build(), every rebuild would create new instances and
   // reset AppSession back to its default — killing the dev user switcher.
   late final ApiClient _apiClient;
+  late final AuthDataSource _authDataSource;
   late final GroupsDataSource _groupsDataSource;
   late final MenusDataSource _menusDataSource;
   late final RecipesDataSource _recipesDataSource;
@@ -33,18 +35,32 @@ class _MenuAppState extends State<MenuApp> {
     super.initState();
     _apiClient = ApiClient(baseUrl: 'http://192.168.1.105:8000');
 
+    _authDataSource    = AuthDataSource(_apiClient);
     _groupsDataSource  = GroupsDataSource(_apiClient);
     _menusDataSource   = MenusDataSource(_apiClient);
     _recipesDataSource = RecipesDataSource(_apiClient);
 
-    _session = AppSession(userId: 1, userName: 'Andrew');
+    // Placeholder session — _init() overwrites it once the token lands.
+    _session = AppSession(userId: 0, userName: '');
 
     _router = buildRouter(
       session:           _session,
+      apiClient:         _apiClient,
+      authDataSource:    _authDataSource,
       groupsDataSource:  _groupsDataSource,
       menusDataSource:   _menusDataSource,
       recipesDataSource: _recipesDataSource,
     );
+
+    _init();
+  }
+
+  Future<void> _init() async {
+    // Dev-login: exchange a known email for a JWT and populate the session.
+    // When real auth arrives this becomes a proper sign-in flow.
+    final result = await _authDataSource.devLogin('andrew@menuapp.dev');
+    _apiClient.setToken(result.accessToken);
+    _session.switchUser(userId: result.userId, userName: result.userName);
   }
 
   @override

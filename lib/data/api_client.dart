@@ -13,10 +13,17 @@ class ApiException implements Exception {
 class ApiClient {
   final String baseUrl;
   final http.Client _client;
+  String? _token;
 
   ApiClient({required this.baseUrl}) : _client = http.Client();
 
-  Map<String, String> get _headers => {'Content-Type': 'application/json'};
+  void setToken(String token) => _token = token;
+  void clearToken() => _token = null;
+
+  Map<String, String> get _headers => {
+        'Content-Type': 'application/json',
+        if (_token != null) 'Authorization': 'Bearer $_token',
+      };
 
   Future<dynamic> get(String path) => _request('GET', path);
   Future<dynamic> post(String path, Map<String, dynamic> body) =>

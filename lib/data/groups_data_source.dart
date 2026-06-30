@@ -16,12 +16,10 @@ class GroupsDataSource {
   Future<Group> createGroup({
     required String name,
     required int threshold,
-    required int ownerId,
   }) async {
     final json = await _client.post('/groups/', {
       'name': name,
       'threshold': threshold,
-      'owner_id': ownerId,
     });
     return Group.fromJson(json as Map<String, dynamic>);
   }
@@ -29,6 +27,10 @@ class GroupsDataSource {
   Future<GroupDetail> getGroupDetail(int groupId) async {
     final json = await _client.get('/groups/$groupId');
     return GroupDetail.fromJson(json as Map<String, dynamic>);
+  }
+
+  Future<void> removeMember(int groupId, int userId) async {
+    await _client.delete('/groups/$groupId/members/$userId');
   }
 
   Future<List<Menu>> getMenusForGroup(int groupId) async {

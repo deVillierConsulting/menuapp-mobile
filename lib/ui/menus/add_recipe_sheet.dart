@@ -5,7 +5,6 @@ import '../../cubits/add_recipe/add_recipe_state.dart';
 import '../../data/menus_data_source.dart';
 import '../../data/models/recipe.dart';
 import '../../data/recipes_data_source.dart';
-import '../../session/app_session.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radii.dart';
 import '../../theme/app_typography.dart';
@@ -17,7 +16,6 @@ Future<bool> showAddRecipeSheet(
   required Set<int> alreadyAddedRecipeIds,
   required RecipesDataSource recipesDataSource,
   required MenusDataSource menusDataSource,
-  required AppSession session,
 }) async {
   final added = await showModalBottomSheet<bool>(
     context: context,
@@ -31,7 +29,6 @@ Future<bool> showAddRecipeSheet(
         menuId: menuId,
         recipesDataSource: recipesDataSource,
         menusDataSource: menusDataSource,
-        session: session,
         alreadyAddedRecipeIds: alreadyAddedRecipeIds,
       )..load(),
       child: const _AddRecipeSheetBody(),

@@ -4,10 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../cubits/group_detail/group_detail_cubit.dart';
 import '../../cubits/group_detail/group_detail_state.dart';
+import '../../data/groups_data_source.dart';
 import '../../data/menus_data_source.dart';
 import '../../data/models/menu.dart';
-import '../../session/app_session.dart';
 import '../../data/models/user.dart';
+import '../../session/app_session.dart';
 import '../menus/create_menu_sheet.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radii.dart';
@@ -16,15 +17,18 @@ import '../../widgets/cards/app_card.dart';
 import '../../widgets/nav/app_page_header.dart';
 import '../../widgets/states/empty_state.dart';
 import '../../widgets/states/error_state.dart';
+import 'group_members_screen.dart';
 
 class GroupDetailScreen extends StatefulWidget {
   final int groupId;
   final MenusDataSource menusDataSource;
+  final GroupsDataSource groupsDataSource;
   final AppSession session;
   const GroupDetailScreen({
     super.key,
     required this.groupId,
     required this.menusDataSource,
+    required this.groupsDataSource,
     required this.session,
   });
 
@@ -56,6 +60,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             return _Loaded(
               state: state,
               menusDataSource: widget.menusDataSource,
+              groupsDataSource: widget.groupsDataSource,
               groupId: widget.groupId,
               session: widget.session,
             );
@@ -70,13 +75,15 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
 class _Loaded extends StatelessWidget {
   final GroupDetailLoaded state;
   final MenusDataSource menusDataSource;
-  final int groupId;
+  final GroupsDataSource groupsDataSource;
   final AppSession session;
+  final int groupId;
   const _Loaded({
     required this.state,
     required this.menusDataSource,
-    required this.groupId,
+    required this.groupsDataSource,
     required this.session,
+    required this.groupId,
   });
 
   @override
@@ -106,10 +113,38 @@ class _Loaded extends StatelessWidget {
         SliverPadding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
           sliver: SliverList.list(children: [
-            _MemberRow(
-              members: state.group.members,
-              threshold: state.group.threshold,
-              showThreshold: state.group.showThreshold,
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: AppRadii.smAll,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => BlocProvider.value(
+                      value: context.read<GroupDetailCubit>(),
+                      child: GroupMembersScreen(
+                        groupId: groupId,
+                        dataSource: groupsDataSource,
+                        session: session,
+                      ),
+                    ),
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: _MemberRow(
+                          members: state.group.members,
+                          threshold: state.group.threshold,
+                          showThreshold: state.group.showThreshold,
+                        ),
+                      ),
+                      Icon(Icons.chevron_right_rounded, color: AppColors.ink4, size: 20),
+                    ],
+                  ),
+                ),
+              ),
             ),
             const SizedBox(height: 24),
             if (state.currentMenu != null) ...[
