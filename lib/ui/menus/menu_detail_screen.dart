@@ -329,9 +329,12 @@ class _FinalizeButton extends StatelessWidget {
   }
 }
 
-// Swipe right → yes, swipe left → no, veto button explicit on card.
-// Drag past _kThreshold to commit a vote; release before it to snap back.
-const double _kThreshold = 100.0;
+// Swipe right → green panel grows from right edge → tap check to vote yes.
+// Swipe left  → red panel grows from left edge → tap X to vote no.
+// Releasing past 40% of panel width holds the panel open.
+// Tap the card content (not the button) to dismiss without voting.
+const double _kPanelMax = 72.0;  // max panel width
+const double _kDragMax  = 110.0; // drag distance that reaches full panel
 
 class _RecipeCard extends StatefulWidget {
   final MenuRecipe menuRecipe;
@@ -344,97 +347,149 @@ class _RecipeCard extends StatefulWidget {
 
 class _RecipeCardState extends State<_RecipeCard>
     with SingleTickerProviderStateMixin {
+  // _dragX drives panel width. Positive = right (yes), negative = left (no).
   double _dragX = 0;
-  late final AnimationController _snapCtrl;
-  late Animation<double> _snapAnim;
+  bool   _held  = false; // panel is held open after finger lift
+  late final AnimationController _animCtrl;
+  late Animation<double> _anim;
 
   @override
   void initState() {
     super.initState();
-    _snapCtrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 250),
-    );
+    _animCtrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 200));
   }
 
   @override
   void dispose() {
-    _snapCtrl.dispose();
+    _animCtrl.dispose();
     super.dispose();
   }
 
   void _onDragUpdate(DragUpdateDetails d) {
-    setState(() => _dragX += d.delta.dx);
+    if (_held) return;
+    setState(() => _dragX = (_dragX + d.delta.dx).clamp(-_kDragMax, _kDragMax));
   }
 
   void _onDragEnd(DragEndDetails d) {
-    if (_dragX.abs() >= _kThreshold) {
-      final vote = _dragX > 0 ? VoteValue.yes : VoteValue.no;
-      HapticFeedback.mediumImpact();
-      context.read<MenuDetailCubit>().castVote(
-            widget.menuRecipe.menuRecipeId,
-            vote,
-          );
+    final ratio = _dragX.abs() / _kDragMax;
+    if (ratio >= 0.4) {
+      // Snap to full width and hold.
+      final target = _dragX > 0 ? _kDragMax : -_kDragMax;
+      _animate(to: target);
+      setState(() => _held = true);
+    } else {
+      _dismiss();
     }
-    // Snap back to centre regardless.
-    _snapAnim = Tween<double>(begin: _dragX, end: 0).animate(
-      CurvedAnimation(parent: _snapCtrl, curve: Curves.elasticOut),
-    )..addListener(() => setState(() => _dragX = _snapAnim.value));
-    _snapCtrl.forward(from: 0);
   }
 
-  // How far along (0→1) the drag is toward the threshold.
-  double get _progress => (_dragX.abs() / _kThreshold).clamp(0.0, 1.0);
-  bool get _goingRight => _dragX >= 0;
+  void _dismiss() {
+    setState(() => _held = false);
+    _animate(to: 0);
+  }
+
+  void _animate({required double to}) {
+    _animCtrl.stop();
+    _anim = Tween<double>(begin: _dragX, end: to)
+        .animate(CurvedAnimation(parent: _animCtrl, curve: Curves.easeOut))
+      ..addListener(() => setState(() => _dragX = _anim.value));
+    _animCtrl.forward(from: 0);
+  }
+
+  void _commitVote(VoteValue vote) {
+    HapticFeedback.mediumImpact();
+    context.read<MenuDetailCubit>().castVote(
+        widget.menuRecipe.menuRecipeId, vote);
+    _dismiss();
+  }
+
+  double get _panelWidth =>
+      (_dragX.abs() / _kDragMax * _kPanelMax).clamp(0.0, _kPanelMax);
+  double get _iconOpacity =>
+      ((_panelWidth / _kPanelMax - 0.3) / 0.7).clamp(0.0, 1.0);
 
   @override
   Widget build(BuildContext context) {
-    final userVote = widget.menuRecipe.voteSummary.userVote;
+    final userVote  = widget.menuRecipe.voteSummary.userVote;
+    final showRight = widget.votingEnabled && _dragX > 0;
+    final showLeft  = widget.votingEnabled && _dragX < 0;
+    final pw        = _panelWidth;
 
     return GestureDetector(
       onHorizontalDragUpdate: widget.votingEnabled ? _onDragUpdate : null,
-      onHorizontalDragEnd: widget.votingEnabled ? _onDragEnd : null,
-      onTap: () => context.push('/recipes/${widget.menuRecipe.recipe.recipeId}'),
-      child: Transform.translate(
-        offset: Offset(_dragX, 0),
-        child: Stack(
-          children: [
-            _CardContent(
-              menuRecipe: widget.menuRecipe,
-              userVote: userVote,
-              votingEnabled: widget.votingEnabled,
-            ),
+      onHorizontalDragEnd:   widget.votingEnabled ? _onDragEnd   : null,
+      onTap: () {
+        if (_held) { _dismiss(); return; }
+        context.push('/recipes/${widget.menuRecipe.recipe.recipeId}');
+      },
+      child: Stack(
+        children: [
+          // Card content with extra padding on whichever side has the panel,
+          // so the title/photo compress rather than hiding under the panel.
+          _CardContent(
+            menuRecipe: widget.menuRecipe,
+            userVote: userVote,
+            votingEnabled: widget.votingEnabled,
+            extraRightPadding: showRight ? pw : 0,
+            extraLeftPadding:  showLeft  ? pw : 0,
+          ),
 
-            // Coloured overlay fades in as you drag.
-            if (_dragX != 0)
-              Positioned.fill(
+          // Yes panel — right edge.
+          if (showRight && pw > 0)
+            Positioned(
+              right: 0, top: 0, bottom: 0,
+              child: GestureDetector(
+                onTap: () => _commitVote(VoteValue.yes),
                 child: ClipRRect(
-                  borderRadius: AppRadii.lgAll,
-                  child: AnimatedContainer(
-                    duration: Duration.zero,
-                    color: (_goingRight ? AppColors.ok : AppColors.danger)
-                        .withValues(alpha: _progress * 0.18),
-                    child: Align(
-                      alignment: _goingRight
-                          ? Alignment.centerLeft
-                          : Alignment.centerRight,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 18),
-                        child: Icon(
-                          _goingRight
-                              ? LucideIcons.check
-                              : LucideIcons.x,
-                          color: (_goingRight ? AppColors.ok : AppColors.danger)
-                              .withValues(alpha: _progress),
-                          size: 28,
+                  borderRadius: BorderRadius.only(
+                    topRight:    AppRadii.lgAll.topRight,
+                    bottomRight: AppRadii.lgAll.bottomRight,
+                  ),
+                  child: SizedBox(
+                    width: pw,
+                    child: ColoredBox(
+                      color: AppColors.ok,
+                      child: Center(
+                        child: Opacity(
+                          opacity: _iconOpacity,
+                          child: const Icon(LucideIcons.check,
+                              color: Colors.white, size: 22),
                         ),
                       ),
                     ),
                   ),
                 ),
               ),
-          ],
-        ),
+            ),
+
+          // No panel — left edge.
+          if (showLeft && pw > 0)
+            Positioned(
+              left: 0, top: 0, bottom: 0,
+              child: GestureDetector(
+                onTap: () => _commitVote(VoteValue.no),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.only(
+                    topLeft:    AppRadii.lgAll.topLeft,
+                    bottomLeft: AppRadii.lgAll.bottomLeft,
+                  ),
+                  child: SizedBox(
+                    width: pw,
+                    child: ColoredBox(
+                      color: AppColors.danger,
+                      child: Center(
+                        child: Opacity(
+                          opacity: _iconOpacity,
+                          child: const Icon(LucideIcons.x,
+                              color: Colors.white, size: 22),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -444,10 +499,14 @@ class _CardContent extends StatelessWidget {
   final MenuRecipe menuRecipe;
   final VoteValue? userVote;
   final bool votingEnabled;
+  final double extraRightPadding;
+  final double extraLeftPadding;
   const _CardContent({
     required this.menuRecipe,
     required this.userVote,
     this.votingEnabled = true,
+    this.extraRightPadding = 0,
+    this.extraLeftPadding  = 0,
   });
 
   // Border tint shows the user's committed vote at rest.
@@ -477,7 +536,8 @@ class _CardContent extends StatelessWidget {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(14),
+        padding: EdgeInsets.fromLTRB(
+          14 + extraLeftPadding, 14, 14 + extraRightPadding, 14),
         child: Row(
           children: [
             // Photo placeholder
