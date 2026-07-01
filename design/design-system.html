@@ -303,10 +303,10 @@ p{ margin:0 0 2.5mm 0; }
   </div>
 
   <div class="meta">
-    <div><div class="mk">Version</div><div class="mv">0.1</div></div>
+    <div><div class="mk">Version</div><div class="mv">0.2</div></div>
     <div><div class="mk">Platform</div><div class="mv">Flutter · iOS · Android</div></div>
     <div><div class="mk">Type</div><div class="mv">System UI · System Mono</div></div>
-    <div><div class="mk">Updated</div><div class="mv">2026-06</div></div>
+    <div><div class="mk">Updated</div><div class="mv">2026-06-30</div></div>
   </div>
 </div>
 
@@ -333,7 +333,7 @@ p{ margin:0 0 2.5mm 0; }
     <div><span class="tn">15</span> Tokens &amp; Flutter theme</div>
     <div><span class="tn">08</span> Buttons, inputs &amp; controls</div>
     <div><span class="tn">16</span> Do &amp; Don't</div>
-    <div><span class="tn">A</span> Appendix — screen specs</div>
+    <div><span class="tn">A</span> Appendix — screen specs (8 shipped)</div>
     <div><span class="tn">B</span> Appendix — build-agent handoff brief</div>
   </div>
 
@@ -463,8 +463,14 @@ p{ margin:0 0 2.5mm 0; }
     <div style="font-size:16pt; font-weight:700; letter-spacing:-0.2px;">Heading 2 — card &amp; section titles</div>
     <div class="small mono" style="margin-top:1mm">System UI · 16/22 · w700 · Flutter: titleLarge</div>
     <hr class="hair">
-    <div style="font-size:15pt; font-weight:400; color:var(--ink-2); line-height:1.5">Body — the default reading size for recipe descriptions, group member lists, and longer content. Comfortable measure with generous line-height.</div>
-    <div class="small mono" style="margin-top:1mm">System UI · 15/22 · w400 · ink-2 · Flutter: bodyMedium</div>
+    <div style="font-size:15pt; font-weight:400; color:var(--ink-2); line-height:1.5">Body — the default reading size for recipe descriptions, group member lists, and longer content.</div>
+    <div class="small mono" style="margin-top:1mm">System UI · 15/22 · w400 · ink-2 · AppTextStyles.body</div>
+    <hr class="hair">
+    <div style="font-size:15pt; font-weight:600; line-height:1.5">Body Medium — primary line in list rows, card titles, emphasized body copy.</div>
+    <div class="small mono" style="margin-top:1mm">System UI · 15/22 · w600 · ink · AppTextStyles.bodyMedium</div>
+    <hr class="hair">
+    <div style="font-size:15pt; font-weight:600; line-height:1.5; color:#fff; background:var(--accent); display:inline-block; padding:2mm 5mm; border-radius:12px">Button label</div>
+    <div class="small mono" style="margin-top:1mm">System UI · 15/22 · w600 · surface (white) · letterSpacing −0.1 · AppTextStyles.button</div>
     <hr class="hair">
     <div style="font-size:12pt; font-weight:600; letter-spacing:0.3px; color:var(--ink-3);">Caption — metadata, timestamps</div>
     <div class="small mono" style="margin-top:1mm">System UI · 12/16 · w600 · ink-3 · Flutter: bodySmall</div>
@@ -472,8 +478,11 @@ p{ margin:0 0 2.5mm 0; }
     <div style="font-size:11pt; font-weight:600; letter-spacing:0.4px; text-transform:uppercase; color:var(--ink-3);">Label — overlines &amp; field labels</div>
     <div class="small mono" style="margin-top:1mm">System UI · 11/14 · w600 · uppercase · +0.4 tracking · Flutter: labelSmall</div>
     <hr class="hair">
-    <div class="mono" style="font-size:11pt; font-weight:600; color:var(--accent-deep);">3/5 votes  ·  threshold: 4  ·  ID-8f21</div>
-    <div class="small mono" style="margin-top:1mm">System Mono · vote counts, thresholds, IDs, numeric data — always tabular, always mono</div>
+    <div class="mono" style="font-size:14pt; font-weight:600; color:var(--ink);">3/5 votes  ·  threshold: 4</div>
+    <div class="small mono" style="margin-top:1mm">System Mono · 14/— · w600 · ink · AppTextStyles.mono — vote counts, thresholds, numeric data</div>
+    <hr class="hair">
+    <div class="mono" style="font-size:12pt; font-weight:500; color:var(--ink-2);">ID-8f21  ·  396.9 g  ·  1 Tbsp</div>
+    <div class="small mono" style="margin-top:1mm">System Mono · 12/— · w500 · ink-2 · AppTextStyles.monoSmall — secondary numeric labels, quantities, IDs</div>
   </div>
   <p class="small" style="margin-top:3mm"><b>Flutter:</b> override the default TextTheme in <span class="mono">app_typography.dart</span>. Set <span class="mono">height</span> from (line-height ÷ size). For mono: wrap in a <span class="mono">Text</span> with <span class="mono">style: AppTypography.mono</span> — a standalone <span class="mono">TextStyle</span> referencing <span class="mono">fontFamily: 'Courier'</span> (Flutter's cross-platform monospace fallback, or use <span class="mono">google_fonts</span> to load Roboto Mono explicitly).</p>
 </div>
@@ -683,8 +692,12 @@ p{ margin:0 0 2.5mm 0; }
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--ink-4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
           <span style="font-size:6pt; font-weight:600; color:var(--ink-4)">Recipes</span>
         </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:1mm">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--ink-4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          <span style="font-size:6pt; font-weight:600; color:var(--ink-4)">Shop</span>
+        </div>
       </div>
-      <div class="spec" style="margin-top:3mm"><b>Flutter:</b> <span class="mono">AppNavBar</span> custom widget. White pill, e2 shadow, border. Active = ink icon + accent label dot indicator. Inactive = ink-4 icon. 2–3 destinations for v1.</div>
+      <div class="spec" style="margin-top:3mm"><b>Flutter:</b> <span class="mono">AppNavBar</span> custom widget. White pill, e2 shadow, border. Active = ink icon + accent label. Inactive = ink-4 icon. <b>v1 has 3 tabs: Groups (index 0), Recipes (index 1), Shop (index 2).</b> Nav is implemented with go_router <span class="mono">StatefulShellRoute</span> + <span class="mono">StatefulShellBranch</span> — each branch preserves its own stack and scroll position independently. <span class="mono">AppShell</span> widget wraps all branches and owns the <span class="mono">AppNavBar</span>.</div>
     </div>
   </div>
 </div>
@@ -828,6 +841,7 @@ p{ margin:0 0 2.5mm 0; }
   <span class="k">static const</span> teal        = Color(<span class="p">0xFF0D9488</span>);
   <span class="k">static const</span> tealDeep    = Color(<span class="p">0xFF0F766E</span>);
   <span class="k">static const</span> teal50      = Color(<span class="p">0xFFF0FDFA</span>);
+  <span class="k">static const</span> teal200     = Color(<span class="p">0xFF99F6E4</span>);  <span class="c">// muted teal borders</span>
 
   <span class="c">// Semantic states</span>
   <span class="k">static const</span> ok       = Color(<span class="p">0xFF16A34A</span>);
@@ -838,14 +852,43 @@ p{ margin:0 0 2.5mm 0; }
   <span class="k">static const</span> dangerBg = Color(<span class="p">0xFFFEE2E2</span>);
 }</div>
 
+  <h4 style="margin-top:6mm">Flutter — <span class="mono">lib/theme/app_typography.dart</span></h4>
+  <div class="codeblock"><span class="k">class</span> <span class="p">AppTextStyles</span> {
+  <span class="k">static const</span> display    = TextStyle(fontSize:<span class="p">34</span>, fontWeight:FontWeight.w800, letterSpacing:<span class="p">-1.6</span>, color:AppColors.ink);
+  <span class="k">static const</span> h1         = TextStyle(fontSize:<span class="p">22</span>, fontWeight:FontWeight.w800, letterSpacing:<span class="p">-0.6</span>, color:AppColors.ink);
+  <span class="k">static const</span> h2         = TextStyle(fontSize:<span class="p">16</span>, fontWeight:FontWeight.w700, letterSpacing:<span class="p">-0.2</span>, color:AppColors.ink);
+  <span class="k">static const</span> body       = TextStyle(fontSize:<span class="p">15</span>, fontWeight:FontWeight.w400, color:AppColors.ink2);
+  <span class="k">static const</span> bodyMedium = TextStyle(fontSize:<span class="p">15</span>, fontWeight:FontWeight.w600, color:AppColors.ink);   <span class="c">// primary list lines</span>
+  <span class="k">static const</span> button     = TextStyle(fontSize:<span class="p">15</span>, fontWeight:FontWeight.w600, letterSpacing:<span class="p">-0.1</span>, color:AppColors.surface);
+  <span class="k">static const</span> caption    = TextStyle(fontSize:<span class="p">12</span>, fontWeight:FontWeight.w500, color:AppColors.ink3);
+  <span class="k">static const</span> label      = TextStyle(fontSize:<span class="p">11</span>, fontWeight:FontWeight.w600, letterSpacing:<span class="p">0.4</span>, color:AppColors.ink3);
+  <span class="k">static const</span> mono       = TextStyle(fontFamily:<span class="s">'Courier'</span>, fontSize:<span class="p">14</span>, fontWeight:FontWeight.w600, color:AppColors.ink);
+  <span class="k">static const</span> monoSmall  = TextStyle(fontFamily:<span class="s">'Courier'</span>, fontSize:<span class="p">12</span>, fontWeight:FontWeight.w500, color:AppColors.ink2);
+}</div>
+
   <h4 style="margin-top:6mm">Flutter — <span class="mono">lib/theme/app_radii.dart</span></h4>
   <div class="codeblock"><span class="k">class</span> <span class="p">AppRadii</span> {
+  <span class="c">// Raw radius values</span>
   <span class="k">static const</span> xs   = <span class="p"> 8.0</span>;  <span class="c">// tags, small chips</span>
-  <span class="k">static const</span> sm   = <span class="p">12.0</span>;  <span class="c">// buttons, text fields</span>
+  <span class="k">static const</span> sm   = <span class="p">12.0</span>;  <span class="c">// buttons, text fields, item tiles</span>
   <span class="k">static const</span> md   = <span class="p">16.0</span>;  <span class="c">// icon containers</span>
   <span class="k">static const</span> lg   = <span class="p">20.0</span>;  <span class="c">// content cards</span>
   <span class="k">static const</span> xxl  = <span class="p">32.0</span>;  <span class="c">// sheets, hero cards</span>
   <span class="k">static const</span> full = <span class="p">999.0</span>; <span class="c">// pills, avatars, FAB</span>
+
+  <span class="c">// Convenience BorderRadius constructors — use these in widget files</span>
+  <span class="k">static</span> BorderRadius circular(<span class="k">double</span> r) =&gt; BorderRadius.circular(r);
+  <span class="k">static const</span> xsAll  = BorderRadius.all(Radius.circular(xs));
+  <span class="k">static const</span> smAll  = BorderRadius.all(Radius.circular(sm));
+  <span class="k">static const</span> mdAll  = BorderRadius.all(Radius.circular(md));
+  <span class="k">static const</span> lgAll  = BorderRadius.all(Radius.circular(lg));
+  <span class="k">static const</span> xxlAll = BorderRadius.all(Radius.circular(xxl));
+  <span class="k">static const</span> fullAll = BorderRadius.all(Radius.circular(full));
+
+  <span class="c">// Sheet: round top corners only</span>
+  <span class="k">static const</span> sheetTop = BorderRadius.only(
+    topLeft: Radius.circular(xxl), topRight: Radius.circular(xxl),
+  );
 }</div>
 
   <h4 style="margin-top:6mm">Flutter — <span class="mono">lib/theme/app_shadows.dart</span></h4>
@@ -901,7 +944,7 @@ p{ margin:0 0 2.5mm 0; }
     <div class="dd dont">
       <h5><span class="ic"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#fff" stroke-width="3"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg></span>Don't</h5>
       <ul>
-        <li>No <span class="mono">ElevatedButton</span>, <span class="mono">FloatingActionButton</span>, <span class="mono">AppBar</span>, <span class="mono">BottomNavigationBar</span> from Material.</li>
+        <li>No <span class="mono">ElevatedButton</span>, <span class="mono">AppBar</span>, <span class="mono">BottomNavigationBar</span> from Material. (<b>Exception:</b> <span class="mono">FloatingActionButton.extended</span> is used on Menu Detail for the "Add recipe" action — acceptable while a custom FAB widget is deferred.)</li>
         <li>No inline <span class="mono">BoxDecoration</span> in screen files — extract to a named widget.</li>
         <li>No blur, no translucency, no <span class="mono">BackdropFilter</span>.</li>
         <li>No single-offset or colored drop shadows — always 2-layer, low alpha.</li>
@@ -918,47 +961,322 @@ p{ margin:0 0 2.5mm 0; }
 <div class="sec page-break">
   <div class="eyebrow">Appendix · A</div>
   <h2>Screen specs — v1</h2>
-  <p class="lead">The screens that must exist before v1 ships. Each is a build ticket. Add renders as they're designed.</p>
+  <p class="lead">All screens shipped or in active development. Routes match go_router definitions in <span class="mono">lib/router.dart</span>. Cubit + state files live under <span class="mono">lib/cubits/</span>; screens under <span class="mono">lib/ui/</span>.</p>
 
   <div class="row top avoid" style="gap:8mm; margin-bottom:8mm">
-    <div><div class="phone"><div class="island"></div><div class="screen"><div class="screen-empty">Groups list</div></div></div><div class="small" style="text-align:center;margin-top:2.5mm">Groups list</div></div>
+    <div><div class="phone"><div class="island"></div><div class="screen" style="background:var(--bg)">
+      <div style="padding:7mm 3.5mm 0">
+        <div style="font-size:11pt;font-weight:800;letter-spacing:-.5px;margin-bottom:3mm">Groups</div>
+        <!-- group card -->
+        <div style="background:#fff;border:1px solid var(--line-2);border-radius:10px;padding:2.5mm;margin-bottom:2mm;display:flex;align-items:center;gap:2mm">
+          <div style="width:7mm;height:7mm;border-radius:999px;background:var(--accent-200);display:flex;align-items:center;justify-content:center;font-size:6pt;font-weight:700;color:var(--accent-deep);flex:none">S</div>
+          <div style="flex:1"><div style="font-size:7pt;font-weight:700">Sunday Dinners</div><div style="font-size:5.5pt;color:var(--ink-3)">4 members · active menu</div></div>
+          <svg viewBox="0 0 24 24" width="8" height="8" fill="none" stroke="var(--ink-4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </div>
+        <div style="background:#fff;border:1px solid var(--line-2);border-radius:10px;padding:2.5mm;display:flex;align-items:center;gap:2mm">
+          <div style="width:7mm;height:7mm;border-radius:999px;background:var(--accent-200);display:flex;align-items:center;justify-content:center;font-size:6pt;font-weight:700;color:var(--accent-deep);flex:none">F</div>
+          <div style="flex:1"><div style="font-size:7pt;font-weight:700">Family Meals</div><div style="font-size:5.5pt;color:var(--ink-3)">3 members · planning</div></div>
+          <svg viewBox="0 0 24 24" width="8" height="8" fill="none" stroke="var(--ink-4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </div>
+      </div>
+      <div class="tabbar"><div style="width:3mm;height:3mm;background:var(--accent);border-radius:999px"></div><div style="width:3mm;height:3mm;background:var(--line);border-radius:999px"></div><div style="width:3mm;height:3mm;background:var(--line);border-radius:999px"></div></div>
+    </div></div><div class="small" style="text-align:center;margin-top:2.5mm">Groups list</div></div>
     <div class="screen-spec">
-      <h4>Screen spec</h4>
-      <div class="sf"><span class="kk">Route</span><span class="vv">/groups</span></div>
-      <div class="sf"><span class="kk">Purpose</span><span class="vv">Show all groups the user belongs to</span></div>
-      <div class="sf"><span class="kk">Entry</span><span class="vv">Tab 0 (default tab)</span></div>
-      <div class="sf"><span class="kk">Components</span><span class="vv">AppPageHeader · GroupCard · AppNavBar · empty state</span></div>
-      <div class="sf"><span class="kk">Primary action</span><span class="vv">Tap card → group detail</span></div>
+      <h4>✅ Groups list — <span class="mono" style="font-size:7.5pt">lib/ui/groups/groups_screen.dart</span></h4>
+      <div class="sf"><span class="kk">Route</span><span class="vv">/groups — Tab 0 (default)</span></div>
+      <div class="sf"><span class="kk">Purpose</span><span class="vv">Show all groups the current user belongs to</span></div>
+      <div class="sf"><span class="kk">Components</span><span class="vv">AppPageHeader · GroupCard · EmptyState · AppNavBar</span></div>
+      <div class="sf"><span class="kk">Primary action</span><span class="vv">Tap card → group detail · FAB → create group</span></div>
       <div class="sf"><span class="kk">States</span><span class="vv">Loading (skeleton) · empty · error · loaded</span></div>
-      <div class="sf"><span class="kk">Data</span><span class="vv">GET /groups</span></div>
+      <div class="sf"><span class="kk">Data</span><span class="vv">GET /groups (filtered to current user's memberships)</span></div>
+      <div class="sf"><span class="kk">Cubit</span><span class="vv">GroupsCubit (app-lifetime, MultiBlocProvider root)</span></div>
     </div>
   </div>
 
   <div class="row top avoid" style="gap:8mm; margin-bottom:8mm">
-    <div><div class="phone"><div class="island"></div><div class="screen"><div class="screen-empty">Group detail + current menu</div></div></div><div class="small" style="text-align:center;margin-top:2.5mm">Group detail</div></div>
+    <div><div class="phone"><div class="island"></div><div class="screen" style="background:var(--bg)">
+      <div style="padding:7mm 3.5mm 0">
+        <div style="font-size:8pt;font-weight:800;letter-spacing:-.3px;margin-bottom:2mm">Sunday Dinners</div>
+        <!-- status pill -->
+        <div style="display:inline-flex;align-items:center;gap:1.5mm;background:var(--ok-bg);border-radius:999px;padding:1mm 2.5mm;margin-bottom:2.5mm">
+          <div style="width:1.5mm;height:1.5mm;background:var(--ok);border-radius:999px"></div>
+          <span style="font-size:5.5pt;font-weight:600;color:var(--ok)">Planning</span>
+        </div>
+        <!-- members row -->
+        <div style="background:#fff;border:1px solid var(--line-2);border-radius:10px;padding:2.5mm;margin-bottom:2mm">
+          <div style="font-size:5.5pt;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:1.5mm">Members</div>
+          <div style="display:flex;gap:1.5mm;align-items:center">
+            <div style="width:5.5mm;height:5.5mm;border-radius:999px;background:var(--accent-200);display:flex;align-items:center;justify-content:center;font-size:5pt;font-weight:700;color:var(--accent-deep)">A</div>
+            <div style="width:5.5mm;height:5.5mm;border-radius:999px;background:var(--teal-50);display:flex;align-items:center;justify-content:center;font-size:5pt;font-weight:700;color:var(--teal-deep)">M</div>
+            <div style="width:5.5mm;height:5.5mm;border-radius:999px;background:var(--field);display:flex;align-items:center;justify-content:center;font-size:5pt;font-weight:700;color:var(--ink-3)">+2</div>
+            <svg style="margin-left:auto" viewBox="0 0 24 24" width="7" height="7" fill="none" stroke="var(--ink-4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+          </div>
+        </div>
+        <!-- active menu card -->
+        <div style="background:#fff;border:1px solid var(--line-2);border-radius:10px;padding:2.5mm">
+          <div style="font-size:5.5pt;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:1.5mm">This week's menu</div>
+          <div style="font-size:6pt;font-weight:600;margin-bottom:1mm">Jun 30 – Jul 6</div>
+          <!-- mini progress bar -->
+          <div style="height:1.5mm;background:var(--line-2);border-radius:999px;overflow:hidden;margin-bottom:1mm"><div style="width:60%;height:100%;background:var(--accent);border-radius:999px"></div></div>
+          <div style="font-size:5.5pt;color:var(--ink-3)">3 of 5 meals planned</div>
+        </div>
+      </div>
+      <div class="tabbar"><div style="width:3mm;height:3mm;background:var(--accent);border-radius:999px"></div><div style="width:3mm;height:3mm;background:var(--line);border-radius:999px"></div><div style="width:3mm;height:3mm;background:var(--line);border-radius:999px"></div></div>
+    </div></div><div class="small" style="text-align:center;margin-top:2.5mm">Group detail</div></div>
     <div class="screen-spec">
-      <h4>Screen spec</h4>
+      <h4>✅ Group detail — <span class="mono" style="font-size:7.5pt">lib/ui/groups/group_detail_screen.dart</span></h4>
       <div class="sf"><span class="kk">Route</span><span class="vv">/groups/:id</span></div>
-      <div class="sf"><span class="kk">Purpose</span><span class="vv">Show current menu, vote progress, and member list</span></div>
-      <div class="sf"><span class="kk">Entry</span><span class="vv">GroupCard tap</span></div>
-      <div class="sf"><span class="kk">Components</span><span class="vv">AppPageHeader · VoteProgressCard · MemberListRow · AppNavBar</span></div>
-      <div class="sf"><span class="kk">Primary action</span><span class="vv">Vote on recipe / add recipe to menu</span></div>
-      <div class="sf"><span class="kk">States</span><span class="vv">Loading · empty (no active menu) · loaded</span></div>
-      <div class="sf"><span class="kk">Data</span><span class="vv">GET /groups/:id · GET /menus/:id (with recipes)</span></div>
+      <div class="sf"><span class="kk">Purpose</span><span class="vv">Active menu summary, member avatar row, menus list</span></div>
+      <div class="sf"><span class="kk">Components</span><span class="vv">AppPageHeader · status pill · member row (InkWell) · menu cards</span></div>
+      <div class="sf"><span class="kk">Primary action</span><span class="vv">Tap menu → menu detail · Tap member → group members</span></div>
+      <div class="sf"><span class="kk">States</span><span class="vv">Loading · error · loaded</span></div>
+      <div class="sf"><span class="kk">Data</span><span class="vv">GET /groups/:id</span></div>
     </div>
   </div>
 
-  <div class="row top avoid" style="gap:8mm">
-    <div><div class="phone"><div class="island"></div><div class="screen"><div class="screen-empty">Recipe library</div></div></div><div class="small" style="text-align:center;margin-top:2.5mm">Recipe library</div></div>
+  <div class="row top avoid" style="gap:8mm; margin-bottom:8mm">
+    <div><div class="phone"><div class="island"></div><div class="screen" style="background:var(--bg)">
+      <div style="padding:7mm 3.5mm 0">
+        <div style="display:flex;align-items:center;gap:2mm;margin-bottom:3mm">
+          <svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          <div style="font-size:8pt;font-weight:800;letter-spacing:-.3px">Members</div>
+        </div>
+        <div style="background:#fff;border:1px solid var(--line-2);border-radius:10px;overflow:hidden">
+          <!-- owner row -->
+          <div style="display:flex;align-items:center;gap:2mm;padding:2.5mm;border-bottom:1px solid var(--line-2)">
+            <div style="width:5.5mm;height:5.5mm;border-radius:999px;background:var(--accent-200);display:flex;align-items:center;justify-content:center;font-size:5pt;font-weight:700;color:var(--accent-deep);flex:none">A</div>
+            <div style="flex:1"><div style="font-size:6.5pt;font-weight:600">Alice</div><div style="font-size:5pt;color:var(--ink-3)">Owner · You</div></div>
+            <div style="font-size:5pt;font-weight:600;color:var(--accent);background:var(--accent-50);padding:.8mm 2mm;border-radius:999px">You</div>
+          </div>
+          <!-- member rows -->
+          <div style="display:flex;align-items:center;gap:2mm;padding:2.5mm;border-bottom:1px solid var(--line-2)">
+            <div style="width:5.5mm;height:5.5mm;border-radius:999px;background:var(--teal-50);display:flex;align-items:center;justify-content:center;font-size:5pt;font-weight:700;color:var(--teal-deep);flex:none">M</div>
+            <div style="flex:1"><div style="font-size:6.5pt;font-weight:600">Marcus</div><div style="font-size:5pt;color:var(--ink-3)">Member</div></div>
+            <svg viewBox="0 0 24 24" width="7" height="7" fill="none" stroke="var(--ink-4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+          </div>
+          <div style="display:flex;align-items:center;gap:2mm;padding:2.5mm">
+            <div style="width:5.5mm;height:5.5mm;border-radius:999px;background:var(--field);display:flex;align-items:center;justify-content:center;font-size:5pt;font-weight:700;color:var(--ink-3);flex:none">J</div>
+            <div style="flex:1"><div style="font-size:6.5pt;font-weight:600">Jordan</div><div style="font-size:5pt;color:var(--ink-3)">Member</div></div>
+            <svg viewBox="0 0 24 24" width="7" height="7" fill="none" stroke="var(--ink-4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+          </div>
+        </div>
+      </div>
+    </div></div><div class="small" style="text-align:center;margin-top:2.5mm">Group members</div></div>
     <div class="screen-spec">
-      <h4>Screen spec</h4>
-      <div class="sf"><span class="kk">Route</span><span class="vv">/recipes</span></div>
-      <div class="sf"><span class="kk">Purpose</span><span class="vv">Browse and filter the full recipe library</span></div>
-      <div class="sf"><span class="kk">Entry</span><span class="vv">Tab 1</span></div>
-      <div class="sf"><span class="kk">Components</span><span class="vv">AppPageHeader · SearchField · FilterChips · RecipeCard</span></div>
-      <div class="sf"><span class="kk">Primary action</span><span class="vv">Tap recipe → detail / add to menu</span></div>
+      <h4>✅ Group members — <span class="mono" style="font-size:7.5pt">lib/ui/groups/group_members_screen.dart</span></h4>
+      <div class="sf"><span class="kk">Route</span><span class="vv">/groups/:id/members</span></div>
+      <div class="sf"><span class="kk">Purpose</span><span class="vv">Full member list with roles; owner can remove members</span></div>
+      <div class="sf"><span class="kk">Components</span><span class="vv">AppPageHeader · AppListRow · role badge · remove action</span></div>
+      <div class="sf"><span class="kk">Primary action</span><span class="vv">Remove member (owner only) with confirm dialog</span></div>
+      <div class="sf"><span class="kk">Data</span><span class="vv">GET /groups/:id · DELETE /groups/:id/members/:user_id</span></div>
+    </div>
+  </div>
+
+  <div class="row top avoid" style="gap:8mm; margin-bottom:8mm">
+    <div><div class="phone"><div class="island"></div><div class="screen" style="background:var(--bg)">
+      <div style="padding:7mm 3.5mm 0">
+        <div style="font-size:11pt;font-weight:800;letter-spacing:-.5px;margin-bottom:2.5mm">Recipes</div>
+        <!-- search bar -->
+        <div style="display:flex;align-items:center;gap:1.5mm;background:var(--field);border:1px solid var(--line);border-radius:8px;padding:1.5mm 2.5mm;margin-bottom:2.5mm">
+          <svg viewBox="0 0 24 24" width="7" height="7" fill="none" stroke="var(--ink-3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span style="font-size:5.5pt;color:var(--ink-4)">Search recipes…</span>
+        </div>
+        <!-- recipe rows -->
+        <div style="background:#fff;border:1px solid var(--line-2);border-radius:8px;padding:2mm;margin-bottom:1.5mm;display:flex;align-items:center;gap:2mm">
+          <div style="width:7mm;height:7mm;border-radius:6px;background:var(--line-2);flex:none"></div>
+          <div style="flex:1"><div style="font-size:6pt;font-weight:600">Chicken Tikka Masala</div><div style="font-size:5pt;color:var(--ink-3)">520 cal · Indian</div></div>
+          <svg viewBox="0 0 24 24" width="7" height="7" fill="none" stroke="var(--ink-4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </div>
+        <div style="background:#fff;border:1px solid var(--line-2);border-radius:8px;padding:2mm;margin-bottom:1.5mm;display:flex;align-items:center;gap:2mm">
+          <div style="width:7mm;height:7mm;border-radius:6px;background:var(--line-2);flex:none"></div>
+          <div style="flex:1"><div style="font-size:6pt;font-weight:600">Falafel Burgers</div><div style="font-size:5pt;color:var(--ink-3)">380 cal · Middle Eastern</div></div>
+          <svg viewBox="0 0 24 24" width="7" height="7" fill="none" stroke="var(--ink-4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </div>
+        <div style="background:#fff;border:1px solid var(--line-2);border-radius:8px;padding:2mm;display:flex;align-items:center;gap:2mm">
+          <div style="width:7mm;height:7mm;border-radius:6px;background:var(--line-2);flex:none"></div>
+          <div style="flex:1"><div style="font-size:6pt;font-weight:600">Beef Teriyaki Stir Fry</div><div style="font-size:5pt;color:var(--ink-3)">610 cal · Asian</div></div>
+          <svg viewBox="0 0 24 24" width="7" height="7" fill="none" stroke="var(--ink-4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </div>
+      </div>
+      <div class="tabbar"><div style="width:3mm;height:3mm;background:var(--line);border-radius:999px"></div><div style="width:3mm;height:3mm;background:var(--accent);border-radius:999px"></div><div style="width:3mm;height:3mm;background:var(--line);border-radius:999px"></div></div>
+    </div></div><div class="small" style="text-align:center;margin-top:2.5mm">Recipe library</div></div>
+    <div class="screen-spec">
+      <h4>✅ Recipe library — <span class="mono" style="font-size:7.5pt">lib/ui/recipes/recipe_library_screen.dart</span></h4>
+      <div class="sf"><span class="kk">Route</span><span class="vv">/recipes — Tab 1</span></div>
+      <div class="sf"><span class="kk">Purpose</span><span class="vv">Browse and search the full recipe library</span></div>
+      <div class="sf"><span class="kk">Components</span><span class="vv">AppPageHeader · search TextField · recipe rows</span></div>
+      <div class="sf"><span class="kk">Primary action</span><span class="vv">Tap recipe → recipe detail</span></div>
       <div class="sf"><span class="kk">States</span><span class="vv">Loading (skeleton) · empty (no results) · error · loaded</span></div>
-      <div class="sf"><span class="kk">Data</span><span class="vv">GET /recipes?cuisine_id=&amp;tag_id=</span></div>
+      <div class="sf"><span class="kk">Data</span><span class="vv">GET /recipes</span></div>
+    </div>
+  </div>
+
+  <div class="row top avoid" style="gap:8mm; margin-bottom:8mm">
+    <div><div class="phone"><div class="island"></div><div class="screen" style="background:var(--bg)">
+      <div style="padding:7mm 3.5mm 0">
+        <div style="display:flex;align-items:center;gap:2mm;margin-bottom:2.5mm">
+          <svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          <div style="font-size:7pt;font-weight:800;letter-spacing:-.3px;flex:1">Chicken Tikka Masala</div>
+        </div>
+        <!-- photo placeholder -->
+        <div style="width:100%;height:18mm;background:var(--line-2);border-radius:10px;margin-bottom:2.5mm;display:flex;align-items:center;justify-content:center">
+          <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="var(--ink-4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </div>
+        <!-- nutrition row -->
+        <div style="display:flex;gap:2mm;margin-bottom:2.5mm">
+          <div style="flex:1;background:#fff;border:1px solid var(--line-2);border-radius:8px;padding:1.5mm;text-align:center"><div style="font-size:7pt;font-weight:700;color:var(--ink)">520</div><div style="font-size:4.5pt;color:var(--ink-3)">cal</div></div>
+          <div style="flex:1;background:#fff;border:1px solid var(--line-2);border-radius:8px;padding:1.5mm;text-align:center"><div style="font-size:7pt;font-weight:700;color:var(--ink)">34g</div><div style="font-size:4.5pt;color:var(--ink-3)">protein</div></div>
+          <div style="flex:1;background:#fff;border:1px solid var(--line-2);border-radius:8px;padding:1.5mm;text-align:center"><div style="font-size:7pt;font-weight:700;color:var(--ink)">45m</div><div style="font-size:4.5pt;color:var(--ink-3)">prep</div></div>
+        </div>
+        <!-- steps heading -->
+        <div style="font-size:5.5pt;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:1.5mm">Steps</div>
+        <div style="background:#fff;border:1px solid var(--line-2);border-radius:8px;padding:2mm;display:flex;gap:2mm">
+          <div style="width:4mm;height:4mm;border-radius:999px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:4.5pt;font-weight:700;color:#fff;flex:none">1</div>
+          <div style="font-size:5.5pt;color:var(--ink-2);line-height:1.4">Marinate chicken in yogurt and spices for 30 min.</div>
+        </div>
+      </div>
+    </div></div><div class="small" style="text-align:center;margin-top:2.5mm">Recipe detail</div></div>
+    <div class="screen-spec">
+      <h4>✅ Recipe detail — <span class="mono" style="font-size:7.5pt">lib/ui/recipes/recipe_detail_screen.dart</span></h4>
+      <div class="sf"><span class="kk">Route</span><span class="vv">/recipes/:id</span></div>
+      <div class="sf"><span class="kk">Purpose</span><span class="vv">Full recipe — photo slot, description, steps, ingredients, nutrition</span></div>
+      <div class="sf"><span class="kk">Components</span><span class="vv">AppPageHeader · photo placeholder · step list · ingredient list</span></div>
+      <div class="sf"><span class="kk">Data</span><span class="vv">GET /recipes/:id</span></div>
+    </div>
+  </div>
+
+  <div class="row top avoid" style="gap:8mm; margin-bottom:8mm">
+    <div><div class="phone"><div class="island"></div><div class="screen" style="background:var(--bg)">
+      <div style="padding:7mm 3.5mm 0">
+        <div style="display:flex;align-items:center;gap:2mm;margin-bottom:2mm">
+          <svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          <div style="font-size:7.5pt;font-weight:800;letter-spacing:-.3px">Jun 30 – Jul 6</div>
+        </div>
+        <!-- status pill -->
+        <div style="display:inline-flex;align-items:center;gap:1.5mm;background:var(--ok-bg);border-radius:999px;padding:1mm 2.5mm;margin-bottom:2.5mm">
+          <div style="width:1.5mm;height:1.5mm;background:var(--ok);border-radius:999px"></div>
+          <span style="font-size:5.5pt;font-weight:600;color:var(--ok)">Planning</span>
+        </div>
+        <!-- completeness bar -->
+        <div style="margin-bottom:2.5mm">
+          <div style="display:flex;justify-content:space-between;margin-bottom:1mm"><span style="font-size:5.5pt;color:var(--ink-2)">3 of 5 meals planned</span><span style="font-size:5.5pt;font-weight:600;color:var(--ink-2)">60%</span></div>
+          <div style="height:1.5mm;background:var(--line-2);border-radius:999px;overflow:hidden"><div style="width:60%;height:100%;background:var(--accent);border-radius:999px"></div></div>
+        </div>
+        <!-- recipe card with vote overlay -->
+        <div style="background:#fff;border:1px solid var(--line-2);border-radius:10px;padding:2.5mm;margin-bottom:1.5mm">
+          <div style="font-size:6.5pt;font-weight:600;margin-bottom:1mm">Chicken Tikka Masala</div>
+          <div style="display:flex;align-items:center;gap:1.5mm;margin-bottom:1.5mm">
+            <div style="width:2mm;height:2mm;background:var(--ok);border-radius:999px"></div>
+            <span style="font-size:5pt;color:var(--ink-3)">3 of 5 approved</span>
+            <span style="font-size:5pt;color:var(--ink-3);margin-left:auto">threshold: 4</span>
+          </div>
+          <div style="height:1mm;background:var(--line-2);border-radius:999px;overflow:hidden"><div style="width:60%;height:100%;background:var(--accent);border-radius:999px"></div></div>
+        </div>
+        <div style="background:#fff;border:1px solid var(--line-2);border-radius:10px;padding:2.5mm">
+          <div style="font-size:6.5pt;font-weight:600;margin-bottom:1mm">Falafel Burgers</div>
+          <div style="display:flex;align-items:center;gap:1.5mm;margin-bottom:1.5mm">
+            <div style="width:2mm;height:2mm;background:var(--warn);border-radius:999px"></div>
+            <span style="font-size:5pt;color:var(--ink-3)">1 of 5 approved</span>
+          </div>
+          <div style="height:1mm;background:var(--line-2);border-radius:999px;overflow:hidden"><div style="width:20%;height:100%;background:var(--accent-200);border-radius:999px"></div></div>
+        </div>
+      </div>
+      <!-- FAB -->
+      <div style="position:absolute;bottom:14mm;right:3.5mm;background:var(--accent);border-radius:999px;padding:2mm 3.5mm;display:flex;align-items:center;gap:1.5mm;box-shadow:0 2px 6px rgba(0,0,0,.15)">
+        <svg viewBox="0 0 24 24" width="7" height="7" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span style="font-size:5.5pt;font-weight:600;color:#fff">Add recipe</span>
+      </div>
+      <div class="tabbar"><div style="width:3mm;height:3mm;background:var(--accent);border-radius:999px"></div><div style="width:3mm;height:3mm;background:var(--line);border-radius:999px"></div><div style="width:3mm;height:3mm;background:var(--line);border-radius:999px"></div></div>
+    </div></div><div class="small" style="text-align:center;margin-top:2.5mm">Menu detail</div></div>
+    <div class="screen-spec">
+      <h4>✅ Menu detail — <span class="mono" style="font-size:7.5pt">lib/ui/menus/menu_detail_screen.dart</span></h4>
+      <div class="sf"><span class="kk">Route</span><span class="vv">/menus/:id</span></div>
+      <div class="sf"><span class="kk">Purpose</span><span class="vv">Recipe list with swipe voting, completeness bar, finalize action</span></div>
+      <div class="sf"><span class="kk">Components</span><span class="vv">AppPageHeader · status pill · CompletenessBar · RecipeCard (swipe) · FinalizeButton · FAB (Add recipe)</span></div>
+      <div class="sf"><span class="kk">Primary action</span><span class="vv">Swipe recipe card to vote · FAB → add recipe sheet · Finalize → grocery list</span></div>
+      <div class="sf"><span class="kk">Key behaviour</span><span class="vv">FinalizeButton appears inline once recipe count ≥ mealTarget. Add-recipe sheet shows "Done" banner when target is hit.</span></div>
+      <div class="sf"><span class="kk">Data</span><span class="vv">GET /menus/:id · POST /menus/:id/votes · POST /menus/:id/finalize</span></div>
+      <div class="sf"><span class="kk">Cubit</span><span class="vv">MenuDetailCubit (screen-lifetime)</span></div>
+    </div>
+  </div>
+
+  <div class="row top avoid" style="gap:8mm; margin-bottom:8mm">
+    <div><div class="phone"><div class="island"></div><div class="screen" style="background:var(--bg)">
+      <div style="padding:7mm 3.5mm 0">
+        <div style="display:flex;align-items:center;gap:2mm;margin-bottom:3mm">
+          <svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          <div style="font-size:8pt;font-weight:800;letter-spacing:-.3px">Grocery list</div>
+        </div>
+        <!-- category -->
+        <div style="font-size:5pt;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:1.5mm">Produce</div>
+        <div style="background:#fff;border:1px solid var(--line-2);border-radius:8px;padding:2mm;margin-bottom:1.5mm;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:6pt;font-weight:500">cherry tomatoes</span><span style="font-size:5.5pt;color:var(--ink-3)">2 cups</span>
+        </div>
+        <div style="background:#fff;border:1px solid var(--line-2);border-radius:8px;padding:2mm;margin-bottom:2.5mm;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:6pt;font-weight:500">romaine lettuce</span><span style="font-size:5.5pt;color:var(--ink-3)">1 large head</span>
+        </div>
+        <!-- category -->
+        <div style="font-size:5pt;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:1.5mm">Meat &amp; Poultry</div>
+        <div style="background:#fff;border:1px solid var(--line-2);border-radius:8px;padding:2mm;margin-bottom:1.5mm;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:6pt;font-weight:500">chicken breast</span><span style="font-size:5.5pt;color:var(--ink-3)">680 g</span>
+        </div>
+        <div style="background:#fff;border:1px solid var(--line-2);border-radius:8px;padding:2mm;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:6pt;font-weight:500">ground beef</span><span style="font-size:5.5pt;color:var(--ink-3)">450 g</span>
+        </div>
+      </div>
+    </div></div><div class="small" style="text-align:center;margin-top:2.5mm">Grocery list</div></div>
+    <div class="screen-spec">
+      <h4>✅ Grocery list — <span class="mono" style="font-size:7.5pt">lib/ui/menus/grocery_list_screen.dart</span></h4>
+      <div class="sf"><span class="kk">Route</span><span class="vv">/menus/:id/grocery-list</span></div>
+      <div class="sf"><span class="kk">Purpose</span><span class="vv">Per-menu ingredient list generated at finalization</span></div>
+      <div class="sf"><span class="kk">Components</span><span class="vv">AppPageHeader · ingredient rows grouped by category</span></div>
+      <div class="sf"><span class="kk">Data</span><span class="vv">GET /menus/:id/grocery-list</span></div>
+      <div class="sf"><span class="kk">Note</span><span class="vv">Superseded for daily use by the Shop tab, which aggregates across all groups. Grocery list remains accessible from finalized menu detail.</span></div>
+    </div>
+  </div>
+
+  <div class="row top avoid" style="gap:8mm; margin-bottom:8mm">
+    <div><div class="phone"><div class="island"></div><div class="screen" style="background:var(--bg)">
+      <div style="padding:7mm 3.5mm 0">
+        <div style="font-size:11pt;font-weight:800;letter-spacing:-.5px;margin-bottom:1mm">Shop</div>
+        <div style="font-size:5.5pt;color:var(--ink-3);margin-bottom:3mm">4 items remaining</div>
+        <!-- category -->
+        <div style="font-size:5pt;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:1.5mm">Produce</div>
+        <!-- unchecked tile -->
+        <div style="background:#fff;border:1px solid var(--line-2);border-radius:8px;padding:2mm;margin-bottom:1.5mm;display:flex;align-items:center;gap:2mm">
+          <div style="width:4mm;height:4mm;border-radius:999px;border:1px solid var(--ink-4);flex:none"></div>
+          <div style="flex:1"><div style="font-size:6pt;font-weight:500">cherry tomatoes</div><div style="font-size:5pt;color:var(--ink-4)">Sunday Dinners</div></div>
+          <span style="font-size:5.5pt;color:var(--ink-3)">2 cups</span>
+        </div>
+        <!-- checked tile -->
+        <div style="background:var(--field);border:1px solid rgba(22,163,74,.3);border-radius:8px;padding:2mm;margin-bottom:2.5mm;display:flex;align-items:center;gap:2mm">
+          <div style="width:4mm;height:4mm;border-radius:999px;background:var(--ok);display:flex;align-items:center;justify-content:center;flex:none">
+            <svg viewBox="0 0 24 24" width="5" height="5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div style="flex:1"><div style="font-size:6pt;font-weight:500;color:var(--ink-4);text-decoration:line-through">romaine lettuce</div><div style="font-size:5pt;color:var(--ink-4)">Sunday Dinners</div></div>
+          <span style="font-size:5.5pt;color:var(--ink-4)">1 head</span>
+        </div>
+        <!-- category -->
+        <div style="font-size:5pt;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:1.5mm">Meat &amp; Poultry</div>
+        <div style="background:#fff;border:1px solid var(--line-2);border-radius:8px;padding:2mm;display:flex;align-items:center;gap:2mm">
+          <div style="width:4mm;height:4mm;border-radius:999px;border:1px solid var(--ink-4);flex:none"></div>
+          <div style="flex:1"><div style="font-size:6pt;font-weight:500">chicken breast</div><div style="font-size:5pt;color:var(--ink-4)">Sunday Dinners · Family Meals</div></div>
+          <span style="font-size:5.5pt;color:var(--ink-3)">900 g</span>
+        </div>
+      </div>
+      <div class="tabbar"><div style="width:3mm;height:3mm;background:var(--line);border-radius:999px"></div><div style="width:3mm;height:3mm;background:var(--line);border-radius:999px"></div><div style="width:3mm;height:3mm;background:var(--accent);border-radius:999px"></div></div>
+    </div></div><div class="small" style="text-align:center;margin-top:2.5mm">Shop</div></div>
+    <div class="screen-spec">
+      <h4>✅ Shop — <span class="mono" style="font-size:7.5pt">lib/ui/shop/shop_screen.dart</span></h4>
+      <div class="sf"><span class="kk">Route</span><span class="vv">/shop — Tab 2</span></div>
+      <div class="sf"><span class="kk">Purpose</span><span class="vv">Unified grocery list aggregated across all finalized menus for all groups the user belongs to</span></div>
+      <div class="sf"><span class="kk">Components</span><span class="vv">AppPageHeader · category headers · ShopItemTile (check circle + animated container) · "Got it (N)" ExpansionTile for checked items</span></div>
+      <div class="sf"><span class="kk">Primary action</span><span class="vv">Tap tile → optimistic check-off, persisted to backend via POST/DELETE /shop/check</span></div>
+      <div class="sf"><span class="kk">Aggregation</span><span class="vv">Key: (ingredient_id, unit). Ingredient record is authority for name/category. Quantities summed. Sources listed as "Group A · Group B".</span></div>
+      <div class="sf"><span class="kk">Category order</span><span class="vv">Produce → Meat & Poultry → Seafood → Dairy & Eggs → Bakery → Dry Goods → Canned → Condiments → Oils → Spices → Beverages → Frozen → Other</span></div>
+      <div class="sf"><span class="kk">States</span><span class="vv">Loading · empty (no finalized menus) · error · loaded</span></div>
+      <div class="sf"><span class="kk">Data</span><span class="vv">GET /shop/ · POST /shop/check · DELETE /shop/check</span></div>
+      <div class="sf"><span class="kk">Cubit</span><span class="vv">ShopCubit (app-lifetime, MultiBlocProvider root). toggle() does optimistic update + rollback on failure.</span></div>
     </div>
   </div>
 </div>
@@ -975,14 +1293,13 @@ p{ margin:0 0 2.5mm 0; }
   <h3>File structure</h3>
   <div class="codeblock">lib/
   theme/
-    app_colors.dart      <span class="c">// §15 — AppColors class</span>
-    app_radii.dart       <span class="c">// §15 — AppRadii class</span>
-    app_shadows.dart     <span class="c">// §15 — e0/e1/e2/e3 BoxShadow lists</span>
-    app_typography.dart  <span class="c">// §05 — AppTextStyles, AppTypography.mono</span>
-    app_theme.dart       <span class="c">// §15 — buildTheme() wiring everything together</span>
+    app_colors.dart       <span class="c">// §15 — AppColors</span>
+    app_radii.dart        <span class="c">// §15 — AppRadii (values + BorderRadius convenience constructors)</span>
+    app_typography.dart   <span class="c">// §05 — AppTextStyles</span>
+    app_theme.dart        <span class="c">// §15 — buildTheme()</span>
   widgets/
     buttons/
-      app_button.dart    <span class="c">// primary / secondary / ghost / destructive</span>
+      app_button.dart     <span class="c">// primary / secondary / ghost / destructive</span>
     inputs/
       app_text_field.dart
       app_toggle.dart
@@ -990,29 +1307,38 @@ p{ margin:0 0 2.5mm 0; }
       app_segmented.dart
       app_stepper.dart
     cards/
-      app_card.dart      <span class="c">// base card with e1 + hairline + lg radius</span>
-      group_card.dart    <span class="c">// avatar + name + threshold + chevron</span>
-      recipe_card.dart   <span class="c">// name + cuisine + tags + status badge</span>
+      app_card.dart       <span class="c">// base card: e1 + hairline + lgAll radius</span>
+      group_card.dart     <span class="c">// avatar + name + threshold + chevron</span>
+      <span class="c">// recipe_card.dart — NOT extracted; recipe rows built inline per screen</span>
     badges/
-      app_badge.dart     <span class="c">// dot + label, enum for ok/warn/danger/info/muted</span>
-      app_tag.dart       <span class="c">// outline chip, dietary tags</span>
+      app_badge.dart      <span class="c">// dot + label, variants: ok/warn/danger/info/muted</span>
+      app_tag.dart        <span class="c">// teal dietary/cuisine chip</span>
     lists/
-      app_list_row.dart  <span class="c">// avatar + title + subtitle + trailing</span>
+      app_list_row.dart   <span class="c">// avatar + title + subtitle + trailing</span>
     progress/
-      vote_meter.dart    <span class="c">// linear bar + threshold marker + vote count</span>
+      vote_meter.dart     <span class="c">// linear bar + threshold marker + vote count</span>
     nav/
-      app_nav_bar.dart   <span class="c">// pill bottom nav, 2–3 tabs</span>
-      app_page_header.dart <span class="c">// large-title collapsing header</span>
-    feedback/
-      app_snackbar.dart  <span class="c">// dark + light variants</span>
-      app_dialog.dart    <span class="c">// title + body + cancel/confirm</span>
-      app_sheet.dart     <span class="c">// modal bottom sheet with grab handle</span>
+      app_nav_bar.dart    <span class="c">// pill bottom nav, 3 tabs (Groups/Recipes/Shop)</span>
+      app_page_header.dart <span class="c">// large-title collapsing SliverPersistentHeader</span>
+      app_shell.dart      <span class="c">// StatefulShellRoute wrapper, owns AppNavBar + user switcher</span>
+    dialogs/
+      app_dialog.dart     <span class="c">// title + body + cancel/confirm</span>
+    sheets/
+      app_sheet.dart      <span class="c">// modal bottom sheet with grab handle</span>
+    snackbar/
+      app_snackbar.dart   <span class="c">// dark + light variants</span>
     states/
       skeleton_list_item.dart
-      empty_state.dart   <span class="c">// icon + title + body + optional action button</span>
-      error_state.dart   <span class="c">// inline error with retry</span>
-  gallery/
-    component_gallery.dart <span class="c">// scrollable screen showing every widget + all states</span></div>
+      empty_state.dart    <span class="c">// icon + title + body + optional CTA</span>
+      error_state.dart    <span class="c">// inline error + retry button</span>
+  cubits/                 <span class="c">// one folder per feature: &lt;feature&gt;_cubit.dart + &lt;feature&gt;_state.dart</span>
+  data/
+    api_client.dart       <span class="c">// HTTP client, token injection, DELETE-with-body via raw Request</span>
+    models/               <span class="c">// plain Dart model classes with fromJson + copyWith</span>
+    *_data_source.dart    <span class="c">// one per domain, injected into cubits</span>
+  ui/                     <span class="c">// screen files: routing + BlocBuilder only, no business logic</span>
+  router.dart             <span class="c">// go_router config: StatefulShellRoute + all GoRoutes</span>
+  app.dart                <span class="c">// MultiBlocProvider root (GroupsCubit, ShopCubit are app-lifetime)</span></div>
 
   <h3>Rules of engagement</h3>
   <div class="dd do" style="margin-top:2mm">
@@ -1028,8 +1354,10 @@ p{ margin:0 0 2.5mm 0; }
     </ul>
   </div>
 
-  <h3>Definition of done — v1 widget kit</h3>
-  <p style="font-size:8.6pt; color:var(--ink-2)">All of the following exist, render correctly in the gallery, have no inline style literals, and pass <span class="mono">flutter analyze</span> with zero warnings: AppButton (4 variants), AppTextField, AppToggle, AppFilterChip, AppSegmented, AppStepper, AppCard, GroupCard, RecipeCard, AppBadge (5 states), AppTag, AppListRow, VoteMeter, AppNavBar, AppPageHeader, AppSnackbar, AppDialog, AppSheet, SkeletonListItem, EmptyState, ErrorState. Target: Flutter 3.x, Dart 3.x, no deprecated APIs.</p>
+  <h3>Widget kit status</h3>
+  <p style="font-size:8.6pt; color:var(--ink-2)"><b>Shipped (pass <span class="mono">flutter analyze</span>, used in production screens):</b> AppButton · AppTextField · AppToggle · AppFilterChip · AppSegmented · AppStepper · AppCard · GroupCard · AppBadge · AppTag · AppListRow · VoteMeter · AppNavBar · AppPageHeader · AppShell · AppSnackbar · AppDialog · AppSheet · SkeletonListItem · EmptyState · ErrorState.</p>
+  <p style="font-size:8.6pt; color:var(--ink-2); margin-top:2mm"><b>Not extracted (built inline, to extract later):</b> RecipeCard (recipe rows vary enough per context that extraction is deferred) · ShopItemTile · CategoryHeader.</p>
+  <p style="font-size:8.6pt; color:var(--ink-2); margin-top:2mm"><b>Standard:</b> Flutter 3.x · Dart 3.x · no deprecated APIs · zero <span class="mono">flutter analyze</span> warnings. All colors from <span class="mono">AppColors</span>, all radii from <span class="mono">AppRadii.*All</span> constructors, no inline literals in widget files.</p>
 </div>
 
 </body>
