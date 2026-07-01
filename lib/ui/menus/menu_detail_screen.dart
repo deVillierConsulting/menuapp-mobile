@@ -540,12 +540,20 @@ class _CardContent extends StatelessWidget {
           14 + extraLeftPadding, 14, 14 + extraRightPadding, 14),
         child: Row(
           children: [
-            // Photo placeholder
+            // Recipe thumbnail
             ClipRRect(
               borderRadius: AppRadii.smAll,
-              child: DecoratedBox(
-                decoration: BoxDecoration(color: AppColors.line2),
-                child: const SizedBox(width: 56, height: 56),
+              child: SizedBox(
+                width: 56,
+                height: 56,
+                child: menuRecipe.recipe.photoKey != null
+                    ? Image.network(
+                        menuRecipe.recipe.photoKey!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stack) => const ColoredBox(
+                            color: AppColors.line2),
+                      )
+                    : const ColoredBox(color: AppColors.line2),
               ),
             ),
             const SizedBox(width: 14),
