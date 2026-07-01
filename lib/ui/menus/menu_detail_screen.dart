@@ -79,6 +79,7 @@ class _MenuDetailScreenState extends State<MenuDetailScreen> {
                 alreadyAddedRecipeIds: alreadyAdded,
                 recipesDataSource: widget.recipesDataSource,
                 menusDataSource: widget.menusDataSource,
+                mealTarget: state.menu.mealTarget,
               );
               if (context.mounted) {
                 context.read<MenuDetailCubit>().load();

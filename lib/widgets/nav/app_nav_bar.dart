@@ -30,6 +30,11 @@ const _tabs = [
     iconActive: LucideIcons.bookOpen,
     label: 'Recipes',
   ),
+  _NavTab(
+    icon: LucideIcons.shoppingCart,
+    iconActive: LucideIcons.shoppingCart,
+    label: 'Shop',
+  ),
 ];
 
 class AppNavBar extends StatelessWidget {

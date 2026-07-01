@@ -5,11 +5,13 @@ import 'cubits/group_detail/group_detail_cubit.dart';
 import 'cubits/menu_detail/menu_detail_cubit.dart';
 import 'cubits/recipe_detail/recipe_detail_cubit.dart';
 import 'cubits/recipes/recipes_cubit.dart';
+import 'cubits/shop/shop_cubit.dart';
 import 'data/api_client.dart';
 import 'data/auth_data_source.dart';
 import 'data/groups_data_source.dart';
 import 'data/menus_data_source.dart';
 import 'data/recipes_data_source.dart';
+import 'data/shop_data_source.dart';
 import 'session/app_session.dart';
 import 'widgets/nav/app_shell.dart';
 import 'ui/groups/group_detail_screen.dart';
@@ -18,6 +20,7 @@ import 'ui/menus/grocery_list_screen.dart';
 import 'ui/menus/menu_detail_screen.dart';
 import 'ui/recipes/recipe_detail_screen.dart';
 import 'ui/recipes/recipes_screen.dart';
+import 'ui/shop/shop_screen.dart';
 
 /// Builds the app's router. All dependencies are passed in from app.dart —
 /// nothing is instantiated here. This keeps the router a pure description
@@ -29,6 +32,7 @@ GoRouter buildRouter({
   required GroupsDataSource groupsDataSource,
   required MenusDataSource menusDataSource,
   required RecipesDataSource recipesDataSource,
+  required ShopDataSource shopDataSource,
 }) =>
     GoRouter(
   initialLocation: '/groups',
@@ -68,6 +72,17 @@ GoRouter buildRouter({
               builder: (context, state) => BlocProvider(
                 create: (_) => RecipesCubit(dataSource: recipesDataSource),
                 child: RecipesScreen(menusDataSource: menusDataSource),
+              ),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/shop',
+              builder: (context, state) => BlocProvider.value(
+                value: context.read<ShopCubit>(),
+                child: const ShopScreen(),
               ),
             ),
           ],

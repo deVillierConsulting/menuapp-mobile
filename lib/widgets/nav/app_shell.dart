@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../cubits/groups/groups_cubit.dart';
+import '../../cubits/shop/shop_cubit.dart';
 import '../../data/api_client.dart';
 import '../../data/auth_data_source.dart';
 import '../../session/app_session.dart';
@@ -79,6 +80,7 @@ class AppShell extends StatelessWidget {
                       session.switchUser(userId: result.userId, userName: result.userName);
                       if (context.mounted) {
                         context.read<GroupsCubit>().loadGroups();
+                        context.read<ShopCubit>().load();
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Switched to ${result.userName}')),
                         );

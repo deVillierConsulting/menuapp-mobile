@@ -30,7 +30,8 @@ class ApiClient {
       _request('POST', path, body: body);
   Future<dynamic> patch(String path, Map<String, dynamic> body) =>
       _request('PATCH', path, body: body);
-  Future<void> delete(String path) => _request('DELETE', path);
+  Future<void> delete(String path, {Map<String, dynamic>? body}) =>
+      _request('DELETE', path, body: body);
 
   Future<dynamic> _request(String method, String path,
       {Map<String, dynamic>? body}) async {
@@ -47,7 +48,12 @@ class ApiClient {
         response = await _client.patch(uri,
             headers: _headers, body: jsonEncode(body));
       case 'DELETE':
-        response = await _client.delete(uri, headers: _headers);
+        // http.Client.delete doesn't support a body; use a raw Request instead.
+        final req = http.Request('DELETE', uri)
+          ..headers.addAll(_headers);
+        if (body != null) req.body = jsonEncode(body);
+        final streamed = await _client.send(req);
+        response = await http.Response.fromStream(streamed);
       default:
         throw ApiException(0, 'Unknown method: $method');
     }

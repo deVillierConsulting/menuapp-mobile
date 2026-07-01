@@ -5,8 +5,10 @@ import 'data/auth_data_source.dart';
 import 'data/groups_data_source.dart';
 import 'data/menus_data_source.dart';
 import 'data/recipes_data_source.dart';
+import 'data/shop_data_source.dart';
 import 'package:go_router/go_router.dart';
 import 'cubits/groups/groups_cubit.dart';
+import 'cubits/shop/shop_cubit.dart';
 import 'router.dart';
 import 'session/app_session.dart';
 import 'theme/app_theme.dart';
@@ -27,6 +29,7 @@ class _MenuAppState extends State<MenuApp> {
   late final GroupsDataSource _groupsDataSource;
   late final MenusDataSource _menusDataSource;
   late final RecipesDataSource _recipesDataSource;
+  late final ShopDataSource _shopDataSource;
   late final AppSession _session;
   late final GoRouter _router;
 
@@ -39,6 +42,7 @@ class _MenuAppState extends State<MenuApp> {
     _groupsDataSource  = GroupsDataSource(_apiClient);
     _menusDataSource   = MenusDataSource(_apiClient);
     _recipesDataSource = RecipesDataSource(_apiClient);
+    _shopDataSource    = ShopDataSource(_apiClient);
 
     // Placeholder session — _init() overwrites it once the token lands.
     _session = AppSession(userId: 0, userName: '');
@@ -50,6 +54,7 @@ class _MenuAppState extends State<MenuApp> {
       groupsDataSource:  _groupsDataSource,
       menusDataSource:   _menusDataSource,
       recipesDataSource: _recipesDataSource,
+      shopDataSource:    _shopDataSource,
     );
 
     _init();
@@ -65,8 +70,11 @@ class _MenuAppState extends State<MenuApp> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => GroupsCubit(_groupsDataSource)..loadGroups(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => GroupsCubit(_groupsDataSource)..loadGroups()),
+        BlocProvider(create: (_) => ShopCubit(_shopDataSource)..load()),
+      ],
       child: MaterialApp.router(
         title: 'MenuApp',
         theme: buildTheme(),
