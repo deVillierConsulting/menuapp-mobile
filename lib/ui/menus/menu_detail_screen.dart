@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../cubits/menu_detail/menu_detail_cubit.dart';
 import '../../cubits/menu_detail/menu_detail_state.dart';
+import '../../cubits/shop/shop_cubit.dart';
 import '../../data/models/menu.dart';
 import '../../data/models/menu_detail.dart';
 import '../../theme/app_colors.dart';
@@ -301,6 +302,7 @@ class _FinalizeButton extends StatelessWidget {
         if (confirmed == true && context.mounted) {
           await context.read<MenuDetailCubit>().finalizeMenu();
           if (context.mounted) {
+            context.read<ShopCubit>().load();
             context.push('/menus/${context.read<MenuDetailCubit>().menuId}/grocery-list');
           }
         }
