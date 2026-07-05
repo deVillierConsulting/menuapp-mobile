@@ -4,11 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../cubits/group_detail/group_detail_cubit.dart';
 import '../../cubits/group_detail/group_detail_state.dart';
+import '../../cubits/auth/auth_cubit.dart';
 import '../../data/groups_data_source.dart';
 import '../../data/menus_data_source.dart';
 import '../../data/models/menu.dart';
 import '../../data/models/user.dart';
-import '../../session/app_session.dart';
 import '../menus/create_menu_sheet.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radii.dart';
@@ -23,13 +23,13 @@ class GroupDetailScreen extends StatefulWidget {
   final int groupId;
   final MenusDataSource menusDataSource;
   final GroupsDataSource groupsDataSource;
-  final AppSession session;
+  final AuthCubit authCubit;
   const GroupDetailScreen({
     super.key,
     required this.groupId,
     required this.menusDataSource,
     required this.groupsDataSource,
-    required this.session,
+    required this.authCubit,
   });
 
   @override
@@ -57,12 +57,14 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             );
           }
           if (state is GroupDetailLoaded) {
+            final authState = widget.authCubit.state;
+            final currentUserId = authState is AuthAuthenticated ? authState.userId : -1;
             return _Loaded(
               state: state,
               menusDataSource: widget.menusDataSource,
               groupsDataSource: widget.groupsDataSource,
               groupId: widget.groupId,
-              session: widget.session,
+              currentUserId: currentUserId,
             );
           }
           return const SizedBox.shrink();
@@ -76,13 +78,13 @@ class _Loaded extends StatelessWidget {
   final GroupDetailLoaded state;
   final MenusDataSource menusDataSource;
   final GroupsDataSource groupsDataSource;
-  final AppSession session;
+  final int currentUserId;
   final int groupId;
   const _Loaded({
     required this.state,
     required this.menusDataSource,
     required this.groupsDataSource,
-    required this.session,
+    required this.currentUserId,
     required this.groupId,
   });
 
@@ -124,7 +126,7 @@ class _Loaded extends StatelessWidget {
                       child: GroupMembersScreen(
                         groupId: groupId,
                         dataSource: groupsDataSource,
-                        session: session,
+                        currentUserId: currentUserId,
                       ),
                     ),
                   ),

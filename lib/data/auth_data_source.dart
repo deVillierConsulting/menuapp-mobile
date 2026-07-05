@@ -1,20 +1,20 @@
 import 'api_client.dart';
 
-class AuthResult {
-  final String accessToken;
+class MeResult {
   final int userId;
   final String userName;
+  final String email;
 
-  const AuthResult({
-    required this.accessToken,
+  const MeResult({
     required this.userId,
     required this.userName,
+    required this.email,
   });
 
-  factory AuthResult.fromJson(Map<String, dynamic> json) => AuthResult(
-        accessToken: json['access_token'] as String,
+  factory MeResult.fromJson(Map<String, dynamic> json) => MeResult(
         userId: json['user_id'] as int,
         userName: json['user_name'] as String,
+        email: json['email'] as String,
       );
 }
 
@@ -22,8 +22,16 @@ class AuthDataSource {
   final ApiClient _client;
   AuthDataSource(this._client);
 
-  Future<AuthResult> devLogin(String email) async {
-    final json = await _client.post('/auth/dev-login', {'email': email});
-    return AuthResult.fromJson(json as Map<String, dynamic>);
+  /// Validate the current token and return the user's identity.
+  /// Throws ApiException(404) if the user has no profile yet.
+  Future<MeResult> me() async {
+    final json = await _client.get('/auth/me');
+    return MeResult.fromJson(json as Map<String, dynamic>);
+  }
+
+  /// Create a user profile for a first-time Supabase sign-in.
+  Future<MeResult> register(String name) async {
+    final json = await _client.post('/auth/register', {'name': name});
+    return MeResult.fromJson(json as Map<String, dynamic>);
   }
 }

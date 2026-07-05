@@ -4,7 +4,6 @@ import '../../cubits/group_detail/group_detail_cubit.dart';
 import '../../cubits/group_detail/group_detail_state.dart';
 import '../../data/groups_data_source.dart';
 import '../../data/models/user.dart';
-import '../../session/app_session.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 import '../../widgets/nav/app_page_header.dart';
@@ -12,13 +11,13 @@ import '../../widgets/nav/app_page_header.dart';
 class GroupMembersScreen extends StatelessWidget {
   final int groupId;
   final GroupsDataSource dataSource;
-  final AppSession session;
+  final int currentUserId;
 
   const GroupMembersScreen({
     super.key,
     required this.groupId,
     required this.dataSource,
-    required this.session,
+    required this.currentUserId,
   });
 
   @override
@@ -39,7 +38,7 @@ class GroupMembersScreen extends StatelessWidget {
                     ...group.members.map((member) => _MemberTile(
                           member: member,
                           isOwner: member.userId == group.ownerId,
-                          canRemove: session.userId == group.ownerId &&
+                          canRemove: currentUserId == group.ownerId &&
                               member.userId != group.ownerId,
                           onRemove: () => _removeMember(context, member),
                         )),

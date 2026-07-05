@@ -1,102 +1,29 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../cubits/groups/groups_cubit.dart';
-import '../../cubits/shop/shop_cubit.dart';
+import '../../cubits/auth/auth_cubit.dart';
 import '../../data/api_client.dart';
-import '../../data/auth_data_source.dart';
-import '../../session/app_session.dart';
 import 'app_nav_bar.dart';
 
 /// The persistent scaffold that wraps all tab screens.
-/// Owns the bottom nav bar and the dev user switcher.
 class AppShell extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
-  final AppSession session;
   final ApiClient apiClient;
-  final AuthDataSource authDataSource;
+  final AuthCubit authCubit;
+
   const AppShell({
     super.key,
     required this.navigationShell,
-    required this.session,
     required this.apiClient,
-    required this.authDataSource,
+    required this.authCubit,
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: navigationShell,
-      bottomNavigationBar: GestureDetector(
-        // Long-press the nav bar to open the dev user switcher (debug builds only).
-        onLongPress: kDebugMode
-            ? () => _showUserSwitcher(context)
-            : null,
-        child: AppNavBar(
-          currentIndex: navigationShell.currentIndex,
-          onTap: (i) => navigationShell.goBranch(i),
-        ),
-      ),
-    );
-  }
-
-  void _showUserSwitcher(BuildContext context) {
-    const users = [
-      (email: 'andrew@menuapp.dev', name: 'Andrew'),
-      (email: 'claire@menuapp.dev', name: 'Claire'),
-      (email: 'matt@menuapp.dev',   name: 'Matt'),
-    ];
-
-    showModalBottomSheet(
-      context: context,
-      builder: (_) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Padding(
-              padding: EdgeInsets.fromLTRB(20, 16, 20, 8),
-              child: Row(
-                children: [
-                  Icon(Icons.bug_report_outlined, size: 18),
-                  SizedBox(width: 8),
-                  Text('Dev user switcher',
-                      style: TextStyle(fontWeight: FontWeight.w600)),
-                ],
-              ),
-            ),
-            ...users.map((u) => ListTile(
-                  title: Text(u.name),
-                  subtitle: Text(u.email),
-                  leading: CircleAvatar(child: Text(u.name[0])),
-                  trailing: session.userName == u.name
-                      ? const Icon(Icons.check, color: Colors.green)
-                      : null,
-                  onTap: () async {
-                    Navigator.of(context).pop();
-                    try {
-                      final result = await authDataSource.devLogin(u.email);
-                      apiClient.setToken(result.accessToken);
-                      session.switchUser(userId: result.userId, userName: result.userName);
-                      if (context.mounted) {
-                        context.read<GroupsCubit>().loadGroups();
-                        context.read<ShopCubit>().load();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Switched to ${result.userName}')),
-                        );
-                      }
-                    } catch (e) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Switch failed: $e')),
-                        );
-                      }
-                    }
-                  },
-                )),
-            const SizedBox(height: 8),
-          ],
-        ),
+      bottomNavigationBar: AppNavBar(
+        currentIndex: navigationShell.currentIndex,
+        onTap: (i) => navigationShell.goBranch(i),
       ),
     );
   }

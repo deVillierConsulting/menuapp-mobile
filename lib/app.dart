@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'cubits/auth/auth_cubit.dart';
+import 'cubits/groups/groups_cubit.dart';
+import 'cubits/shop/shop_cubit.dart';
 import 'data/api_client.dart';
 import 'data/auth_data_source.dart';
 import 'data/groups_data_source.dart';
 import 'data/menus_data_source.dart';
 import 'data/recipes_data_source.dart';
 import 'data/shop_data_source.dart';
-import 'package:go_router/go_router.dart';
-import 'cubits/groups/groups_cubit.dart';
-import 'cubits/shop/shop_cubit.dart';
 import 'router.dart';
-import 'session/app_session.dart';
 import 'theme/app_theme.dart';
 
 class MenuApp extends StatefulWidget {
@@ -21,64 +20,70 @@ class MenuApp extends StatefulWidget {
 }
 
 class _MenuAppState extends State<MenuApp> {
-  // These are created once in initState and live for the entire app lifetime.
-  // If they lived in build(), every rebuild would create new instances and
-  // reset AppSession back to its default — killing the dev user switcher.
   late final ApiClient _apiClient;
   late final AuthDataSource _authDataSource;
   late final GroupsDataSource _groupsDataSource;
   late final MenusDataSource _menusDataSource;
   late final RecipesDataSource _recipesDataSource;
   late final ShopDataSource _shopDataSource;
-  late final AppSession _session;
-  late final GoRouter _router;
+  late final AuthCubit _authCubit;
+  late final GroupsCubit _groupsCubit;
+  late final ShopCubit _shopCubit;
 
   @override
   void initState() {
     super.initState();
-    _apiClient = ApiClient(baseUrl: 'http://192.168.1.105:8000');
-
+    _apiClient         = ApiClient(baseUrl: 'http://192.168.1.105:8000');
     _authDataSource    = AuthDataSource(_apiClient);
     _groupsDataSource  = GroupsDataSource(_apiClient);
     _menusDataSource   = MenusDataSource(_apiClient);
     _recipesDataSource = RecipesDataSource(_apiClient);
     _shopDataSource    = ShopDataSource(_apiClient);
 
-    // Placeholder session — _init() overwrites it once the token lands.
-    _session = AppSession(userId: 0, userName: '');
+    _authCubit   = AuthCubit(_authDataSource, _apiClient);
+    _groupsCubit = GroupsCubit(_groupsDataSource);
+    _shopCubit   = ShopCubit(_shopDataSource);
 
-    _router = buildRouter(
-      session:           _session,
+    // Check for an existing Supabase session and validate it with the backend.
+    // AuthCubit emits AuthAuthenticated → router redirects to /groups.
+    // If no session, emits AuthUnauthenticated → router redirects to /login.
+    _authCubit.initialize().then((_) {
+      if (_authCubit.state is AuthAuthenticated) {
+        _groupsCubit.loadGroups();
+        _shopCubit.load();
+      }
+    });
+
+    // Reload data whenever the user signs in (or switches accounts).
+    _authCubit.stream.listen((state) {
+      if (state is AuthAuthenticated) {
+        _groupsCubit.loadGroups();
+        _shopCubit.load();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final router = buildRouter(
+      authCubit:         _authCubit,
       apiClient:         _apiClient,
-      authDataSource:    _authDataSource,
       groupsDataSource:  _groupsDataSource,
       menusDataSource:   _menusDataSource,
       recipesDataSource: _recipesDataSource,
       shopDataSource:    _shopDataSource,
     );
 
-    _init();
-  }
-
-  Future<void> _init() async {
-    // Dev-login: exchange a known email for a JWT and populate the session.
-    // When real auth arrives this becomes a proper sign-in flow.
-    final result = await _authDataSource.devLogin('andrew@menuapp.dev');
-    _apiClient.setToken(result.accessToken);
-    _session.switchUser(userId: result.userId, userName: result.userName);
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => GroupsCubit(_groupsDataSource)..loadGroups()),
-        BlocProvider(create: (_) => ShopCubit(_shopDataSource)..load()),
+        BlocProvider.value(value: _authCubit),
+        BlocProvider.value(value: _groupsCubit),
+        BlocProvider.value(value: _shopCubit),
       ],
       child: MaterialApp.router(
         title: 'MenuApp',
         theme: buildTheme(),
-        routerConfig: _router,
+        routerConfig: router,
       ),
     );
   }

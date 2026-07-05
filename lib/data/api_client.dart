@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class ApiException implements Exception {
@@ -58,10 +59,14 @@ class ApiClient {
         throw ApiException(0, 'Unknown method: $method');
     }
 
+    debugPrint('[ApiClient] $method $path → ${response.statusCode}');
+
     if (response.statusCode == 204) return null;
 
     if (response.statusCode >= 400) {
       final detail = _parseDetail(response.body);
+      debugPrint('[ApiClient]   body: ${response.body}');
+      debugPrint('[ApiClient]   token present: ${_token != null}');
       throw ApiException(response.statusCode, detail);
     }
 
