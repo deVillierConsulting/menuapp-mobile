@@ -1,0 +1,1071 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MenuApp · Flow 01 · Home Screen</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+/* ── Tokens ──────────────────────────────────────────────────────────── */
+:root {
+  --canvas:   #FAFAF8;
+  --surface:  #FFFFFF;
+  --ink:      #1C1917;
+  --ink-2:    #57534E;
+  --ink-3:    #A8A29E;
+  --ink-4:    #D6D3D1;
+  --line:     #E7E5E4;
+  --field:    #F5F5F4;
+  --accent:   #F97316;
+  --accent-d: #C2570A;
+  --ok:       #16A34A;
+  --ok-bg:    #DCFCE7;
+  --warn:     #D97706;
+  --bezel:    #2C2820;
+  --bezel-2:  #3D3530;
+  --doc-bg:   #FAFAF8;
+  --anno-bg:  #F0EFEC;
+  --anno-line:#E7E5E4;
+  --serif:    Georgia, 'Times New Roman', serif;
+  --sans:     -apple-system, 'SF Pro Text', 'Helvetica Neue', system-ui, sans-serif;
+  --mono:     ui-monospace, 'SF Mono', 'Roboto Mono', monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --doc-bg:  #1C1917;
+    --canvas:  #1C1917;
+    --anno-bg: #262220;
+    --anno-line:#3A3530;
+    --ink:     #FAF9F7;
+    --ink-2:   #C4B8B0;
+    --ink-3:   #8C837D;
+    --ink-4:   #4A4540;
+    --line:    #3A3530;
+  }
+}
+:root[data-theme="dark"] {
+  --doc-bg:  #1C1917;
+  --canvas:  #1C1917;
+  --anno-bg: #262220;
+  --anno-line:#3A3530;
+  --ink:     #FAF9F7;
+  --ink-2:   #C4B8B0;
+  --ink-3:   #8C837D;
+  --ink-4:   #4A4540;
+  --line:    #3A3530;
+}
+:root[data-theme="light"] {
+  --doc-bg:   #FAFAF8;
+  --canvas:   #FAFAF8;
+  --anno-bg:  #F0EFEC;
+  --anno-line:#E7E5E4;
+  --ink:      #1C1917;
+  --ink-2:    #57534E;
+  --ink-3:    #A8A29E;
+  --ink-4:    #D6D3D1;
+  --line:     #E7E5E4;
+}
+
+/* ── Reset ───────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: var(--doc-bg); color: var(--ink); font-family: var(--sans); font-size: 14px; }
+body { min-height: 100vh; background: var(--doc-bg); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* ── Document header ─────────────────────────────────────────────────── */
+.doc-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 20px 32px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.doc-eyebrow {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .08em;
+  color: var(--ink-3);
+  text-transform: uppercase;
+}
+.doc-title {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: normal;
+  color: var(--ink);
+  margin-top: 2px;
+  text-wrap: balance;
+}
+.doc-meta {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink-3);
+  text-align: right;
+  line-height: 1.6;
+}
+
+/* ── Storyboard ──────────────────────────────────────────────────────── */
+.storyboard-scroll { overflow-x: auto; padding: 36px 32px 0; }
+.storyboard {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  min-width: max-content;
+}
+.frame-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 240px;
+}
+.frame-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 6px;
+}
+.frame-name {
+  font-family: var(--serif);
+  font-size: 13px;
+  color: var(--ink);
+  margin-bottom: 12px;
+  text-align: center;
+  text-wrap: balance;
+}
+.frame-name em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+/* ── Connector ───────────────────────────────────────────────────────── */
+.connector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  padding-top: 68px;
+  flex-shrink: 0;
+}
+.conn-line {
+  width: 36px;
+  height: 1px;
+  border-top: 1.5px dashed var(--ink-4);
+}
+.conn-arrow {
+  width: 0; height: 0;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 5px solid var(--ink-4);
+  margin-left: -1px;
+}
+.conn-label {
+  margin-top: 6px;
+  font-family: var(--mono);
+  font-size: 8px;
+  color: var(--ink-3);
+  text-align: center;
+  max-width: 52px;
+  line-height: 1.4;
+}
+
+/* ── Phone frame ─────────────────────────────────────────────────────── */
+.phone {
+  width: 220px;
+  height: 472px;
+  background: var(--bezel);
+  border-radius: 38px;
+  padding: 8px;
+  box-shadow:
+    0 0 0 1px var(--bezel-2),
+    0 20px 60px rgba(0,0,0,.22),
+    0 4px 12px rgba(0,0,0,.12);
+  position: relative;
+  flex-shrink: 0;
+}
+.phone-screen {
+  width: 100%;
+  height: 100%;
+  background: #FAFAF8;
+  border-radius: 31px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Dynamic island */
+.dynamic-island {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 78px;
+  height: 22px;
+  background: var(--bezel);
+  border-radius: 20px;
+  z-index: 10;
+}
+
+/* Status bar */
+.status-bar {
+  height: 44px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 16px 6px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+.status-time {
+  font-size: 11px;
+  font-weight: 600;
+  color: #1C1917;
+  letter-spacing: -.3px;
+}
+.status-icons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Screen content */
+.screen-content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Tab bar */
+.tab-bar {
+  height: 68px;
+  background: #FFFFFF;
+  border-top: 1px solid #E7E5E4;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 12px;
+  padding-bottom: 14px;
+  flex-shrink: 0;
+}
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  flex: 1;
+}
+.tab-label {
+  font-size: 8.5px;
+  font-weight: 600;
+  color: #A8A29E;
+}
+.tab.active .tab-label { color: #F97316; }
+
+/* ── Phone UI components ─────────────────────────────────────────────── */
+.screen-header {
+  padding: 4px 16px 10px;
+  flex-shrink: 0;
+}
+.screen-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1C1917;
+  letter-spacing: -.4px;
+  line-height: 1.15;
+}
+.screen-subtitle {
+  font-size: 10.5px;
+  color: #A8A29E;
+  margin-top: 2px;
+}
+.group-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: #F5F5F4;
+  border: 1px solid #E7E5E4;
+  border-radius: 20px;
+  padding: 3px 8px 3px 6px;
+  font-size: 9px;
+  font-weight: 600;
+  color: #57534E;
+  margin-bottom: 6px;
+}
+.group-dot {
+  width: 14px; height: 14px;
+  background: #FED7AA;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 7px; font-weight: 700; color: #C2570A;
+}
+.btn-primary {
+  background: #F97316;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 10px 14px;
+  width: 100%;
+  text-align: center;
+  cursor: pointer;
+  letter-spacing: -.1px;
+}
+.btn-outline {
+  background: transparent;
+  color: #F97316;
+  border: 1.5px solid #F97316;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 8px 14px;
+  width: 100%;
+  text-align: center;
+}
+.btn-green {
+  background: #16A34A;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 10px 14px;
+  width: 100%;
+  text-align: center;
+}
+.link-muted {
+  font-size: 9.5px;
+  color: #A8A29E;
+  text-align: center;
+  text-decoration: underline;
+  text-decoration-color: #D6D3D1;
+}
+.divider { height: 1px; background: #E7E5E4; margin: 10px 0; }
+
+/* Recipe vote card */
+.vote-card {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,.12);
+  background: #fff;
+  flex-shrink: 0;
+}
+.vote-card-photo {
+  height: 118px;
+  background:
+    linear-gradient(to bottom, transparent 30%, rgba(0,0,0,.55) 100%),
+    linear-gradient(135deg, #FDE68A 0%, #FB923C 45%, #9A3412 100%);
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  padding: 10px 12px;
+}
+.vote-card-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -.2px;
+  line-height: 1.2;
+  text-shadow: 0 1px 3px rgba(0,0,0,.3);
+}
+.vote-card-body {
+  padding: 8px 12px 10px;
+}
+.tag-row {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 5px;
+  flex-wrap: wrap;
+}
+.tag {
+  font-size: 8px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 20px;
+  letter-spacing: .02em;
+}
+.tag-cuisine { background: #F0FDFA; color: #0F766E; }
+.tag-dietary { background: #FFF7ED; color: #C2570A; }
+.vote-meta { font-size: 9px; color: #A8A29E; }
+
+.vote-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  justify-content: center;
+}
+.vote-btn {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,.1);
+}
+.vote-btn-skip { background: #F5F5F4; border: 1.5px solid #E7E5E4; }
+.vote-btn-ok   { background: #16A34A; }
+
+/* Progress bar */
+.progress-row {
+  padding: 0 16px 8px;
+  flex-shrink: 0;
+}
+.progress-label {
+  font-size: 9px;
+  color: #A8A29E;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+}
+.progress-track {
+  height: 3px;
+  background: #E7E5E4;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: #F97316;
+  border-radius: 2px;
+}
+
+/* Empty state */
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 20px 10px;
+  gap: 8px;
+}
+.empty-icon {
+  width: 52px; height: 52px;
+  background: #FFF7ED;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+/* Caught-up state */
+.caught-up {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 16px 0;
+}
+.check-circle {
+  width: 48px; height: 48px;
+  background: #DCFCE7;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+.waiting-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #F5F5F4;
+  border-radius: 10px;
+  padding: 7px 10px;
+  width: 100%;
+  margin-top: 8px;
+}
+.avatar-sm {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: #FED7AA;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px; font-weight: 700; color: #C2570A;
+  flex-shrink: 0;
+}
+
+/* Recipe mini row */
+.recipe-mini {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid #E7E5E4;
+}
+.recipe-mini:last-child { border-bottom: none; }
+.recipe-thumb {
+  width: 32px; height: 32px;
+  border-radius: 7px;
+  flex-shrink: 0;
+}
+.recipe-mini-name {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: #1C1917;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.recipe-mini-sub {
+  font-size: 8px;
+  color: #A8A29E;
+}
+.vote-badge {
+  width: 16px; height: 16px;
+  background: #DCFCE7;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Finalized pill */
+.finalized-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #DCFCE7;
+  color: #16A34A;
+  border-radius: 20px;
+  padding: 3px 8px;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  margin-bottom: 6px;
+}
+
+/* ── Annotations ─────────────────────────────────────────────────────── */
+.annotations {
+  display: flex;
+  min-width: max-content;
+  padding: 0 32px;
+  gap: 60px;
+  margin-top: 0;
+}
+.anno-col {
+  width: 240px;
+  flex-shrink: 0;
+}
+.anno-block {
+  background: var(--anno-bg);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-top: 14px;
+  border-left: 2.5px solid var(--line);
+}
+.anno-block.accent { border-left-color: var(--accent); }
+.anno-block.green  { border-left-color: var(--ok); }
+.anno-hed {
+  font-family: var(--mono);
+  font-size: 8.5px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 5px;
+}
+.anno-body {
+  font-size: 10.5px;
+  color: var(--ink-2);
+  line-height: 1.55;
+}
+.anno-body strong { color: var(--ink); font-weight: 600; }
+
+/* ── Design notes section ────────────────────────────────────────────── */
+.design-notes {
+  margin: 48px 32px 56px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  max-width: 760px;
+}
+.note-card {
+  background: var(--anno-bg);
+  border-radius: 12px;
+  padding: 18px 20px;
+}
+.note-hed {
+  font-family: var(--serif);
+  font-size: 14px;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+.note-body {
+  font-size: 11px;
+  color: var(--ink-2);
+  line-height: 1.6;
+}
+.note-card.full { grid-column: span 2; }
+.open-q {
+  border-left: 2.5px solid var(--warn);
+  padding-left: 12px;
+}
+.open-q .note-hed { color: var(--warn); }
+
+/* section divider */
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 36px 32px 20px;
+}
+.section-divider-label {
+  font-family: var(--serif);
+  font-size: 16px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.section-divider-line {
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+</style>
+</head>
+<body>
+
+<!-- Document header -->
+<header class="doc-header">
+  <div>
+    <div class="doc-eyebrow">MenuApp · Flow 01 of 06</div>
+    <h1 class="doc-title">Home Screen — Context States</h1>
+  </div>
+  <div class="doc-meta">
+    v2 IA Redesign<br>
+    July 2026
+  </div>
+</header>
+
+<!-- Storyboard -->
+<div class="storyboard-scroll">
+<div class="storyboard">
+
+  <!-- ── State 1: No Groups ── -->
+  <div class="frame-col">
+    <div class="frame-label">State 01</div>
+    <div class="frame-name">Empty — No Groups</div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg width="13" height="9" viewBox="0 0 13 9" fill="none"><rect x="0" y="3" width="2.5" height="6" rx="0.5" fill="#1C1917" opacity=".35"/><rect x="3.5" y="2" width="2.5" height="7" rx="0.5" fill="#1C1917" opacity=".55"/><rect x="7" y="0.5" width="2.5" height="8.5" rx="0.5" fill="#1C1917" opacity=".8"/><rect x="10.5" y="0" width="2.5" height="9" rx="0.5" fill="#1C1917"/></svg>
+            <svg width="14" height="10" viewBox="0 0 14 10" fill="none"><path d="M7 2.5C9.2 2.5 11.1 3.5 12.4 5L13.5 3.8C11.9 2.1 9.6 1 7 1C4.4 1 2.1 2.1 0.5 3.8L1.6 5C2.9 3.5 4.8 2.5 7 2.5Z" fill="#1C1917" opacity=".35"/><path d="M7 5C8.4 5 9.6 5.6 10.5 6.6L11.6 5.4C10.4 4.1 8.8 3.3 7 3.3C5.2 3.3 3.6 4.1 2.4 5.4L3.5 6.6C4.4 5.6 5.6 5 7 5Z" fill="#1C1917" opacity=".7"/><circle cx="7" cy="8.5" r="1.2" fill="#1C1917"/></svg>
+            <svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x="0.5" y="0.5" width="18" height="9" rx="2.5" stroke="#1C1917" stroke-opacity=".35"/><rect x="1.5" y="1.5" width="14" height="7" rx="1.5" fill="#1C1917"/><path d="M19.5 3.5V6.5C20.3 6.2 21 5.5 21 5C21 4.5 20.3 3.8 19.5 3.5Z" fill="#1C1917" opacity=".4"/></svg>
+          </div>
+        </div>
+        <div class="empty-state">
+          <div class="empty-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+          </div>
+          <div style="font-size:14px;font-weight:700;color:#1C1917;text-align:center;letter-spacing:-.3px;line-height:1.2">Ready to start<br>planning together?</div>
+          <div style="font-size:10px;color:#A8A29E;text-align:center;line-height:1.5;max-width:160px">Create a group with your partner or household to get started.</div>
+          <div style="width:100%;margin-top:4px">
+            <div class="btn-primary">Create your first group →</div>
+          </div>
+          <div class="link-muted" style="margin-top:6px">Browse recipes first</div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab active">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span class="tab-label">Home</span>
+          </div>
+          <div class="tab">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A8A29E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            <span class="tab-label">Recipes</span>
+          </div>
+          <div class="tab">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A8A29E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            <span class="tab-label">Shop</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Connector 1→2 -->
+  <div class="connector">
+    <div style="display:flex;align-items:center">
+      <div class="conn-line"></div>
+      <div class="conn-arrow"></div>
+    </div>
+    <div class="conn-label">group created</div>
+  </div>
+
+  <!-- ── State 2: Group, No Menu ── -->
+  <div class="frame-col">
+    <div class="frame-label">State 02</div>
+    <div class="frame-name">Planning — No Active Menu</div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg width="13" height="9" viewBox="0 0 13 9" fill="none"><rect x="0" y="3" width="2.5" height="6" rx="0.5" fill="#1C1917" opacity=".35"/><rect x="3.5" y="2" width="2.5" height="7" rx="0.5" fill="#1C1917" opacity=".55"/><rect x="7" y="0.5" width="2.5" height="8.5" rx="0.5" fill="#1C1917" opacity=".8"/><rect x="10.5" y="0" width="2.5" height="9" rx="0.5" fill="#1C1917"/></svg>
+            <svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x="0.5" y="0.5" width="18" height="9" rx="2.5" stroke="#1C1917" stroke-opacity=".35"/><rect x="1.5" y="1.5" width="14" height="7" rx="1.5" fill="#1C1917"/><path d="M19.5 3.5V6.5C20.3 6.2 21 5.5 21 5C21 4.5 20.3 3.8 19.5 3.5Z" fill="#1C1917" opacity=".4"/></svg>
+          </div>
+        </div>
+        <div class="screen-content" style="padding:0 16px;gap:0">
+          <div style="padding-bottom:8px">
+            <div class="group-pill">
+              <div class="group-dot">H</div>
+              House <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#A8A29E" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="screen-title">What's for<br>dinner?</div>
+            <div class="screen-subtitle">Week of Jul 7 · No meals planned yet</div>
+          </div>
+          <div style="background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:14px;padding:14px;margin-bottom:10px">
+            <div style="font-size:10.5px;font-weight:700;color:#1C1917;margin-bottom:3px">Plan this week</div>
+            <div style="font-size:9.5px;color:#57534E;line-height:1.45;margin-bottom:10px">Pick recipes together and vote on what sounds good. Takes 2 minutes.</div>
+            <div class="btn-primary" style="border-radius:10px;padding:9px 14px;font-size:10.5px">Plan this week →</div>
+          </div>
+          <div class="divider"></div>
+          <div style="font-size:9.5px;color:#A8A29E;text-align:center">or browse recipes to get inspired</div>
+          <div style="flex:1"></div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab active">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span class="tab-label">Home</span>
+          </div>
+          <div class="tab">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A8A29E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            <span class="tab-label">Recipes</span>
+          </div>
+          <div class="tab">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A8A29E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            <span class="tab-label">Shop</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Connector 2→3 -->
+  <div class="connector">
+    <div style="display:flex;align-items:center">
+      <div class="conn-line"></div>
+      <div class="conn-arrow"></div>
+    </div>
+    <div class="conn-label">recipes added to menu</div>
+  </div>
+
+  <!-- ── State 3: Voting ── -->
+  <div class="frame-col">
+    <div class="frame-label">State 03 · <em style="color:#F97316;font-style:normal">The Hook</em></div>
+    <div class="frame-name">Active Menu — <em>Vote Now</em></div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg width="13" height="9" viewBox="0 0 13 9" fill="none"><rect x="0" y="3" width="2.5" height="6" rx="0.5" fill="#1C1917" opacity=".35"/><rect x="3.5" y="2" width="2.5" height="7" rx="0.5" fill="#1C1917" opacity=".55"/><rect x="7" y="0.5" width="2.5" height="8.5" rx="0.5" fill="#1C1917" opacity=".8"/><rect x="10.5" y="0" width="2.5" height="9" rx="0.5" fill="#1C1917"/></svg>
+            <svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x="0.5" y="0.5" width="18" height="9" rx="2.5" stroke="#1C1917" stroke-opacity=".35"/><rect x="1.5" y="1.5" width="14" height="7" rx="1.5" fill="#1C1917"/><path d="M19.5 3.5V6.5C20.3 6.2 21 5.5 21 5C21 4.5 20.3 3.8 19.5 3.5Z" fill="#1C1917" opacity=".4"/></svg>
+          </div>
+        </div>
+        <div class="screen-content" style="padding:0 14px 10px">
+          <div style="padding-bottom:6px">
+            <div class="group-pill">
+              <div class="group-dot">H</div>
+              House · Week of Jul 7
+            </div>
+          </div>
+          <div class="progress-row" style="padding:0 0 8px">
+            <div class="progress-label">
+              <span>Your votes</span>
+              <span>3 of 8</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill" style="width:37.5%"></div></div>
+          </div>
+          <div class="vote-card">
+            <div class="vote-card-photo">
+              <div class="vote-card-name">Chicken Tikka<br>Masala</div>
+            </div>
+            <div class="vote-card-body">
+              <div class="tag-row">
+                <span class="tag tag-cuisine">Indian</span>
+                <span class="tag tag-dietary">Gluten-free</span>
+              </div>
+              <div class="vote-meta">520 cal · 35 min · Serves 4</div>
+            </div>
+          </div>
+          <div class="vote-buttons">
+            <div class="vote-btn vote-btn-skip">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A8A29E" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </div>
+            <div class="vote-btn vote-btn-ok">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+          </div>
+          <div class="link-muted" style="margin-top:8px">Skip for now</div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab active">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span class="tab-label">Home</span>
+          </div>
+          <div class="tab">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A8A29E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            <span class="tab-label">Recipes</span>
+          </div>
+          <div class="tab">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A8A29E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            <span class="tab-label">Shop</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Connector 3→4 -->
+  <div class="connector">
+    <div style="display:flex;align-items:center">
+      <div class="conn-line"></div>
+      <div class="conn-arrow"></div>
+    </div>
+    <div class="conn-label">all your votes cast</div>
+  </div>
+
+  <!-- ── State 4: All Voted ── -->
+  <div class="frame-col">
+    <div class="frame-label">State 04</div>
+    <div class="frame-name">Waiting — Others Still Voting</div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg width="13" height="9" viewBox="0 0 13 9" fill="none"><rect x="0" y="3" width="2.5" height="6" rx="0.5" fill="#1C1917" opacity=".35"/><rect x="3.5" y="2" width="2.5" height="7" rx="0.5" fill="#1C1917" opacity=".55"/><rect x="7" y="0.5" width="2.5" height="8.5" rx="0.5" fill="#1C1917" opacity=".8"/><rect x="10.5" y="0" width="2.5" height="9" rx="0.5" fill="#1C1917"/></svg>
+            <svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x="0.5" y="0.5" width="18" height="9" rx="2.5" stroke="#1C1917" stroke-opacity=".35"/><rect x="1.5" y="1.5" width="14" height="7" rx="1.5" fill="#1C1917"/><path d="M19.5 3.5V6.5C20.3 6.2 21 5.5 21 5C21 4.5 20.3 3.8 19.5 3.5Z" fill="#1C1917" opacity=".4"/></svg>
+          </div>
+        </div>
+        <div class="screen-content" style="padding:0 16px 10px">
+          <div style="padding-bottom:6px">
+            <div class="group-pill">
+              <div class="group-dot">H</div>
+              House · Week of Jul 7
+            </div>
+          </div>
+          <div class="caught-up">
+            <div class="check-circle">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div style="font-size:13px;font-weight:700;color:#1C1917;letter-spacing:-.2px">You're all caught up</div>
+            <div style="font-size:9.5px;color:#A8A29E;text-align:center;margin-bottom:2px">Waiting on others to finish voting</div>
+            <div class="waiting-row">
+              <div class="avatar-sm">C</div>
+              <div style="flex:1">
+                <div style="font-size:9.5px;font-weight:600;color:#1C1917">Claire</div>
+                <div style="font-size:8.5px;color:#A8A29E">2 recipes left to vote on</div>
+              </div>
+            </div>
+          </div>
+          <div style="padding:0;margin-top:12px">
+            <div style="font-size:8.5px;font-weight:600;color:#A8A29E;letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px">Leading so far</div>
+            <div class="recipe-mini">
+              <div class="recipe-thumb" style="background:linear-gradient(135deg,#FDE68A,#FB923C)"></div>
+              <div style="flex:1"><div class="recipe-mini-name">Chicken Tikka Masala</div><div class="recipe-mini-sub">Both approved</div></div>
+              <div class="vote-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            </div>
+            <div class="recipe-mini">
+              <div class="recipe-thumb" style="background:linear-gradient(135deg,#BBF7D0,#059669)"></div>
+              <div style="flex:1"><div class="recipe-mini-name">Smash Burgers</div><div class="recipe-mini-sub">You approved</div></div>
+              <div class="vote-badge" style="background:#FFF7ED"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            </div>
+          </div>
+          <div style="margin-top:10px">
+            <div class="btn-outline" style="border-radius:10px;font-size:10px;padding:8px">Remind Claire →</div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab active">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span class="tab-label">Home</span>
+          </div>
+          <div class="tab">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A8A29E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            <span class="tab-label">Recipes</span>
+          </div>
+          <div class="tab">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A8A29E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            <span class="tab-label">Shop</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Connector 4→5 -->
+  <div class="connector">
+    <div style="display:flex;align-items:center">
+      <div class="conn-line"></div>
+      <div class="conn-arrow"></div>
+    </div>
+    <div class="conn-label">menu finalized</div>
+  </div>
+
+  <!-- ── State 5: Finalized ── -->
+  <div class="frame-col">
+    <div class="frame-label">State 05</div>
+    <div class="frame-name">Finalized — Ready to Shop</div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg width="13" height="9" viewBox="0 0 13 9" fill="none"><rect x="0" y="3" width="2.5" height="6" rx="0.5" fill="#1C1917" opacity=".35"/><rect x="3.5" y="2" width="2.5" height="7" rx="0.5" fill="#1C1917" opacity=".55"/><rect x="7" y="0.5" width="2.5" height="8.5" rx="0.5" fill="#1C1917" opacity=".8"/><rect x="10.5" y="0" width="2.5" height="9" rx="0.5" fill="#1C1917"/></svg>
+            <svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x="0.5" y="0.5" width="18" height="9" rx="2.5" stroke="#1C1917" stroke-opacity=".35"/><rect x="1.5" y="1.5" width="14" height="7" rx="1.5" fill="#1C1917"/><path d="M19.5 3.5V6.5C20.3 6.2 21 5.5 21 5C21 4.5 20.3 3.8 19.5 3.5Z" fill="#1C1917" opacity=".4"/></svg>
+          </div>
+        </div>
+        <div class="screen-content" style="padding:0 16px 10px">
+          <div style="padding-bottom:4px">
+            <div class="group-pill">
+              <div class="group-dot">H</div>
+              House · Week of Jul 7
+            </div>
+            <div class="finalized-pill">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Menu finalized
+            </div>
+            <div class="screen-title" style="font-size:18px">This week's meals</div>
+          </div>
+          <div style="flex:1;margin-top:6px">
+            <div class="recipe-mini">
+              <div class="recipe-thumb" style="background:linear-gradient(135deg,#FDE68A,#FB923C)"></div>
+              <div style="flex:1"><div class="recipe-mini-name">Chicken Tikka Masala</div><div class="recipe-mini-sub">Monday</div></div>
+            </div>
+            <div class="recipe-mini">
+              <div class="recipe-thumb" style="background:linear-gradient(135deg,#BBF7D0,#059669)"></div>
+              <div style="flex:1"><div class="recipe-mini-name">Smash Burgers</div><div class="recipe-mini-sub">Wednesday</div></div>
+            </div>
+            <div class="recipe-mini">
+              <div class="recipe-thumb" style="background:linear-gradient(135deg,#BFDBFE,#3B82F6)"></div>
+              <div style="flex:1"><div class="recipe-mini-name">Carne Asada Tacos</div><div class="recipe-mini-sub">Friday</div></div>
+            </div>
+            <div class="recipe-mini">
+              <div class="recipe-thumb" style="background:linear-gradient(135deg,#FCE7F3,#DB2777)"></div>
+              <div style="flex:1"><div class="recipe-mini-name">Pasta Primavera</div><div class="recipe-mini-sub">Sunday</div></div>
+            </div>
+          </div>
+          <div style="margin-top:8px;display:flex;flex-direction:column;gap:6px">
+            <div class="btn-green" style="border-radius:10px;font-size:10.5px;padding:9px">Go shopping →</div>
+            <div class="link-muted">Plan next week</div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab active">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span class="tab-label">Home</span>
+          </div>
+          <div class="tab">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A8A29E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            <span class="tab-label">Recipes</span>
+          </div>
+          <div class="tab">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A8A29E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            <span class="tab-label">Shop</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /storyboard -->
+</div><!-- /storyboard-scroll -->
+
+<!-- Annotations -->
+<div class="annotations" style="margin-top:16px;padding-bottom:0">
+  <div class="anno-col">
+    <div class="anno-block">
+      <div class="anno-hed">Trigger</div>
+      <div class="anno-body">No group memberships. Shown on first launch after registration.</div>
+    </div>
+    <div class="anno-block">
+      <div class="anno-hed">Primary action</div>
+      <div class="anno-body"><strong>Create your first group</strong> → opens group creation form. Secondary escape: browse recipes (free, no auth required).</div>
+    </div>
+  </div>
+  <div class="anno-col" style="margin-left:60px">
+    <div class="anno-block">
+      <div class="anno-hed">Trigger</div>
+      <div class="anno-body">User belongs to a group but no menu exists for the current or upcoming week.</div>
+    </div>
+    <div class="anno-block accent">
+      <div class="anno-hed">One-tap menu creation</div>
+      <div class="anno-body"><strong>"Plan this week →"</strong> auto-names the menu <em>"Week of Jul 7"</em>, skips the form entirely, and drops directly into the recipe picker. Name is editable later from menu detail.</div>
+    </div>
+  </div>
+  <div class="anno-col" style="margin-left:60px">
+    <div class="anno-block accent">
+      <div class="anno-hed">The hook — design priority</div>
+      <div class="anno-body">This is the state most active users see on open. <strong>It must be instant and satisfying.</strong> Swipe right to approve, left to skip. No tap required — the gesture IS the vote.</div>
+    </div>
+    <div class="anno-block">
+      <div class="anno-hed">Progress indicator</div>
+      <div class="anno-body">Shows personal vote progress only ("3 of 8"), not household totals — reduces social pressure to vote a certain way.</div>
+    </div>
+  </div>
+  <div class="anno-col" style="margin-left:60px">
+    <div class="anno-block">
+      <div class="anno-hed">Trigger</div>
+      <div class="anno-body">User has voted on all recipes. At least one other member still has uncast votes.</div>
+    </div>
+    <div class="anno-block">
+      <div class="anno-hed">Nudge action</div>
+      <div class="anno-body"><strong>"Remind Claire →"</strong> sends a push notification (task #42). Should feel casual, not nagging — rate-limited to once per day per recipient.</div>
+    </div>
+  </div>
+  <div class="anno-col" style="margin-left:60px">
+    <div class="anno-block green">
+      <div class="anno-hed">Cycle completion</div>
+      <div class="anno-body">The week feels resolved. <strong>"Go shopping →"</strong> routes to the Shop tab with the grocery list pre-loaded. <strong>"Plan next week"</strong> restarts the cycle — keeps momentum going.</div>
+    </div>
+    <div class="anno-block">
+      <div class="anno-hed">Day assignment</div>
+      <div class="anno-body">Day-of-week labels ("Monday", "Wednesday") are a future enhancement — see calendar UI task #TBD. For now, ordering reflects vote score.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Design notes -->
+<div class="section-divider" style="padding-top:48px">
+  <div class="section-divider-label">Design decisions</div>
+  <div class="section-divider-line"></div>
+</div>
+<div class="design-notes">
+  <div class="note-card">
+    <div class="note-hed">Why Home, not Groups</div>
+    <div class="note-body">The previous Groups tab organized the app around management. Most users have one group. Making them navigate Group → Menu → Vote on every open added 2–3 unnecessary taps before they could do anything meaningful. Home is context-aware: it shows the most relevant action for where the user is in the planning cycle, with no navigation required.</div>
+  </div>
+  <div class="note-card">
+    <div class="note-hed">Group switcher — multi-group users</div>
+    <div class="note-body">The "House ▾" pill in the header is a lightweight group switcher. Tap to open a compact sheet listing all groups. The app remembers your last active group across sessions. Multi-group users are a minority — the switcher should feel secondary, not prominent.</div>
+  </div>
+  <div class="note-card open-q">
+    <div class="note-hed">Open: swipe vs. button voting</div>
+    <div class="note-body">State 3 shows explicit approve/skip buttons. The existing implementation has swipe-to-vote already. The home screen version should use swipe — more satisfying, faster, and the card stack metaphor is familiar. Needs a subtle swipe hint on first use (e.g., a brief card tilt animation on load).</div>
+  </div>
+  <div class="note-card open-q">
+    <div class="note-hed">Open: monetization gate placement</div>
+    <div class="note-body">Group creation is the proposed paywall boundary. State 1 is where most new users will encounter it. The CTA copy ("Create your first group") needs to feel like an invitation, not a purchase decision. Consider showing a value prop screen before the paywall — show what a finalized menu week looks like before asking for payment.</div>
+  </div>
+  <div class="note-card full">
+    <div class="note-hed">State transitions and data requirements</div>
+    <div class="note-body" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:12px;margin-top:4px">
+      <div><strong style="font-size:10px;display:block;margin-bottom:4px">→ State 1</strong>No group membership rows for this user.</div>
+      <div><strong style="font-size:10px;display:block;margin-bottom:4px">→ State 2</strong>Group exists. No menu with status = active or planning for current week.</div>
+      <div><strong style="font-size:10px;display:block;margin-bottom:4px">→ State 3</strong>Active menu exists. Current user has at least 1 unvoted recipe.</div>
+      <div><strong style="font-size:10px;display:block;margin-bottom:4px">→ State 4</strong>Active menu exists. Current user has voted on all recipes. Others have not.</div>
+      <div><strong style="font-size:10px;display:block;margin-bottom:4px">→ State 5</strong>Menu status = finalized.</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

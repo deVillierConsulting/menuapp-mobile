@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MenuApp · Flow 02 · Auth</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --canvas: #FAFAF8; --surface: #FFFFFF; --ink: #1C1917; --ink-2: #57534E;
+  --ink-3: #A8A29E; --ink-4: #D6D3D1; --line: #E7E5E4; --field: #F5F5F4;
+  --accent: #F97316; --ok: #16A34A; --bezel: #2C2820; --bezel-2: #3D3530;
+  --doc-bg: #FAFAF8; --anno-bg: #F0EFEC; --serif: Georgia,'Times New Roman',serif;
+  --sans: -apple-system,'SF Pro Text','Helvetica Neue',system-ui,sans-serif;
+  --mono: ui-monospace,'SF Mono','Roboto Mono',monospace;
+}
+@media (prefers-color-scheme: dark) { :root { --doc-bg:#1C1917;--anno-bg:#262220;--ink:#FAF9F7;--ink-2:#C4B8B0;--ink-3:#8C837D;--ink-4:#4A4540;--line:#3A3530; } }
+:root[data-theme="dark"] { --doc-bg:#1C1917;--anno-bg:#262220;--ink:#FAF9F7;--ink-2:#C4B8B0;--ink-3:#8C837D;--ink-4:#4A4540;--line:#3A3530; }
+:root[data-theme="light"] { --doc-bg:#FAFAF8;--anno-bg:#F0EFEC;--ink:#1C1917;--ink-2:#57534E;--ink-3:#A8A29E;--ink-4:#D6D3D1;--line:#E7E5E4; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: var(--doc-bg); color: var(--ink); font-family: var(--sans); font-size: 14px; }
+body { min-height: 100vh; }
+
+.doc-header { display:flex;align-items:baseline;justify-content:space-between;padding:20px 32px 16px;border-bottom:1px solid var(--line); }
+.doc-eyebrow { font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-3);text-transform:uppercase; }
+.doc-title { font-family:var(--serif);font-size:22px;font-weight:normal;color:var(--ink);margin-top:2px; }
+.doc-meta { font-family:var(--mono);font-size:10px;color:var(--ink-3);text-align:right;line-height:1.6; }
+
+.storyboard-scroll { overflow-x:auto;padding:36px 32px 0; }
+.storyboard { display:flex;align-items:flex-start;gap:0;min-width:max-content; }
+.frame-col { display:flex;flex-direction:column;align-items:center;width:240px; }
+.frame-label { font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px; }
+.frame-name { font-family:var(--serif);font-size:13px;color:var(--ink);margin-bottom:12px;text-align:center; }
+
+.connector { display:flex;flex-direction:column;align-items:center;justify-content:center;width:60px;padding-top:68px;flex-shrink:0; }
+.conn-line { width:36px;height:1px;border-top:1.5px dashed #D6D3D1; }
+.conn-arrow { width:0;height:0;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:5px solid #D6D3D1;margin-left:-1px; }
+.conn-label { margin-top:6px;font-family:var(--mono);font-size:8px;color:var(--ink-3);text-align:center;max-width:52px;line-height:1.4; }
+.conn-branch { font-family:var(--mono);font-size:8px;color:#F97316;text-align:center;max-width:52px;line-height:1.4;margin-top:2px; }
+
+.phone { width:220px;height:472px;background:var(--bezel);border-radius:38px;padding:8px;box-shadow:0 0 0 1px var(--bezel-2),0 20px 60px rgba(0,0,0,.22),0 4px 12px rgba(0,0,0,.12);position:relative;flex-shrink:0; }
+.phone-screen { width:100%;height:100%;background:#FAFAF8;border-radius:31px;overflow:hidden;position:relative;display:flex;flex-direction:column; }
+.dynamic-island { position:absolute;top:10px;left:50%;transform:translateX(-50%);width:78px;height:22px;background:var(--bezel);border-radius:20px;z-index:10; }
+.status-bar { height:44px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 16px 6px;flex-shrink:0;position:relative;z-index:1; }
+.status-time { font-size:11px;font-weight:600;color:#1C1917;letter-spacing:-.3px; }
+.status-icons { display:flex;align-items:center;gap:4px; }
+
+/* dark screen variant */
+.phone-screen.dark { background:#1C1917; }
+.phone-screen.dark .status-time { color:#FAFAF8; }
+
+/* shared UI atoms */
+.btn-primary { background:#F97316;color:#fff;border:none;border-radius:12px;font-size:11px;font-weight:600;padding:11px 14px;width:100%;text-align:center; }
+.btn-apple { background:#1C1917;color:#fff;border:none;border-radius:12px;font-size:11px;font-weight:600;padding:11px 14px;width:100%;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px; }
+.btn-outline { background:transparent;color:#F97316;border:1.5px solid #F97316;border-radius:12px;font-size:10px;font-weight:600;padding:9px 14px;width:100%;text-align:center; }
+.link-center { font-size:9.5px;color:#A8A29E;text-align:center; }
+.link-accent { font-size:9.5px;color:#F97316;text-align:center; }
+.divider-or { display:flex;align-items:center;gap:8px;margin:10px 0; }
+.divider-or-line { flex:1;height:1px;background:#E7E5E4; }
+.divider-or-text { font-size:9px;color:#A8A29E; }
+
+.field { background:#F5F5F4;border:1.5px solid #E7E5E4;border-radius:10px;padding:9px 12px;font-size:11px;color:#1C1917;width:100%; }
+.field-label { font-size:9px;font-weight:600;color:#57534E;margin-bottom:4px;letter-spacing:.02em; }
+.field-hint { font-size:8.5px;color:#A8A29E;margin-top:3px; }
+.field.focused { border-color:#F97316; }
+.field.disabled { color:#A8A29E;background:#F0EFEC; }
+
+/* OTP boxes */
+.otp-row { display:flex;gap:6px;justify-content:center;margin:14px 0 8px; }
+.otp-box { width:30px;height:38px;background:#F5F5F4;border:1.5px solid #E7E5E4;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#1C1917;flex-shrink:0; }
+.otp-box.filled { border-color:#F97316;background:#FFF7ED; }
+.otp-box.active { border-color:#F97316;background:#fff;box-shadow:0 0 0 3px rgba(249,115,22,.12); }
+
+/* fake keyboard */
+.keyboard { background:#D1D5DB;border-radius:8px 8px 0 0;padding:6px 4px 4px;flex-shrink:0; }
+.kb-row { display:flex;gap:3px;margin-bottom:3px;justify-content:center; }
+.kb-key { flex:1;max-width:28px;height:26px;background:#fff;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;color:#1C1917;box-shadow:0 1px 0 rgba(0,0,0,.2); }
+.kb-key.wide { max-width:44px; }
+.kb-key.space { max-width:96px; }
+.kb-key.dark { background:#ADB5BD;color:#1C1917; }
+.kb-key.num { font-size:11px;font-weight:600; }
+
+/* success checkmark */
+.success-circle { width:56px;height:56px;background:#DCFCE7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px; }
+
+/* wordmark / splash */
+.splash-bg {
+  flex:1;
+  background: linear-gradient(160deg, #1C1917 0%, #292524 60%, #3D2008 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+}
+.wordmark { font-family:Georgia,serif;font-size:22px;font-weight:normal;color:#FAFAF8;letter-spacing:-.3px; }
+.wordmark-sub { font-size:9px;color:#A8A29E;letter-spacing:.12em;text-transform:uppercase; }
+.logo-mark { width:44px;height:44px;background:#F97316;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:2px; }
+
+/* annotations */
+.annotations { display:flex;min-width:max-content;padding:0 32px;gap:60px;margin-top:0; }
+.anno-col { width:240px;flex-shrink:0; }
+.anno-block { background:var(--anno-bg);border-radius:10px;padding:12px 14px;margin-top:14px;border-left:2.5px solid var(--line); }
+.anno-block.accent { border-left-color:#F97316; }
+.anno-block.warn { border-left-color:#D97706; }
+.anno-hed { font-family:var(--mono);font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:5px; }
+.anno-body { font-size:10.5px;color:var(--ink-2);line-height:1.55; }
+.anno-body strong { color:var(--ink);font-weight:600; }
+
+.design-notes { margin:48px 32px 56px;display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:760px; }
+.note-card { background:var(--anno-bg);border-radius:12px;padding:18px 20px; }
+.note-hed { font-family:var(--serif);font-size:14px;color:var(--ink);margin-bottom:6px; }
+.note-body { font-size:11px;color:var(--ink-2);line-height:1.6; }
+.note-card.full { grid-column:span 2; }
+.open-q { border-left:2.5px solid #D97706;padding-left:12px; }
+.open-q .note-hed { color:#D97706; }
+
+.section-divider { display:flex;align-items:center;gap:12px;padding:36px 32px 20px; }
+.section-divider-label { font-family:var(--serif);font-size:16px;color:var(--ink);white-space:nowrap; }
+.section-divider-line { flex:1;height:1px;background:var(--line); }
+
+/* siwa branch note */
+.branch-note { display:flex;align-items:center;gap:6px;padding:4px 0; }
+.branch-dot { width:6px;height:6px;border-radius:50%;flex-shrink:0; }
+</style>
+</head>
+<body>
+
+<header class="doc-header">
+  <div>
+    <div class="doc-eyebrow">MenuApp · Flow 02 of 06</div>
+    <h1 class="doc-title">Authentication — Login through First Home View</h1>
+  </div>
+  <div class="doc-meta">v2 IA Redesign<br>July 2026</div>
+</header>
+
+<div class="storyboard-scroll">
+<div class="storyboard">
+
+  <!-- ── Screen 1: Splash / Login ── -->
+  <div class="frame-col">
+    <div class="frame-label">Screen 01</div>
+    <div class="frame-name">Login</div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar" style="position:absolute;top:0;left:0;right:0;z-index:2">
+          <span class="status-time" style="color:#FAFAF8">9:41</span>
+          <div class="status-icons">
+            <svg width="13" height="9" viewBox="0 0 13 9" fill="none"><rect x="0" y="3" width="2.5" height="6" rx=".5" fill="#FAFAF8" opacity=".5"/><rect x="3.5" y="2" width="2.5" height="7" rx=".5" fill="#FAFAF8" opacity=".7"/><rect x="7" y=".5" width="2.5" height="8.5" rx=".5" fill="#FAFAF8" opacity=".9"/><rect x="10.5" y="0" width="2.5" height="9" rx=".5" fill="#FAFAF8"/></svg>
+            <svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x=".5" y=".5" width="18" height="9" rx="2.5" stroke="#FAFAF8" stroke-opacity=".4"/><rect x="1.5" y="1.5" width="12" height="7" rx="1.5" fill="#FAFAF8"/><path d="M19.5 3.5V6.5C20.3 6.2 21 5.5 21 5C21 4.5 20.3 3.8 19.5 3.5Z" fill="#FAFAF8" opacity=".4"/></svg>
+          </div>
+        </div>
+        <!-- Top dark hero -->
+        <div style="height:200px;background:linear-gradient(160deg,#1C1917 0%,#292524 70%,#3D2008 100%);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:24px;flex-shrink:0">
+          <div class="logo-mark">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+          </div>
+          <div class="wordmark" style="margin-top:8px">MenuApp</div>
+          <div class="wordmark-sub">plan meals together</div>
+        </div>
+        <!-- Login form -->
+        <div style="flex:1;padding:18px 18px 14px;display:flex;flex-direction:column;gap:10px">
+          <div class="btn-apple">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            Sign in with Apple
+          </div>
+          <div class="divider-or">
+            <div class="divider-or-line"></div>
+            <div class="divider-or-text">or</div>
+            <div class="divider-or-line"></div>
+          </div>
+          <div>
+            <div class="field-label">Email</div>
+            <div class="field focused" style="color:#A8A29E">you@example.com</div>
+          </div>
+          <div class="btn-primary">Continue with email →</div>
+          <div class="link-center" style="margin-top:2px">By continuing you agree to our <span style="color:#F97316">Terms</span> and <span style="color:#F97316">Privacy Policy</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Connector -->
+  <div class="connector">
+    <div style="display:flex;align-items:center"><div class="conn-line"></div><div class="conn-arrow"></div></div>
+    <div class="conn-label">email path</div>
+    <div class="conn-branch">SIWA skips ↓ to S4</div>
+  </div>
+
+  <!-- ── Screen 2: OTP entry ── -->
+  <div class="frame-col">
+    <div class="frame-label">Screen 02</div>
+    <div class="frame-name">Verify — OTP Code</div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg width="13" height="9" viewBox="0 0 13 9" fill="none"><rect x="0" y="3" width="2.5" height="6" rx=".5" fill="#1C1917" opacity=".35"/><rect x="3.5" y="2" width="2.5" height="7" rx=".5" fill="#1C1917" opacity=".55"/><rect x="7" y=".5" width="2.5" height="8.5" rx=".5" fill="#1C1917" opacity=".8"/><rect x="10.5" y="0" width="2.5" height="9" rx=".5" fill="#1C1917"/></svg>
+            <svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x=".5" y=".5" width="18" height="9" rx="2.5" stroke="#1C1917" stroke-opacity=".35"/><rect x="1.5" y="1.5" width="12" height="7" rx="1.5" fill="#1C1917"/><path d="M19.5 3.5V6.5C20.3 6.2 21 5.5 21 5C21 4.5 20.3 3.8 19.5 3.5Z" fill="#1C1917" opacity=".4"/></svg>
+          </div>
+        </div>
+        <div style="flex:1;padding:12px 18px 0;display:flex;flex-direction:column">
+          <!-- back -->
+          <div style="font-size:9px;color:#F97316;margin-bottom:14px">← Back</div>
+          <div style="font-size:16px;font-weight:700;color:#1C1917;letter-spacing:-.3px;margin-bottom:4px">Check your email</div>
+          <div style="font-size:9.5px;color:#A8A29E;line-height:1.5;margin-bottom:2px">We sent a 6-digit code to<br><strong style="color:#57534E">andrew@example.com</strong></div>
+          <div class="otp-row">
+            <div class="otp-box filled">3</div>
+            <div class="otp-box filled">7</div>
+            <div class="otp-box filled">4</div>
+            <div class="otp-box active"></div>
+            <div class="otp-box"></div>
+            <div class="otp-box"></div>
+          </div>
+          <div class="link-center" style="margin-bottom:8px">Didn't get it? <span style="color:#F97316">Resend</span></div>
+          <div class="link-center" style="font-size:8.5px;color:#D6D3D1">Expires in 9:42</div>
+          <div style="flex:1"></div>
+        </div>
+        <!-- Numeric keyboard -->
+        <div class="keyboard">
+          <div class="kb-row">
+            <div class="kb-key num">1</div><div class="kb-key num">2</div><div class="kb-key num">3</div>
+          </div>
+          <div class="kb-row">
+            <div class="kb-key num">4</div><div class="kb-key num">5</div><div class="kb-key num">6</div>
+          </div>
+          <div class="kb-row">
+            <div class="kb-key num">7</div><div class="kb-key num">8</div><div class="kb-key num">9</div>
+          </div>
+          <div class="kb-row">
+            <div class="kb-key dark" style="font-size:8px">*#</div>
+            <div class="kb-key num">0</div>
+            <div class="kb-key dark">
+              <svg width="14" height="10" viewBox="0 0 20 14" fill="none" stroke="#1C1917" stroke-width="1.5" stroke-linecap="round"><path d="M7 2H18a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H7L1 7z"/><line x1="10" y1="5" x2="15" y2="9"/><line x1="15" y1="5" x2="10" y2="9"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Connector -->
+  <div class="connector">
+    <div style="display:flex;align-items:center"><div class="conn-line"></div><div class="conn-arrow"></div></div>
+    <div class="conn-label">code verified</div>
+  </div>
+
+  <!-- ── Screen 3: Complete Profile (new users only) ── -->
+  <div class="frame-col">
+    <div class="frame-label">Screen 03 · New users only</div>
+    <div class="frame-name">Complete Profile</div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg width="13" height="9" viewBox="0 0 13 9" fill="none"><rect x="0" y="3" width="2.5" height="6" rx=".5" fill="#1C1917" opacity=".35"/><rect x="3.5" y="2" width="2.5" height="7" rx=".5" fill="#1C1917" opacity=".55"/><rect x="7" y=".5" width="2.5" height="8.5" rx=".5" fill="#1C1917" opacity=".8"/><rect x="10.5" y="0" width="2.5" height="9" rx=".5" fill="#1C1917"/></svg>
+            <svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x=".5" y=".5" width="18" height="9" rx="2.5" stroke="#1C1917" stroke-opacity=".35"/><rect x="1.5" y="1.5" width="12" height="7" rx="1.5" fill="#1C1917"/><path d="M19.5 3.5V6.5C20.3 6.2 21 5.5 21 5C21 4.5 20.3 3.8 19.5 3.5Z" fill="#1C1917" opacity=".4"/></svg>
+          </div>
+        </div>
+        <div style="flex:1;padding:14px 18px 0;display:flex;flex-direction:column">
+          <!-- progress dots -->
+          <div style="display:flex;gap:5px;margin-bottom:18px">
+            <div style="width:20px;height:3px;background:#F97316;border-radius:2px"></div>
+            <div style="width:20px;height:3px;background:#F97316;border-radius:2px"></div>
+            <div style="width:20px;height:3px;background:#E7E5E4;border-radius:2px"></div>
+          </div>
+          <!-- avatar picker -->
+          <div style="width:60px;height:60px;background:#FED7AA;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:10px;position:relative">
+            <span style="font-size:24px">👤</span>
+            <div style="position:absolute;bottom:0;right:0;width:20px;height:20px;background:#F97316;border-radius:50%;display:flex;align-items:center;justify-content:center">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            </div>
+          </div>
+          <div style="font-size:16px;font-weight:700;color:#1C1917;letter-spacing:-.3px;margin-bottom:3px">What's your name?</div>
+          <div style="font-size:9.5px;color:#A8A29E;margin-bottom:14px">Your group will see this when you vote.</div>
+          <div style="margin-bottom:10px">
+            <div class="field-label">First name</div>
+            <div class="field focused">Andrew</div>
+          </div>
+          <div style="margin-bottom:10px">
+            <div class="field-label">Last name</div>
+            <div class="field">deVillier</div>
+          </div>
+          <div style="margin-bottom:10px">
+            <div class="field-label">Email</div>
+            <div class="field disabled">andrew@example.com</div>
+            <div class="field-hint">Can't be changed — this is your login.</div>
+          </div>
+          <div style="flex:1"></div>
+        </div>
+        <!-- sticky CTA -->
+        <div style="padding:10px 18px 16px;border-top:1px solid #E7E5E4">
+          <div class="btn-primary">Create account →</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Connector -->
+  <div class="connector">
+    <div style="display:flex;align-items:center"><div class="conn-line"></div><div class="conn-arrow"></div></div>
+    <div class="conn-label">account created</div>
+  </div>
+
+  <!-- ── Screen 4: Welcome / transition ── -->
+  <div class="frame-col">
+    <div class="frame-label">Screen 04</div>
+    <div class="frame-name">Welcome — Transition</div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar" style="position:absolute;top:0;left:0;right:0;z-index:2">
+          <span class="status-time" style="color:#FAFAF8">9:41</span>
+          <div class="status-icons">
+            <svg width="13" height="9" viewBox="0 0 13 9" fill="none"><rect x="0" y="3" width="2.5" height="6" rx=".5" fill="#FAFAF8" opacity=".5"/><rect x="3.5" y="2" width="2.5" height="7" rx=".5" fill="#FAFAF8" opacity=".7"/><rect x="7" y=".5" width="2.5" height="8.5" rx=".5" fill="#FAFAF8" opacity=".9"/><rect x="10.5" y="0" width="2.5" height="9" rx=".5" fill="#FAFAF8"/></svg>
+            <svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x=".5" y=".5" width="18" height="9" rx="2.5" stroke="#FAFAF8" stroke-opacity=".4"/><rect x="1.5" y="1.5" width="12" height="7" rx="1.5" fill="#FAFAF8"/><path d="M19.5 3.5V6.5C20.3 6.2 21 5.5 21 5C21 4.5 20.3 3.8 19.5 3.5Z" fill="#FAFAF8" opacity=".4"/></svg>
+          </div>
+        </div>
+        <div style="flex:1;background:linear-gradient(160deg,#1C1917 0%,#292524 60%,#431407 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px">
+          <div style="width:64px;height:64px;background:rgba(255,255,255,.08);border:2px solid rgba(249,115,22,.5);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:16px">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div style="font-family:Georgia,serif;font-size:20px;color:#FAFAF8;text-align:center;margin-bottom:6px">Welcome, Andrew.</div>
+          <div style="font-size:10px;color:#A8A29E;text-align:center;line-height:1.6;max-width:160px">You're all set. Now let's get you planning meals with your household.</div>
+          <div style="margin-top:20px;width:100%">
+            <div class="btn-primary">Get started →</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Connector -->
+  <div class="connector">
+    <div style="display:flex;align-items:center"><div class="conn-line"></div><div class="conn-arrow"></div></div>
+    <div class="conn-label">tap "get started"</div>
+  </div>
+
+  <!-- ── Screen 5: Home (no group) ── -->
+  <div class="frame-col">
+    <div class="frame-label">Screen 05</div>
+    <div class="frame-name">Home — Empty State</div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg width="13" height="9" viewBox="0 0 13 9" fill="none"><rect x="0" y="3" width="2.5" height="6" rx=".5" fill="#1C1917" opacity=".35"/><rect x="3.5" y="2" width="2.5" height="7" rx=".5" fill="#1C1917" opacity=".55"/><rect x="7" y=".5" width="2.5" height="8.5" rx=".5" fill="#1C1917" opacity=".8"/><rect x="10.5" y="0" width="2.5" height="9" rx=".5" fill="#1C1917"/></svg>
+            <svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x=".5" y=".5" width="18" height="9" rx="2.5" stroke="#1C1917" stroke-opacity=".35"/><rect x="1.5" y="1.5" width="12" height="7" rx="1.5" fill="#1C1917"/><path d="M19.5 3.5V6.5C20.3 6.2 21 5.5 21 5C21 4.5 20.3 3.8 19.5 3.5Z" fill="#1C1917" opacity=".4"/></svg>
+          </div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px">
+          <div style="width:52px;height:52px;background:#FFF7ED;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:12px">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+          </div>
+          <div style="font-size:14px;font-weight:700;color:#1C1917;text-align:center;letter-spacing:-.3px;line-height:1.2;margin-bottom:6px">Ready to start<br>planning together?</div>
+          <div style="font-size:10px;color:#A8A29E;text-align:center;line-height:1.5;max-width:160px;margin-bottom:16px">Create a group with your partner or household to get started.</div>
+          <div style="width:100%"><div class="btn-primary">Create your first group →</div></div>
+          <div style="font-size:9.5px;color:#A8A29E;text-align:center;text-decoration:underline;text-decoration-color:#D6D3D1;margin-top:8px">Browse recipes first</div>
+        </div>
+        <!-- Tab bar -->
+        <div style="height:68px;background:#fff;border-top:1px solid #E7E5E4;display:flex;align-items:center;justify-content:space-around;padding:0 12px 14px;flex-shrink:0">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span style="font-size:8.5px;font-weight:600;color:#F97316">Home</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A8A29E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            <span style="font-size:8.5px;font-weight:600;color:#A8A29E">Recipes</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A8A29E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            <span style="font-size:8.5px;font-weight:600;color:#A8A29E">Shop</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- Annotations -->
+<div class="annotations" style="margin-top:16px">
+  <div class="anno-col">
+    <div class="anno-block accent">
+      <div class="anno-hed">SIWA is primary</div>
+      <div class="anno-body"><strong>Sign in with Apple</strong> is the first and most prominent action — required for App Store. Email/OTP is the fallback. SIWA skips screens 2–3 entirely and drops directly into Screen 4 (welcome) or Home if returning user.</div>
+    </div>
+    <div class="anno-block">
+      <div class="anno-hed">Screen height</div>
+      <div class="anno-body">The dark hero hero gradient fills ~200px and the form lives below. On the physical phone this creates breathing room without wasted space.</div>
+    </div>
+  </div>
+  <div class="anno-col" style="margin-left:60px">
+    <div class="anno-block accent">
+      <div class="anno-hed">Auto-confirm from email</div>
+      <div class="anno-body">Supabase can auto-fill the OTP if the user taps the link in the email rather than typing the code. The 6-box UI is the fallback. Show a <strong>"Code sent — or tap the link in your email"</strong> hint above the boxes.</div>
+    </div>
+    <div class="anno-block">
+      <div class="anno-hed">Countdown timer</div>
+      <div class="anno-body">OTP expires in 10 minutes. Show a countdown. On expiry, gray the boxes and show "Code expired — Resend" prominently.</div>
+    </div>
+  </div>
+  <div class="anno-col" style="margin-left:60px">
+    <div class="anno-block">
+      <div class="anno-hed">New users only</div>
+      <div class="anno-body">Returning users (email already in Supabase) skip this screen and land on Screen 4 (welcome back) or directly on Home if the welcome has been seen before.</div>
+    </div>
+    <div class="anno-block warn">
+      <div class="anno-hed">SIWA name handling</div>
+      <div class="anno-body">Apple only provides the user's name on the <em>first</em> SIWA login. After that it's gone. Pre-populate the name fields from the Apple identity token on first registration; Surface this screen even for SIWA users if name is blank.</div>
+    </div>
+  </div>
+  <div class="anno-col" style="margin-left:60px">
+    <div class="anno-block">
+      <div class="anno-hed">Transition moment</div>
+      <div class="anno-body">This screen exists to punctuate the auth flow. It should animate in (fade + subtle scale up of the check circle) and auto-advance after ~1.5s if the user doesn't tap. Gives the backend time to finish account setup before Home loads.</div>
+    </div>
+  </div>
+  <div class="anno-col" style="margin-left:60px">
+    <div class="anno-block">
+      <div class="anno-hed">First home</div>
+      <div class="anno-body">New users always see the empty state (no groups). Returning users land wherever they left off in the home context cycle — the app resumes their state.</div>
+    </div>
+    <div class="anno-block">
+      <div class="anno-hed">Group creation is the gate</div>
+      <div class="anno-body">The paywall should appear here — <strong>before</strong> the group creation form, not after. Show what they get (meal planning + voting) then ask for subscription. Free users can browse recipes but not plan.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section-divider" style="padding-top:48px">
+  <div class="section-divider-label">Design decisions</div>
+  <div class="section-divider-line"></div>
+</div>
+<div class="design-notes">
+  <div class="note-card">
+    <div class="note-hed">Dark hero on a warm-canvas app</div>
+    <div class="note-body">The login and welcome screens use a deep warm-dark background — not the app's default canvas. This creates a deliberate threshold feeling: you're stepping into the app from the outside. The warmth in the gradient (burnt orange at the bottom corner) keeps it from reading as generic and connects to the orange accent used throughout.</div>
+  </div>
+  <div class="note-card">
+    <div class="note-hed">No password, ever</div>
+    <div class="note-body">The auth model is SIWA or email OTP — there's no password creation, no confirm password field, no forgot password flow. This is intentional and worth protecting as the app grows. Passwords add friction, support burden, and security surface. OTP via Supabase is already implemented and working.</div>
+  </div>
+  <div class="note-card open-q">
+    <div class="note-hed">Open: paywall placement</div>
+    <div class="note-body">Currently leaning toward gating group creation. But the better experience might be: let a new user create one group for free (demonstrate value first), then gate on second group or on advanced features. Worth testing both. The key principle: don't show a paywall before you've shown the user anything worth paying for.</div>
+  </div>
+  <div class="note-card open-q">
+    <div class="note-hed">Open: profile photo</div>
+    <div class="note-body">Screen 3 shows a photo picker button on the avatar. Avatar initials are fine for V1. A photo option adds significant surface area (upload, resize, storage on S3, display throughout the app). Defer until AWS photo infrastructure ships — task #21.</div>
+  </div>
+</div>
+
+</body>
+</html>

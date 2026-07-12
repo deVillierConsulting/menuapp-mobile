@@ -697,8 +697,132 @@ p{ margin:0 0 2.5mm 0; }
           <span style="font-size:6pt; font-weight:600; color:var(--ink-4)">Shop</span>
         </div>
       </div>
-      <div class="spec" style="margin-top:3mm"><b>Flutter:</b> <span class="mono">AppNavBar</span> custom widget. White pill, e2 shadow, border. Active = ink icon + accent label. Inactive = ink-4 icon. <b>v1 has 3 tabs: Groups (index 0), Recipes (index 1), Shop (index 2).</b> Nav is implemented with go_router <span class="mono">StatefulShellRoute</span> + <span class="mono">StatefulShellBranch</span> — each branch preserves its own stack and scroll position independently. <span class="mono">AppShell</span> widget wraps all branches and owns the <span class="mono">AppNavBar</span>.</div>
+      <div class="spec" style="margin-top:3mm"><b>Flutter:</b> <span class="mono">AppNavBar</span> custom widget. White pill, e2 shadow, border. Active = ink icon + accent label. Inactive = ink-4 icon. <b>v2 has 3 tabs: Home (index 0), Recipes (index 1), Shop (index 2).</b> Groups is no longer a primary tab — it's accessible from the Home screen header. Nav is implemented with go_router <span class="mono">StatefulShellRoute</span> + <span class="mono">StatefulShellBranch</span> — each branch preserves its own stack and scroll position independently. <span class="mono">AppShell</span> widget wraps all branches and owns the <span class="mono">AppNavBar</span>.</div>
     </div>
+  </div>
+</div>
+
+<!-- ======================= INFORMATION ARCHITECTURE v2 ======================= -->
+<div class="sec page-break">
+  <div class="eyebrow">Strategy · IA v2</div>
+  <h2>Information architecture — v2</h2>
+  <p class="lead">v1 organized around management (Groups → Menus → Voting). v2 reorganizes around the experience: voting and planning are front and center. The hook — "what are we eating this week?" — is answerable in one tap from the moment you open the app.</p>
+
+  <h4 style="margin-top:6mm">Core insight</h4>
+  <p style="font-size:9pt; color:var(--ink-2); margin:2mm 0 5mm">Most users are in one active group with one active menu most of the time. Design for that case. Groups list and management are secondary — reachable but not in the way.</p>
+
+  <h4>Tab bar — v1 vs v2</h4>
+  <div class="row top" style="gap:8mm; margin:3mm 0 6mm">
+    <div style="flex:1; min-width:60mm">
+      <div class="cc-h" style="color:var(--danger)">v1 — management-first</div>
+      <div class="tabbar" style="position:static; height:14mm; padding:0 5mm; margin-top:2mm; opacity:.6">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1mm">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          <span style="font-size:6pt;font-weight:600;color:var(--accent)">Groups</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1mm">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--ink-4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          <span style="font-size:6pt;font-weight:600;color:var(--ink-4)">Recipes</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1mm">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--ink-4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          <span style="font-size:6pt;font-weight:600;color:var(--ink-4)">Shop</span>
+        </div>
+      </div>
+      <p style="font-size:7.5pt;color:var(--ink-3);margin-top:2mm">Hook (voting) is 3 taps deep. First screen is a list of groups — useful only for power users with multiple groups.</p>
+    </div>
+    <div style="flex:1; min-width:60mm">
+      <div class="cc-h" style="color:var(--ok)">v2 — experience-first</div>
+      <div class="tabbar" style="position:static; height:14mm; padding:0 5mm; margin-top:2mm">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1mm">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span style="font-size:6pt;font-weight:600;color:var(--accent)">Home</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1mm">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--ink-4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          <span style="font-size:6pt;font-weight:600;color:var(--ink-4)">Recipes</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1mm">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--ink-4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          <span style="font-size:6pt;font-weight:600;color:var(--ink-4)">Shop</span>
+        </div>
+      </div>
+      <p style="font-size:7.5pt;color:var(--ink-3);margin-top:2mm">Hook is the home screen. Groups accessible from Home header. Single-group users never need to think about groups at all.</p>
+    </div>
+  </div>
+
+  <h4>Home screen — 5 context states</h4>
+  <p style="font-size:8.5pt;color:var(--ink-2);margin:2mm 0 4mm">The Home tab renders one of five states based on the user's current group + menu situation. All transitions are driven by the existing data — no new concepts required.</p>
+
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:4mm; margin-bottom:6mm">
+
+    <div style="border:1.5px solid var(--line);border-radius:var(--r-sm);padding:4mm">
+      <div style="font-size:7pt;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-4);margin-bottom:2mm">State 1 · No groups</div>
+      <div style="font-weight:700;font-size:9pt;margin-bottom:1.5mm">Welcome to MenuApp</div>
+      <div style="font-size:8pt;color:var(--ink-2);margin-bottom:3mm">Plan meals together with your household or partner.</div>
+      <div class="btn btn-primary btn-pill" style="font-size:8pt;text-align:center">Create your first group</div>
+      <div style="font-size:7.5pt;color:var(--ink-3);margin-top:2mm">→ Onboarding / zero state. See task #40.</div>
+    </div>
+
+    <div style="border:1.5px solid var(--line);border-radius:var(--r-sm);padding:4mm">
+      <div style="font-size:7pt;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-4);margin-bottom:2mm">State 2 · Has group, no active menu</div>
+      <div style="font-weight:700;font-size:9pt;margin-bottom:1.5mm">What's for dinner?</div>
+      <div style="font-size:8pt;color:var(--ink-2);margin-bottom:3mm">No menu planned for this week yet.</div>
+      <div class="btn btn-primary btn-pill" style="font-size:8pt;text-align:center">Plan this week →</div>
+      <div style="font-size:7.5pt;color:var(--ink-3);margin-top:2mm">One tap: auto-names menu "Week of [date]", skips form, opens recipe picker immediately.</div>
+    </div>
+
+    <div style="border:2px solid var(--accent);border-radius:var(--r-sm);padding:4mm">
+      <div style="font-size:7pt;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--accent);margin-bottom:2mm">State 3 · Active menu, votes pending ← THE HOOK</div>
+      <div style="font-weight:700;font-size:9pt;margin-bottom:1.5mm">Vote on this week's meals</div>
+      <div style="font-size:8pt;color:var(--ink-2);margin-bottom:3mm">Swipeable recipe cards front and center. Approve or skip. See results update live.</div>
+      <div style="font-size:7.5pt;color:var(--ink-3)">This is the state most active users will see on open. It must be instant and satisfying.</div>
+    </div>
+
+    <div style="border:1.5px solid var(--line);border-radius:var(--r-sm);padding:4mm">
+      <div style="font-size:7pt;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-4);margin-bottom:2mm">State 4 · All voted, awaiting others</div>
+      <div style="font-weight:700;font-size:9pt;margin-bottom:1.5mm">You're all caught up ✓</div>
+      <div style="font-size:8pt;color:var(--ink-2);margin-bottom:3mm">Waiting on Claire to vote on 2 recipes.</div>
+      <div style="font-size:7.5pt;color:var(--ink-3)">Shows who's voted, who hasn't. Nudge option (push notification, #42).</div>
+    </div>
+
+    <div style="border:1.5px solid var(--ok);border-radius:var(--r-sm);padding:4mm;grid-column:span 2">
+      <div style="font-size:7pt;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ok);margin-bottom:2mm">State 5 · Menu finalized</div>
+      <div style="font-weight:700;font-size:9pt;margin-bottom:1.5mm">This week's meals are set</div>
+      <div style="font-size:8pt;color:var(--ink-2);margin-bottom:3mm">Shows the finalized recipe list. Prominent "Go shopping →" CTA routes to Shop tab.</div>
+      <div style="font-size:7.5pt;color:var(--ink-3)">Secondary action: "Plan next week" starts the cycle again.</div>
+    </div>
+
+  </div>
+
+  <h4>Click reduction — menu creation</h4>
+  <div class="row top" style="gap:8mm">
+    <div style="flex:1">
+      <div class="cc-h" style="color:var(--danger)">v1 — 5 steps</div>
+      <ol style="font-size:8.5pt;color:var(--ink-2);margin:2mm 0;padding-left:4mm;line-height:1.8">
+        <li>Tap group in list</li>
+        <li>Tap FAB on group detail</li>
+        <li>Fill in menu name</li>
+        <li>Submit form</li>
+        <li>Tap "Add recipes" separately</li>
+      </ol>
+    </div>
+    <div style="flex:1">
+      <div class="cc-h" style="color:var(--ok)">v2 — 2 steps</div>
+      <ol style="font-size:8.5pt;color:var(--ink-2);margin:2mm 0;padding-left:4mm;line-height:1.8">
+        <li>Tap "Plan this week →" on Home</li>
+        <li>Select recipes</li>
+      </ol>
+      <p style="font-size:7.5pt;color:var(--ink-3);margin-top:1mm">Menu auto-named "Week of [Mon date]". Name editable later from menu detail. No form.</p>
+    </div>
+  </div>
+
+  <h4 style="margin-top:6mm">Multi-group users</h4>
+  <p style="font-size:8.5pt;color:var(--ink-2)">Users with multiple groups see a compact group switcher in the Home header — a small pill showing the active group name with a chevron. Tap to switch. This is a secondary interaction and should feel lightweight, not prominent.</p>
+
+  <div style="background:var(--accent-50);border-left:3px solid var(--accent);padding:3mm 4mm;border-radius:0 var(--r-xs) var(--r-xs) 0;margin-top:4mm">
+    <div style="font-size:8pt;font-weight:700;color:var(--accent-deep);margin-bottom:1mm">Monetization hook</div>
+    <p style="font-size:8pt;color:var(--ink-2);margin:0">Group creation is the paywall boundary. Solo browse (Recipes tab) is free. Creating or joining a group requires a subscription. Design the group creation flow to feel like an upgrade moment, not a friction point — show value before asking for payment.</p>
   </div>
 </div>
 

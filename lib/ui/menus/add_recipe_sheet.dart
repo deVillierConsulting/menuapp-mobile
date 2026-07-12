@@ -67,9 +67,8 @@ class _AddRecipeSheetBodyState extends State<_AddRecipeSheetBody> {
   Widget build(BuildContext context) {
     return BlocBuilder<AddRecipeCubit, AddRecipeState>(
       builder: (context, state) {
-        final newlyAdded =
-            state is AddRecipeLoaded ? state.addedRecipeIds.length : 0;
-        final totalAdded = widget.initialCount + newlyAdded;
+        final totalAdded =
+            state is AddRecipeLoaded ? state.addedRecipeIds.length : widget.initialCount;
         final targetMet = totalAdded >= widget.mealTarget;
 
         return DraggableScrollableSheet(
@@ -188,8 +187,8 @@ class _DoneBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final extra = totalAdded - target;
     final label = extra > 0
-        ? '$target meals planned · +$extra extra'
-        : '$target meals planned';
+        ? '$totalAdded meals planned · +$extra over goal'
+        : '$totalAdded meals planned';
 
     return SafeArea(
       top: false,
