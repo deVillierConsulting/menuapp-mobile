@@ -2,37 +2,33 @@ import 'package:equatable/equatable.dart';
 import 'menu.dart';
 import 'recipe.dart';
 
-enum VoteValue { yes, no, veto }
+enum VoteValue { approve, veto }
 
 class VoteSummary extends Equatable {
-  final int yes;
-  final int no;
+  final int approve;
   final int veto;
   final VoteValue? userVote;
 
   const VoteSummary({
-    this.yes = 0,
-    this.no = 0,
+    this.approve = 0,
     this.veto = 0,
     this.userVote,
   });
 
   factory VoteSummary.fromJson(Map<String, dynamic> json) => VoteSummary(
-        yes: json['yes'] as int? ?? 0,
-        no: json['no'] as int? ?? 0,
+        approve: json['approve'] as int? ?? 0,
         veto: json['veto'] as int? ?? 0,
         userVote: _voteFromString(json['user_vote'] as String?),
       );
 
   static VoteValue? _voteFromString(String? s) => switch (s) {
-        'yes' => VoteValue.yes,
-        'no' => VoteValue.no,
+        'approve' => VoteValue.approve,
         'veto' => VoteValue.veto,
         _ => null,
       };
 
   @override
-  List<Object?> get props => [yes, no, veto, userVote];
+  List<Object?> get props => [approve, veto, userVote];
 }
 
 class MenuRecipe extends Equatable {
@@ -56,7 +52,7 @@ class MenuRecipe extends Equatable {
             json['vote_summary'] as Map<String, dynamic>? ?? {}),
       );
 
-  int get totalVotes => voteSummary.yes + voteSummary.no + voteSummary.veto;
+  int get totalVotes => voteSummary.approve + voteSummary.veto;
   bool get hasVeto => voteSummary.veto > 0;
 
   @override
@@ -112,19 +108,16 @@ class MenuDetail extends Equatable {
         final old = mr.voteSummary;
         final prev = old.userVote;
         // Decrement the old vote bucket, increment the new one.
-        int yes = old.yes + (newVote == VoteValue.yes ? 1 : 0)
-                            - (prev == VoteValue.yes ? 1 : 0);
-        int no  = old.no  + (newVote == VoteValue.no  ? 1 : 0)
-                            - (prev == VoteValue.no  ? 1 : 0);
+        int approve = old.approve + (newVote == VoteValue.approve ? 1 : 0)
+                                  - (prev == VoteValue.approve ? 1 : 0);
         int veto = old.veto + (newVote == VoteValue.veto ? 1 : 0)
-                              - (prev == VoteValue.veto ? 1 : 0);
+                            - (prev == VoteValue.veto ? 1 : 0);
         return MenuRecipe(
           menuRecipeId: mr.menuRecipeId,
           recipe: mr.recipe,
           addedAt: mr.addedAt,
           voteSummary: VoteSummary(
-            yes: yes.clamp(0, 999),
-            no: no.clamp(0, 999),
+            approve: approve.clamp(0, 999),
             veto: veto.clamp(0, 999),
             userVote: newVote,
           ),

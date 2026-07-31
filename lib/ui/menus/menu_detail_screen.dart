@@ -439,7 +439,7 @@ class _RecipeCardState extends State<_RecipeCard>
             Positioned(
               right: 0, top: 0, bottom: 0,
               child: GestureDetector(
-                onTap: () => _commitVote(VoteValue.yes),
+                onTap: () => _commitVote(VoteValue.approve),
                 child: ClipRRect(
                   borderRadius: BorderRadius.only(
                     topRight:    AppRadii.lgAll.topRight,
@@ -467,7 +467,7 @@ class _RecipeCardState extends State<_RecipeCard>
             Positioned(
               left: 0, top: 0, bottom: 0,
               child: GestureDetector(
-                onTap: () => _commitVote(VoteValue.no),
+                onTap: () => _commitVote(VoteValue.veto),
                 child: ClipRRect(
                   borderRadius: BorderRadius.only(
                     topLeft:    AppRadii.lgAll.topLeft,
@@ -511,10 +511,9 @@ class _CardContent extends StatelessWidget {
 
   // Border tint shows the user's committed vote at rest.
   Color? get _voteBorderColor => switch (userVote) {
-        VoteValue.yes  => AppColors.ok,
-        VoteValue.no   => AppColors.ink3,
-        VoteValue.veto => AppColors.danger,
-        null           => null,
+        VoteValue.approve => AppColors.ok,
+        VoteValue.veto    => AppColors.danger,
+        null              => null,
       };
 
   @override
@@ -632,16 +631,12 @@ class _VotePills extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        if (summary.yes > 0) _pill('${summary.yes} yes', AppColors.ok),
-        if (summary.no > 0) ...[
-          const SizedBox(width: 4),
-          _pill('${summary.no} no', AppColors.ink3),
-        ],
+        if (summary.approve > 0) _pill('${summary.approve} approve', AppColors.ok),
         if (summary.veto > 0) ...[
           const SizedBox(width: 4),
           _pill('${summary.veto} veto', AppColors.danger),
         ],
-        if (summary.yes == 0 && summary.no == 0 && summary.veto == 0)
+        if (summary.approve == 0 && summary.veto == 0)
           _pill('no votes', AppColors.ink4),
       ],
     );
