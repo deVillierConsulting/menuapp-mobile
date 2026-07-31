@@ -78,3 +78,29 @@ When all recipes in the menu have been voted on but the meal target is not met:
 - "Lower meal target" adjusts `mealTarget` on the menu record via a PATCH to `/menus/{id}`. A simple bottom sheet with a stepper is enough UI.
 
 ---
+
+## Onboarding — Curated Recipe Pool
+
+**Applies to:** Backend seed data + onboarding logic
+**Related flow:** flow-07-onboarding.html · Part A
+
+The recipes shown during onboarding must be a hand-curated pool of 12–15 top-rated recipes — best food photography, broad cuisine variety, high historical approval rate. This pool should be tagged separately in the database (e.g. a boolean `is_onboarding_featured` on the Recipe model or a dedicated join table). It must never change without deliberate product review. Do not pull from the general recipe pool randomly; a mediocre first impression is unrecoverable.
+
+---
+
+## Onboarding — Guest Session Persistence
+
+**Applies to:** Mobile client + backend join endpoint
+**Related flow:** flow-07-onboarding.html · Parts A & B
+
+Votes cast before sign-in (the "Try it first" path) must survive the auth flow without interruption. Implementation:
+
+- On first app launch, generate a device-scoped guest UUID and store it in `SharedPreferences`.
+- All votes cast in guest mode are stored locally under this UUID.
+- On successful sign-in, POST the guest UUID to a `/sessions/migrate` endpoint (or include it in the sign-in payload).
+- The backend migrates any local votes to the newly created user account, associates them with the correct menu, and returns the updated menu state.
+- The user must land on the home screen seeing the same menu preview they saw before sign-in — no visible seam.
+
+This is a non-trivial backend requirement. The guest UUID must be included in the vote submission payloads from the start of the guest session so the server can find them at migration time.
+
+---

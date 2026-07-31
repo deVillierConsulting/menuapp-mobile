@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MenuApp · Flow 08 · Invite Accept</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --canvas: #FAFAF8; --surface: #FFFFFF; --ink: #1C1917; --ink-2: #57534E;
+  --ink-3: #A8A29E; --ink-4: #D6D3D1; --line: #E7E5E4; --field: #F5F5F4;
+  --accent: #F97316; --ok: #16A34A; --ok-bg: #DCFCE7; --danger: #DC2626; --danger-bg: #FEE2E2;
+  --warn: #D97706; --warn-bg: #FFFBEB; --warn-border: #FED7AA;
+  --bezel: #2C2820; --bezel-2: #3D3530;
+  --doc-bg: #FAFAF8; --anno-bg: #F0EFEC;
+  --serif: Georgia,'Times New Roman',serif;
+  --sans: -apple-system,'SF Pro Text','Helvetica Neue',system-ui,sans-serif;
+  --mono: ui-monospace,'SF Mono','Roboto Mono',monospace;
+}
+@media (prefers-color-scheme: dark) { :root { --doc-bg:#1C1917;--anno-bg:#262220;--ink:#FAF9F7;--ink-2:#C4B8B0;--ink-3:#8C837D;--ink-4:#4A4540;--line:#3A3530; } }
+:root[data-theme="dark"] { --doc-bg:#1C1917;--anno-bg:#262220;--ink:#FAF9F7;--ink-2:#C4B8B0;--ink-3:#8C837D;--ink-4:#4A4540;--line:#3A3530; }
+:root[data-theme="light"] { --doc-bg:#FAFAF8;--anno-bg:#F0EFEC;--ink:#1C1917;--ink-2:#57534E;--ink-3:#A8A29E;--ink-4:#D6D3D1;--line:#E7E5E4; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: var(--doc-bg); color: var(--ink); font-family: var(--sans); font-size: 14px; }
+body { min-height: 100vh; }
+
+.doc-header { display:flex;align-items:baseline;justify-content:space-between;padding:20px 32px 16px;border-bottom:1px solid var(--line); }
+.doc-eyebrow { font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-3);text-transform:uppercase; }
+.doc-title { font-family:var(--serif);font-size:22px;font-weight:normal;color:var(--ink);margin-top:2px; }
+.doc-meta { font-family:var(--mono);font-size:10px;color:var(--ink-3);text-align:right;line-height:1.6; }
+
+.section-head { padding:28px 32px 0; }
+.section-label { font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:4px; }
+.section-title { font-family:var(--serif);font-size:16px;color:var(--ink); }
+
+.storyboard-scroll { overflow-x:auto;padding:28px 32px 0; }
+.storyboard { display:flex;align-items:flex-start;gap:0;min-width:max-content; }
+.frame-col { display:flex;flex-direction:column;align-items:center;width:240px; }
+.frame-label { font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px; }
+.frame-name { font-family:var(--serif);font-size:13px;color:var(--ink);margin-bottom:12px;text-align:center;text-wrap:balance;line-height:1.3; }
+.frame-name em { font-style:normal;color:var(--accent); }
+
+.connector { display:flex;flex-direction:column;align-items:center;justify-content:center;width:60px;padding-top:68px;flex-shrink:0; }
+.conn-line { width:36px;height:1px;border-top:1.5px dashed var(--ink-4); }
+.conn-arrow { width:0;height:0;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:5px solid var(--ink-4);margin-left:-1px; }
+.conn-label { margin-top:6px;font-family:var(--mono);font-size:8px;color:var(--ink-3);text-align:center;max-width:52px;line-height:1.4; }
+.conn-label em { font-style:normal;color:var(--accent);display:block; }
+
+.phone { width:220px;height:472px;background:var(--bezel);border-radius:38px;padding:8px;box-shadow:0 0 0 1px var(--bezel-2),0 20px 60px rgba(0,0,0,.22),0 4px 12px rgba(0,0,0,.12);position:relative;flex-shrink:0; }
+.phone-screen { width:100%;height:100%;background:#FAFAF8;border-radius:31px;overflow:hidden;position:relative;display:flex;flex-direction:column; }
+.phone-screen.dark { background:#1C1917; }
+.phone-screen.dark .status-time { color:#FAFAF8; }
+.dynamic-island { position:absolute;top:10px;left:50%;transform:translateX(-50%);width:78px;height:22px;background:var(--bezel);border-radius:20px;z-index:10; }
+.status-bar { height:44px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 16px 6px;flex-shrink:0;position:relative;z-index:1; }
+.status-time { font-size:11px;font-weight:600;color:#1C1917;letter-spacing:-.3px; }
+.status-icons { display:flex;align-items:center;gap:4px; }
+.status-dot { width:5px;height:5px;border-radius:50%;background:#1C1917; }
+.status-dot.dim { opacity:.35; }
+.tab-bar { height:68px;background:#fff;border-top:1px solid #E7E5E4;display:flex;align-items:center;justify-content:space-around;padding:0 12px 14px;flex-shrink:0; }
+.tab { display:flex;flex-direction:column;align-items:center;gap:3px;flex:1; }
+.tab-icon { width:22px;height:22px;border-radius:5px;background:#A8A29E; }
+.tab-lbl { font-size:8.5px;font-weight:600;color:#A8A29E; }
+.tab.active .tab-icon { background:#F97316; }
+.tab.active .tab-lbl { color:#F97316; }
+
+/* ── INVITE SHEET — bottom sheet overlay ── */
+.invite-sheet-overlay { flex:1;position:relative;background:#1C1917;opacity:.45; }
+.invite-sheet { position:absolute;bottom:0;left:0;right:0;background:#FAFAF8;border-radius:24px 24px 0 0;padding:0 0 16px; }
+.sheet-handle { width:36px;height:4px;background:#D6D3D1;border-radius:2px;margin:10px auto 16px; }
+.sheet-inner { padding:0 16px; }
+
+/* ── GROUP PREVIEW CARD ── */
+.group-preview { background:#fff;border-radius:16px;border:1px solid #E7E5E4;padding:14px;margin-bottom:12px; }
+.gp-who { font-size:10px;font-weight:600;color:#A8A29E;letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px; }
+.gp-name { font-size:18px;font-weight:700;color:#1C1917;letter-spacing:-.3px;margin-bottom:10px; }
+.gp-avatars { display:flex;align-items:center;margin-bottom:10px; }
+.av { width:28px;height:28px;border-radius:50%;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;margin-left:-6px;flex-shrink:0; }
+.av:first-child { margin-left:0; }
+.av-a { background:linear-gradient(135deg,#FED7AA,#F97316);color:#7C2D12; }
+.av-b { background:linear-gradient(135deg,#BFDBFE,#3B82F6);color:#1E3A8A; }
+.av-plus { background:#F5F5F4;color:#A8A29E;font-size:8px; }
+.gp-member-lbl { font-size:10px;color:#A8A29E;margin-left:8px; }
+.gp-stat-row { display:flex;gap:16px;border-top:1px solid #F5F5F4;padding-top:10px; }
+.gp-stat { display:flex;flex-direction:column;gap:1px; }
+.gp-stat-val { font-size:13px;font-weight:700;color:#1C1917; }
+.gp-stat-lbl { font-size:9px;color:#A8A29E; }
+
+/* ── BUTTONS ── */
+.btn { border:none;border-radius:12px;font-size:11px;font-weight:600;padding:11px 14px;width:100%;text-align:center;letter-spacing:-.1px;cursor:pointer; }
+.btn-primary { background:#F97316;color:#fff; }
+.btn-ghost { background:transparent;color:#A8A29E;margin-top:6px; }
+.btn-danger { background:#FEE2E2;color:#DC2626; }
+.btn-siwa { background:#000;color:#fff;border-radius:12px;font-size:11px;font-weight:600;padding:11px 14px;width:100%;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px; }
+.apple-logo { font-size:13px;line-height:1; }
+
+/* ── ERROR CARD ── */
+.error-card { background:var(--danger-bg);border-radius:14px;padding:14px;margin-bottom:12px;display:flex;gap:10px;align-items:flex-start; }
+.error-icon { font-size:16px;flex-shrink:0;line-height:1.2; }
+.error-hed { font-size:11px;font-weight:700;color:#991B1B;margin-bottom:2px; }
+.error-body { font-size:10px;color:#991B1B;line-height:1.4; }
+
+/* ── SUCCESS SCREEN ── */
+.success-hero { flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 20px;text-align:center;gap:10px; }
+.success-ring { width:72px;height:72px;border-radius:50%;background:var(--ok-bg);display:flex;align-items:center;justify-content:center;margin-bottom:4px; }
+.success-check { font-size:32px;line-height:1; }
+.success-hed { font-size:18px;font-weight:700;color:#1C1917;letter-spacing:-.3px; }
+.success-sub { font-size:11px;color:#A8A29E;line-height:1.5;max-width:200px; }
+.success-footer { padding:0 16px 20px; }
+
+/* ── ALREADY MEMBER ── */
+.already-card { background:#F5F5F4;border-radius:14px;padding:14px;margin-bottom:12px;display:flex;gap:10px;align-items:flex-start; }
+.already-icon { font-size:16px;flex-shrink:0;line-height:1.2; }
+.already-hed { font-size:11px;font-weight:700;color:#57534E;margin-bottom:2px; }
+.already-body { font-size:10px;color:#78716C;line-height:1.4; }
+
+/* ── AUTH GATE ── */
+.auth-gate-hero { flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 0 20px;background:linear-gradient(160deg,#1C1917 0%,#292524 60%,#3D2008 100%); }
+.auth-gate-inner { padding:0 16px; }
+.auth-eyebrow { font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#F97316;margin-bottom:6px; }
+.auth-hed { font-size:20px;font-weight:700;color:#fff;letter-spacing:-.4px;line-height:1.2;margin-bottom:6px; }
+.auth-sub { font-size:11px;color:#A8A29E;line-height:1.5;margin-bottom:18px; }
+.auth-footer { padding:0 16px 16px;background:#1C1917; }
+.divider-row { display:flex;align-items:center;gap:8px;margin:8px 0; }
+.divider-line { flex:1;height:1px;background:#3A3530; }
+.divider-lbl { font-size:9px;color:#57534E;font-weight:600; }
+.email-btn { background:transparent;border:1px solid #3A3530;color:#A8A29E;border-radius:12px;font-size:11px;padding:11px 14px;width:100%;text-align:center;font-weight:600; }
+
+/* ── HOME HANDOFF ── */
+.home-group-pill { display:inline-flex;align-items:center;gap:4px;background:#F5F5F4;border:1px solid #E7E5E4;border-radius:20px;padding:3px 10px 3px 4px;font-size:9px;font-weight:600;color:#57534E;margin-bottom:8px; }
+.home-new-badge { background:#F97316;color:#fff;font-size:7px;font-weight:700;border-radius:4px;padding:1px 4px;letter-spacing:.04em; }
+.home-hero { background:linear-gradient(135deg,#1C1917,#292524);border-radius:14px;padding:14px;margin:0 8px 10px; }
+.home-hero-eyebrow { font-size:8px;font-weight:600;color:#78716C;margin-bottom:4px; }
+.home-hero-hed { font-size:15px;font-weight:700;color:#fff;margin-bottom:3px; }
+.home-hero-sub { font-size:9px;color:#A8A29E; }
+.home-btn { background:#F97316;color:#fff;border-radius:10px;font-size:10px;font-weight:600;padding:9px 14px;margin:0 8px;text-align:center; }
+
+/* ── ANNOTATIONS ── */
+.annotations { display:flex;min-width:max-content;padding:0 32px;gap:60px;margin-top:0; }
+.anno-col { width:240px;flex-shrink:0; }
+.anno-block { background:var(--anno-bg);border-radius:10px;padding:12px 14px;margin-top:14px;border-left:2.5px solid var(--line); }
+.anno-block.accent { border-left-color:#F97316; }
+.anno-block.ok { border-left-color:#16A34A; }
+.anno-block.danger { border-left-color:#DC2626; }
+.anno-block.warn { border-left-color:#D97706; }
+.anno-hed { font-family:var(--mono);font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:5px; }
+.anno-body { font-size:10.5px;color:var(--ink-2);line-height:1.55; }
+.anno-body strong { color:var(--ink);font-weight:600; }
+
+.design-notes { margin:48px 32px 56px;display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:860px; }
+.note-card { background:var(--anno-bg);border-radius:12px;padding:18px 20px; }
+.note-hed { font-family:var(--serif);font-size:14px;color:var(--ink);margin-bottom:6px; }
+.note-body { font-size:11px;color:var(--ink-2);line-height:1.6; }
+</style>
+</head>
+<body>
+
+<div class="doc-header">
+  <div>
+    <div class="doc-eyebrow">MenuApp · Flow 08</div>
+    <div class="doc-title">Invite Accept</div>
+  </div>
+  <div class="doc-meta">Deep-link join · 5 states<br>Happy path + 3 edge cases</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ PART A: HAPPY PATH -->
+<div class="section-head" style="padding-top:32px;">
+  <div class="section-label">Part A</div>
+  <div class="section-title">Happy path — app installed, user signed in</div>
+</div>
+
+<div class="storyboard-scroll">
+<div class="storyboard">
+
+  <!-- S1: HOME — link tapped, sheet rises -->
+  <div class="frame-col">
+    <div class="frame-label">State 01</div>
+    <div class="frame-name">Link tapped →<br><em>join sheet appears</em></div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><div class="status-dot"></div><div class="status-dot"></div><div class="status-dot dim"></div></div>
+        </div>
+        <!-- dimmed home bg -->
+        <div style="flex:1;background:#FAFAF8;position:relative;overflow:hidden;">
+          <!-- faint home content visible behind sheet -->
+          <div style="padding:8px 10px 0;">
+            <div class="home-group-pill"><div class="av av-a" style="width:14px;height:14px;font-size:7px;margin-left:0;">A</div> The Smiths</div>
+            <div class="home-hero">
+              <div class="home-hero-eyebrow">Week of Jul 14</div>
+              <div class="home-hero-hed">Ready to plan?</div>
+              <div class="home-hero-sub">Pick recipes, vote, done.</div>
+            </div>
+          </div>
+          <!-- overlay -->
+          <div style="position:absolute;inset:0;background:rgba(28,25,23,.5);border-radius:0;"></div>
+          <!-- bottom sheet -->
+          <div style="position:absolute;bottom:0;left:0;right:0;background:#FAFAF8;border-radius:20px 20px 0 0;padding:0 0 12px;">
+            <div class="sheet-handle"></div>
+            <div class="sheet-inner">
+              <div style="font-size:10px;font-weight:600;color:#A8A29E;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;">You've been invited</div>
+              <div class="group-preview">
+                <div class="gp-who">from Claire</div>
+                <div class="gp-name">The Smiths</div>
+                <div class="gp-avatars">
+                  <div class="av av-a">C</div>
+                  <div class="av av-plus">+1</div>
+                  <span class="gp-member-lbl">2 members</span>
+                </div>
+                <div class="gp-stat-row">
+                  <div class="gp-stat"><div class="gp-stat-val">4</div><div class="gp-stat-lbl">meals/wk</div></div>
+                  <div class="gp-stat"><div class="gp-stat-val">12</div><div class="gp-stat-lbl">recipes</div></div>
+                  <div class="gp-stat"><div class="gp-stat-val">2</div><div class="gp-stat-lbl">members</div></div>
+                </div>
+              </div>
+              <button class="btn btn-primary">Join The Smiths</button>
+              <button class="btn btn-ghost">Not now</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="conn-line"></div><div class="conn-arrow"></div><div class="conn-label">tap <em>Join</em></div></div>
+
+  <!-- S2: SUCCESS -->
+  <div class="frame-col">
+    <div class="frame-label">State 02</div>
+    <div class="frame-name">Joined —<br><em>brief celebration</em></div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><div class="status-dot"></div><div class="status-dot"></div><div class="status-dot dim"></div></div>
+        </div>
+        <div class="success-hero">
+          <div class="success-ring"><div class="success-check">✓</div></div>
+          <div class="success-hed">You're in!</div>
+          <div class="success-sub">You've joined <strong>The Smiths</strong>. Claire will be notified.</div>
+          <div style="display:flex;gap:4px;margin-top:4px;">
+            <div class="av av-a" style="width:32px;height:32px;font-size:11px;">C</div>
+            <div class="av av-b" style="width:32px;height:32px;font-size:11px;margin-left:-8px;">A</div>
+          </div>
+        </div>
+        <div class="success-footer">
+          <button class="btn btn-primary">Go to The Smiths →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="conn-line"></div><div class="conn-arrow"></div><div class="conn-label">auto or tap CTA</div></div>
+
+  <!-- S3: HOME — now in group -->
+  <div class="frame-col">
+    <div class="frame-label">State 03</div>
+    <div class="frame-name">Home — <em>group active</em>,<br>ready to plan</div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><div class="status-dot"></div><div class="status-dot"></div><div class="status-dot dim"></div></div>
+        </div>
+        <div style="flex:1;padding:6px 10px 0;">
+          <div class="home-group-pill">
+            <div class="av av-a" style="width:14px;height:14px;font-size:7px;margin-left:0;">C</div>
+            The Smiths
+            <span class="home-new-badge">NEW</span>
+          </div>
+          <div class="home-hero">
+            <div class="home-hero-eyebrow">Week of Jul 14</div>
+            <div class="home-hero-hed">Ready to plan?</div>
+            <div class="home-hero-sub">Pick recipes, vote, done.</div>
+          </div>
+          <div style="height:10px;"></div>
+          <div class="home-btn">Start this week's menu →</div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab active"><div class="tab-icon"></div><div class="tab-lbl">Home</div></div>
+          <div class="tab"><div class="tab-icon"></div><div class="tab-lbl">Recipes</div></div>
+          <div class="tab"><div class="tab-icon"></div><div class="tab-lbl">Shop</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- annotations row A -->
+<div class="annotations">
+  <div class="anno-col">
+    <div class="anno-block accent">
+      <div class="anno-hed">Sheet content</div>
+      <div class="anno-body">Shows group name, inviter's name, current member count, meals/week default, and recipe library size. Enough context to make an informed decision before joining. No app tour, no permissions gate — just one tap.</div>
+    </div>
+  </div>
+  <div class="anno-col" style="margin-left:60px;">
+    <div class="anno-block ok">
+      <div class="anno-hed">Success → auto-advance</div>
+      <div class="anno-body">After 1.5s the success screen auto-advances to the home screen with the new group already selected. The "Go to The Smiths →" CTA lets impatient users skip the wait. A <strong>NEW</strong> badge on the group pill reinforces which group was just joined.</div>
+    </div>
+  </div>
+  <div class="anno-col" style="margin-left:60px;">
+    <div class="anno-block">
+      <div class="anno-hed">Notification to inviter</div>
+      <div class="anno-body">Claire receives a push notification: "Andrew joined The Smiths." Sent server-side when the member row is created. No in-app action needed from Claire.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ PART B: EDGE CASES -->
+<div class="section-head" style="padding-top:44px;">
+  <div class="section-label">Part B</div>
+  <div class="section-title">Edge cases</div>
+</div>
+
+<div class="storyboard-scroll">
+<div class="storyboard">
+
+  <!-- EC1: NOT SIGNED IN -->
+  <div class="frame-col">
+    <div class="frame-label">Edge case A</div>
+    <div class="frame-name">Not signed in —<br><em>auth gate first</em></div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen dark">
+        <div class="status-bar">
+          <span class="status-time" style="color:#FAFAF8;">9:41</span>
+          <div class="status-icons"><div class="status-dot" style="background:#FAFAF8;"></div><div class="status-dot" style="background:#FAFAF8;"></div><div class="status-dot dim" style="background:#FAFAF8;"></div></div>
+        </div>
+        <div class="auth-gate-hero">
+          <div class="auth-gate-inner">
+            <div class="auth-eyebrow">Invite from Claire</div>
+            <div class="auth-hed">Sign in to join<br>The Smiths</div>
+            <div class="auth-sub">You'll be added to the group automatically after signing in.</div>
+          </div>
+        </div>
+        <div class="auth-footer">
+          <button class="btn-siwa"><span class="apple-logo">&#xf8ff;</span> Sign in with Apple</button>
+          <div class="divider-row"><div class="divider-line"></div><div class="divider-lbl">OR</div><div class="divider-line"></div></div>
+          <button class="email-btn">Continue with email</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="conn-line"></div><div class="conn-arrow"></div><div class="conn-label">sign in<br>→ join fires</div></div>
+
+  <!-- EC2: EXPIRED LINK -->
+  <div class="frame-col">
+    <div class="frame-label">Edge case B</div>
+    <div class="frame-name">Expired or<br>already-used link</div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><div class="status-dot"></div><div class="status-dot"></div><div class="status-dot dim"></div></div>
+        </div>
+        <div style="flex:1;position:relative;overflow:hidden;">
+          <!-- dimmed bg -->
+          <div style="padding:8px 10px 0;opacity:.3;">
+            <div class="home-group-pill"><div class="av av-a" style="width:14px;height:14px;font-size:7px;margin-left:0;">A</div> The Smiths</div>
+            <div class="home-hero"><div class="home-hero-hed">Ready to plan?</div></div>
+          </div>
+          <div style="position:absolute;inset:0;background:rgba(28,25,23,.5);"></div>
+          <div style="position:absolute;bottom:0;left:0;right:0;background:#FAFAF8;border-radius:20px 20px 0 0;padding:0 0 12px;">
+            <div class="sheet-handle"></div>
+            <div class="sheet-inner">
+              <div class="error-card">
+                <div class="error-icon">⚠</div>
+                <div>
+                  <div class="error-hed">This invite has expired</div>
+                  <div class="error-body">Invite links expire after 7 days or after they've been used once. Ask Claire to send a new one.</div>
+                </div>
+              </div>
+              <button class="btn btn-ghost" style="background:#F5F5F4;color:#57534E;">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="conn-line"></div><div class="conn-arrow"></div><div class="conn-label" style="opacity:0;">·</div></div>
+
+  <!-- EC3: ALREADY A MEMBER -->
+  <div class="frame-col">
+    <div class="frame-label">Edge case C</div>
+    <div class="frame-name">Already a member<br>of this group</div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><div class="status-dot"></div><div class="status-dot"></div><div class="status-dot dim"></div></div>
+        </div>
+        <div style="flex:1;position:relative;overflow:hidden;">
+          <div style="padding:8px 10px 0;opacity:.3;">
+            <div class="home-group-pill"><div class="av av-a" style="width:14px;height:14px;font-size:7px;margin-left:0;">A</div> The Smiths</div>
+            <div class="home-hero"><div class="home-hero-hed">Ready to plan?</div></div>
+          </div>
+          <div style="position:absolute;inset:0;background:rgba(28,25,23,.5);"></div>
+          <div style="position:absolute;bottom:0;left:0;right:0;background:#FAFAF8;border-radius:20px 20px 0 0;padding:0 0 12px;">
+            <div class="sheet-handle"></div>
+            <div class="sheet-inner">
+              <div class="already-card">
+                <div class="already-icon">👋</div>
+                <div>
+                  <div class="already-hed">You're already in The Smiths</div>
+                  <div class="already-body">Looks like you've already joined this group. Head back to the app to keep planning.</div>
+                </div>
+              </div>
+              <button class="btn btn-primary">Open The Smiths →</button>
+              <button class="btn btn-ghost">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- annotations row B -->
+<div class="annotations" style="padding-bottom:8px;">
+  <div class="anno-col">
+    <div class="anno-block accent">
+      <div class="anno-hed">Auth gate — intent preserved</div>
+      <div class="anno-body">The invite token is stored locally before auth begins. After sign-in completes, the join fires automatically — the user never has to tap the link again. If they abandon auth, the token is discarded; they tap the link again when ready.</div>
+    </div>
+  </div>
+  <div class="anno-col" style="margin-left:60px;">
+    <div class="anno-block danger">
+      <div class="anno-hed">Expired = 410 Gone</div>
+      <div class="anno-body">The API returns <strong>410 Gone</strong> for expired or used tokens (not 404 — the distinction matters: 404 means the link never existed, 410 means it did but is now consumed). The client shows this sheet for any non-200 response from the join endpoint.</div>
+    </div>
+  </div>
+  <div class="anno-col" style="margin-left:60px;">
+    <div class="anno-block">
+      <div class="anno-hed">Already a member</div>
+      <div class="anno-body">Handled as a soft success — the user is in the right place, they just don't need to join again. The CTA deep-links into the group directly. No error language, no friction.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ DESIGN NOTES -->
+<div class="design-notes">
+  <div class="note-card">
+    <div class="note-hed">Token lifecycle</div>
+    <div class="note-body">Tokens are single-use and expire after 7 days. The owner can generate a new token at any time from the group settings share sheet — the old token is not invalidated, it just expires naturally. There is no revocation endpoint in V1; if a link is accidentally shared publicly, the owner can remove the unwanted member after the fact.</div>
+  </div>
+  <div class="note-card">
+    <div class="note-hed">Deep link URL structure</div>
+    <div class="note-body">Universal link: <code style="font-family:var(--mono);font-size:10px;">menuapp.com/join/{token}</code>. Falls back to a web page with an App Store badge if the app isn't installed. The web page also stores the token in localStorage so it survives the install → open cycle on first-time installs.</div>
+  </div>
+  <div class="note-card">
+    <div class="note-hed">Not-installed path</div>
+    <div class="note-body">Tapping the link on a device without the app goes to a web landing page: group name, member avatars, "Download MenuApp to join." After install and first sign-in, the app checks for a pending invite token in the universal link and fires the join automatically. This requires Associated Domains entitlement + apple-app-site-association file on the server.</div>
+  </div>
+  <div class="note-card">
+    <div class="note-hed">Sheet vs. full screen</div>
+    <div class="note-body">The join flow uses a bottom sheet overlay rather than a full-screen push because the user is already in the app — a full-screen takeover feels like they've left somewhere. The sheet keeps home visible underneath, reinforcing that joining adds to what they already have rather than replacing it.</div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,744 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MenuApp · Flow 07 · Onboarding</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --canvas: #FAFAF8; --surface: #FFFFFF; --ink: #1C1917; --ink-2: #57534E;
+  --ink-3: #A8A29E; --ink-4: #D6D3D1; --line: #E7E5E4; --field: #F5F5F4;
+  --accent: #F97316; --ok: #16A34A; --ok-bg: #DCFCE7; --danger: #DC2626; --danger-bg: #FEE2E2;
+  --bezel: #2C2820; --bezel-2: #3D3530;
+  --doc-bg: #FAFAF8; --anno-bg: #F0EFEC;
+  --serif: Georgia,'Times New Roman',serif;
+  --sans: -apple-system,'SF Pro Text','Helvetica Neue',system-ui,sans-serif;
+  --mono: ui-monospace,'SF Mono','Roboto Mono',monospace;
+}
+@media (prefers-color-scheme: dark) { :root { --doc-bg:#1C1917;--anno-bg:#262220;--ink:#FAF9F7;--ink-2:#C4B8B0;--ink-3:#8C837D;--ink-4:#4A4540;--line:#3A3530; } }
+:root[data-theme="dark"] { --doc-bg:#1C1917;--anno-bg:#262220;--ink:#FAF9F7;--ink-2:#C4B8B0;--ink-3:#8C837D;--ink-4:#4A4540;--line:#3A3530; }
+:root[data-theme="light"] { --doc-bg:#FAFAF8;--anno-bg:#F0EFEC;--ink:#1C1917;--ink-2:#57534E;--ink-3:#A8A29E;--ink-4:#D6D3D1;--line:#E7E5E4; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: var(--doc-bg); color: var(--ink); font-family: var(--sans); font-size: 14px; }
+body { min-height: 100vh; }
+
+.doc-header { display:flex;align-items:baseline;justify-content:space-between;padding:20px 32px 16px;border-bottom:1px solid var(--line); }
+.doc-eyebrow { font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-3);text-transform:uppercase; }
+.doc-title { font-family:var(--serif);font-size:22px;font-weight:normal;color:var(--ink);margin-top:2px; }
+.doc-meta { font-family:var(--mono);font-size:10px;color:var(--ink-3);text-align:right;line-height:1.6; }
+
+.section-head { padding:28px 32px 0; }
+.section-label { font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:4px; }
+.section-title { font-family:var(--serif);font-size:16px;color:var(--ink); }
+.section-sub { font-size:11px;color:var(--ink-3);margin-top:3px; }
+
+.storyboard-scroll { overflow-x:auto;padding:28px 32px 0; }
+.storyboard { display:flex;align-items:flex-start;gap:0;min-width:max-content; }
+.frame-col { display:flex;flex-direction:column;align-items:center;width:240px; }
+.frame-label { font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px; }
+.frame-name { font-family:var(--serif);font-size:13px;color:var(--ink);margin-bottom:12px;text-align:center;line-height:1.3; }
+.frame-name em { font-style:normal;color:var(--accent); }
+
+.connector { display:flex;flex-direction:column;align-items:center;justify-content:center;width:60px;padding-top:68px;flex-shrink:0; }
+.conn-line { width:36px;height:1px;border-top:1.5px dashed var(--ink-4); }
+.conn-arrow { width:0;height:0;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:5px solid var(--ink-4);margin-left:-1px; }
+.conn-label { margin-top:6px;font-family:var(--mono);font-size:8px;color:var(--ink-3);text-align:center;max-width:52px;line-height:1.4; }
+.conn-label em { font-style:normal;color:var(--accent);display:block; }
+
+.phone { width:220px;height:472px;background:var(--bezel);border-radius:38px;padding:8px;box-shadow:0 0 0 1px var(--bezel-2),0 20px 60px rgba(0,0,0,.22),0 4px 12px rgba(0,0,0,.12);position:relative;flex-shrink:0; }
+.phone-screen { width:100%;height:100%;background:#FAFAF8;border-radius:31px;overflow:hidden;position:relative;display:flex;flex-direction:column; }
+.dynamic-island { position:absolute;top:10px;left:50%;transform:translateX(-50%);width:78px;height:22px;background:var(--bezel);border-radius:20px;z-index:10; }
+.status-bar { height:44px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 16px 6px;flex-shrink:0;position:relative;z-index:1; }
+.status-time { font-size:11px;font-weight:600;color:#1C1917;letter-spacing:-.3px; }
+.status-time.light { color:#FAFAF8; }
+.status-icons { display:flex;align-items:center;gap:4px; }
+.status-dot { width:5px;height:5px;border-radius:50%;background:#1C1917; }
+.status-dot.light { background:#FAFAF8; }
+.status-dot.dim { opacity:.35; }
+
+/* ── SPLASH ── */
+.splash { flex:1;background:linear-gradient(175deg,#1C1917 0%,#292524 50%,#431407 100%);display:flex;flex-direction:column;position:relative; }
+.splash-wordmark { padding:20px 20px 0;font-size:13px;font-weight:700;color:#F97316;letter-spacing:.04em; }
+.splash-center { flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 20px 20px; }
+.splash-hed { font-size:26px;font-weight:800;color:#fff;letter-spacing:-.6px;line-height:1.1;margin-bottom:8px; }
+.splash-hed span { color:#F97316; }
+.splash-sub { font-size:11px;color:#A8A29E;line-height:1.5;margin-bottom:24px; }
+.btn-siwa-splash { background:#fff;color:#1C1917;border-radius:14px;font-size:11px;font-weight:700;padding:13px 14px;width:100%;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:10px;letter-spacing:-.1px; }
+.apple-logo { font-size:14px;line-height:1; }
+.btn-try { background:transparent;border:1.5px solid rgba(255,255,255,.2);color:#FAFAF8;border-radius:14px;font-size:11px;font-weight:600;padding:12px 14px;width:100%;text-align:center;letter-spacing:-.1px; }
+.splash-legal { font-size:8px;color:#57534E;text-align:center;margin-top:10px;line-height:1.5; }
+
+/* ── VOTE CARD ── */
+.vote-screen { flex:1;background:#F5F5F4;position:relative;display:flex;flex-direction:column;overflow:hidden; }
+.vote-header { padding:8px 14px 6px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0; }
+.vote-week { font-size:9px;font-weight:600;color:#A8A29E;letter-spacing:.06em;text-transform:uppercase; }
+.vote-progress { display:flex;align-items:center;gap:3px; }
+.vp-dot { width:6px;height:6px;border-radius:3px;background:#E7E5E4; }
+.vp-dot.active { width:14px;background:#F97316; }
+.vp-dot.done { background:#16A34A;width:6px; }
+.vp-dot.veto { background:#DC2626;width:6px; }
+
+.card-stack { flex:1;position:relative;display:flex;align-items:center;justify-content:center; }
+
+/* real card */
+.recipe-card { position:absolute;width:176px;height:230px;border-radius:18px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.18),0 2px 6px rgba(0,0,0,.1);background:#fff; }
+.recipe-card.back { transform:scale(.94) translateY(8px);z-index:1; }
+.recipe-card.front { z-index:2; }
+.recipe-card.ghost { z-index:3;opacity:.88; }
+
+.recipe-photo { width:100%;height:160px;object-fit:cover;position:relative;overflow:hidden; }
+.recipe-photo-bg { width:100%;height:160px;position:relative; }
+.recipe-overlay-name { position:absolute;bottom:0;left:0;right:0;padding:20px 10px 8px;background:linear-gradient(transparent,rgba(28,25,23,.72));color:#fff;font-size:11px;font-weight:700;letter-spacing:-.2px;line-height:1.2; }
+.recipe-meta { padding:8px 10px 0; }
+.tag-pill { display:inline-flex;align-items:center;font-size:8px;font-weight:600;padding:2px 6px;border-radius:10px;margin-right:3px;margin-bottom:3px; }
+.tag-cuisine { background:#F0FDFA;color:#0F766E; }
+.tag-time { background:#FFF7ED;color:#C2570A; }
+
+/* swipe verdict overlays */
+.verdict-approve { position:absolute;top:18px;right:10px;background:#16A34A;color:#fff;font-size:9px;font-weight:800;padding:3px 8px;border-radius:6px;letter-spacing:.06em;transform:rotate(-8deg);opacity:0; }
+.verdict-veto { position:absolute;top:18px;left:10px;background:#DC2626;color:#fff;font-size:9px;font-weight:800;padding:3px 8px;border-radius:6px;letter-spacing:.06em;transform:rotate(8deg);opacity:0; }
+.verdict-approve.show { opacity:1; }
+.verdict-veto.show { opacity:1; }
+
+/* ghost card specific */
+.recipe-card.ghost-mid { transform:rotate(10deg) translateX(20px);z-index:3; }
+.ghost-tint { position:absolute;inset:0;background:rgba(22,163,74,.18);border-radius:18px; }
+.ghost-avatar { position:absolute;top:8px;left:8px;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#BFDBFE,#3B82F6);border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#1E3A8A;z-index:5; }
+.ghost-verdict { position:absolute;top:14px;right:8px;background:#16A34A;color:#fff;font-size:8px;font-weight:800;padding:2px 7px;border-radius:5px;letter-spacing:.06em;transform:rotate(-8deg);z-index:5; }
+.ghost-trail { position:absolute;inset:0;border:2px solid rgba(22,163,74,.3);border-radius:18px; }
+
+/* static partner hint (Option A) */
+.partner-hint { position:absolute;top:8px;right:8px;display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.9);border-radius:20px;padding:3px 7px 3px 3px;z-index:5; }
+.ph-avatar { width:16px;height:16px;border-radius:50%;background:#E7E5E4;border:1.5px dashed #A8A29E;display:flex;align-items:center;justify-content:center; }
+.ph-avatar-q { font-size:8px;color:#A8A29E;font-weight:700; }
+.ph-label { font-size:8px;color:#78716C;font-weight:600; }
+
+/* ── VOTE RAIL LABELS ── */
+.vote-rail { position:absolute;top:0;bottom:0;display:flex;align-items:center;pointer-events:none;z-index:1; }
+.vote-rail.left { left:8px; }
+.vote-rail.right { right:8px; }
+.rail-label { font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;writing-mode:vertical-rl; }
+.rail-label.approve { color:rgba(22,163,74,.5);transform:rotate(180deg); }
+.rail-label.veto { color:rgba(220,38,38,.5); }
+
+/* ── MENU PREVIEW SCREEN ── */
+.menu-preview { flex:1;background:#FAFAF8;display:flex;flex-direction:column; }
+.mp-header { padding:10px 14px 0; }
+.mp-eyebrow { font-size:8px;font-weight:700;color:#F97316;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px; }
+.mp-title { font-size:14px;font-weight:700;color:#1C1917;letter-spacing:-.3px;margin-bottom:12px; }
+.mp-week-label { font-size:9px;font-weight:600;color:#A8A29E;letter-spacing:.04em;margin-bottom:6px; }
+.menu-card { margin:0 10px;background:#fff;border-radius:14px;border:1px solid #E7E5E4;overflow:hidden;margin-bottom:8px; }
+.menu-recipe-row { display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid #F5F5F4; }
+.menu-recipe-row:last-child { border-bottom:none; }
+.mrr-thumb { width:36px;height:36px;border-radius:8px;flex-shrink:0;object-fit:cover;overflow:hidden; }
+.mrr-thumb-bg { width:36px;height:36px;border-radius:8px;flex-shrink:0; }
+.mrr-info { flex:1;min-width:0; }
+.mrr-name { font-size:10px;font-weight:600;color:#1C1917;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.mrr-day { font-size:8.5px;color:#A8A29E; }
+.mrr-vote { display:flex;align-items:center;gap:2px; }
+.vote-pip { width:8px;height:8px;border-radius:50%; }
+.vote-pip.approve { background:#16A34A; }
+.vote-pip.empty { background:#E7E5E4; }
+.mp-locked { display:flex;align-items:center;gap:6px;margin:0 10px;padding:10px 12px;background:#FFF7ED;border-radius:10px;border:1px solid #FED7AA; }
+.mp-lock-icon { font-size:14px;flex-shrink:0; }
+.mp-lock-text { font-size:9.5px;color:#92400E;line-height:1.4; }
+.mp-lock-text strong { font-weight:700; }
+
+/* ── GHOST ANIMATION CALLOUT ── */
+.ghost-callout { position:absolute;bottom:56px;left:10px;right:10px;background:#fff;border-radius:14px;padding:10px 12px;box-shadow:0 4px 20px rgba(0,0,0,.12);display:flex;gap:8px;align-items:flex-start;z-index:10; }
+.gc-avatar { width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#BFDBFE,#3B82F6);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#1E3A8A;margin-top:1px; }
+.gc-body { flex:1;min-width:0; }
+.gc-hed { font-size:10px;font-weight:700;color:#1C1917;margin-bottom:2px; }
+.gc-sub { font-size:9px;color:#78716C;line-height:1.4; }
+.gc-cta { font-size:9px;font-weight:700;color:#F97316;margin-top:4px; }
+
+/* ── SAVE GATE ── */
+.save-screen { flex:1;background:#1C1917;display:flex;flex-direction:column; }
+.save-hero { flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 20px 20px; }
+.save-eyebrow { font-size:9px;font-weight:600;letter-spacing:.1em;color:#F97316;text-transform:uppercase;margin-bottom:8px; }
+.save-hed { font-size:22px;font-weight:800;color:#fff;letter-spacing:-.5px;line-height:1.1;margin-bottom:6px; }
+.save-sub { font-size:10.5px;color:#A8A29E;line-height:1.5;margin-bottom:20px; }
+.save-menu-preview { background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:10px 12px;margin-bottom:20px; }
+.smp-label { font-size:8px;font-weight:600;color:#78716C;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px; }
+.smp-row { display:flex;align-items:center;gap:6px;margin-bottom:4px; }
+.smp-row:last-child { margin-bottom:0; }
+.smp-dot { width:6px;height:6px;border-radius:50%;background:#16A34A;flex-shrink:0; }
+.smp-name { font-size:9.5px;color:#D6D3D1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.save-footer { padding:0 20px 20px; }
+.btn-siwa-save { background:#fff;color:#1C1917;border-radius:14px;font-size:11px;font-weight:700;padding:13px 14px;width:100%;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:10px; }
+.btn-email-save { background:transparent;border:1.5px solid rgba(255,255,255,.15);color:#A8A29E;border-radius:14px;font-size:11px;font-weight:600;padding:12px 14px;width:100%;text-align:center; }
+
+/* ── PAYWALL ── */
+.paywall-screen { flex:1;background:#FAFAF8;display:flex;flex-direction:column; }
+.pw-header { padding:16px 16px 0;display:flex;align-items:center;justify-content:space-between; }
+.pw-skip { font-size:9.5px;color:#A8A29E;font-weight:600; }
+.pw-body { flex:1;padding:14px 16px 0; }
+.pw-eyebrow { font-size:9px;font-weight:600;color:#F97316;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px; }
+.pw-hed { font-size:18px;font-weight:800;color:#1C1917;letter-spacing:-.4px;line-height:1.15;margin-bottom:8px; }
+.pw-features { display:flex;flex-direction:column;gap:6px;margin-bottom:14px; }
+.pw-feat { display:flex;align-items:flex-start;gap:8px; }
+.pw-feat-icon { font-size:13px;flex-shrink:0;line-height:1.3; }
+.pw-feat-body { font-size:10px;color:#57534E;line-height:1.4; }
+.pw-feat-body strong { color:#1C1917;font-weight:600; }
+.pw-plan-row { display:flex;gap:8px;margin-bottom:12px; }
+.pw-plan { flex:1;border:1.5px solid #E7E5E4;border-radius:12px;padding:8px 10px;text-align:center; }
+.pw-plan.selected { border-color:#F97316;background:#FFF7ED; }
+.pw-plan-price { font-size:14px;font-weight:800;color:#1C1917;letter-spacing:-.3px; }
+.pw-plan-period { font-size:8px;color:#A8A29E;margin-top:1px; }
+.pw-plan-label { font-size:8px;font-weight:700;color:#F97316;margin-top:4px; }
+.pw-trial-badge { background:#DCFCE7;border-radius:8px;padding:7px 10px;text-align:center;margin-bottom:10px; }
+.pw-trial-text { font-size:10px;font-weight:700;color:#15803D; }
+.pw-footer { padding:0 16px 16px; }
+.btn-start-trial { background:#F97316;color:#fff;border-radius:14px;font-size:11px;font-weight:700;padding:13px;width:100%;text-align:center;margin-bottom:6px; }
+.pw-legal { font-size:8px;color:#A8A29E;text-align:center;line-height:1.5; }
+
+/* ── HOME LANDING ── */
+.home-screen { flex:1;background:#FAFAF8;display:flex;flex-direction:column; }
+.home-inner { flex:1;padding:6px 10px 0; }
+.group-pill { display:inline-flex;align-items:center;gap:4px;background:#F5F5F4;border:1px solid #E7E5E4;border-radius:20px;padding:3px 10px 3px 4px;font-size:9px;font-weight:600;color:#57534E;margin-bottom:8px; }
+.av-sm { width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,#FED7AA,#F97316);display:flex;align-items:center;justify-content:center;font-size:6px;font-weight:700;color:#7C2D12; }
+.home-hero-card { background:linear-gradient(135deg,#1C1917,#292524);border-radius:14px;padding:14px;margin-bottom:8px; }
+.hhc-eyebrow { font-size:8px;font-weight:600;color:#78716C;margin-bottom:4px; }
+.hhc-hed { font-size:14px;font-weight:700;color:#fff;margin-bottom:2px; }
+.hhc-sub { font-size:9px;color:#A8A29E; }
+.home-menu-row { background:#fff;border-radius:12px;border:1px solid #E7E5E4;padding:10px;margin-bottom:8px; }
+.hmr-label { font-size:8px;font-weight:700;color:#F97316;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px; }
+.hmr-recipe { display:flex;align-items:center;gap:6px;margin-bottom:4px; }
+.hmr-recipe:last-child { margin-bottom:0; }
+.hmr-dot { width:6px;height:6px;border-radius:50%;background:#16A34A;flex-shrink:0; }
+.hmr-name { font-size:9px;color:#1C1917;font-weight:500; }
+.tab-bar { height:68px;background:#fff;border-top:1px solid #E7E5E4;display:flex;align-items:center;justify-content:space-around;padding:0 12px 14px;flex-shrink:0; }
+.tab { display:flex;flex-direction:column;align-items:center;gap:3px;flex:1; }
+.tab-icon { width:22px;height:22px;border-radius:5px;background:#A8A29E; }
+.tab-lbl { font-size:8.5px;font-weight:600;color:#A8A29E; }
+.tab.active .tab-icon { background:#F97316; }
+.tab.active .tab-lbl { color:#F97316; }
+
+/* ── FOOD PHOTO PLACEHOLDERS ── */
+.photo-pasta { background:linear-gradient(145deg,#7C2D12,#C2570A,#A16207); }
+.photo-chicken { background:linear-gradient(145deg,#92400E,#B45309,#CA8A04); }
+.photo-salmon { background:linear-gradient(145deg,#9A3412,#EA580C,#F59E0B); }
+.photo-risotto { background:linear-gradient(145deg,#713F12,#A16207,#D97706); }
+.photo-tacos { background:linear-gradient(145deg,#7C2D12,#DC2626,#EA580C); }
+
+/* ── ANNOTATIONS ── */
+.annotations { display:flex;min-width:max-content;padding:0 32px;gap:60px;margin-top:0; }
+.anno-col { width:240px;flex-shrink:0; }
+.anno-block { background:var(--anno-bg);border-radius:10px;padding:12px 14px;margin-top:14px;border-left:2.5px solid var(--line); }
+.anno-block.accent { border-left-color:#F97316; }
+.anno-block.ok { border-left-color:#16A34A; }
+.anno-block.danger { border-left-color:#DC2626; }
+.anno-block.warn { border-left-color:#D97706; }
+.anno-block.purple { border-left-color:#7C3AED; }
+.anno-hed { font-family:var(--mono);font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:5px; }
+.anno-body { font-size:10.5px;color:var(--ink-2);line-height:1.55; }
+.anno-body strong { color:var(--ink);font-weight:600; }
+
+.conversion-notes { margin:48px 32px 56px;display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:860px; }
+.note-card { background:var(--anno-bg);border-radius:12px;padding:18px 20px; }
+.note-hed { font-family:var(--serif);font-size:14px;color:var(--ink);margin-bottom:6px; }
+.note-body { font-size:11px;color:var(--ink-2);line-height:1.6; }
+.note-body code { font-family:var(--mono);font-size:10px;background:var(--line);padding:1px 4px;border-radius:3px; }
+</style>
+</head>
+<body>
+
+<div class="doc-header">
+  <div>
+    <div class="doc-eyebrow">MenuApp · Flow 07</div>
+    <div class="doc-title">Onboarding</div>
+  </div>
+  <div class="doc-meta">Zero-friction entry · Action-first<br>No account required to feel value</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ PART A: ENTRY + VOTING -->
+<div class="section-head" style="padding-top:32px;">
+  <div class="section-label">Part A — Entry & Value</div>
+  <div class="section-title">Zero friction. In the app before they know it.</div>
+  <div class="section-sub">No account. No questions. One tap to real recipe cards.</div>
+</div>
+
+<div class="storyboard-scroll">
+<div class="storyboard">
+
+  <!-- S01: SPLASH -->
+  <div class="frame-col">
+    <div class="frame-label">Screen 01</div>
+    <div class="frame-name">Splash —<br><em>try before sign-up</em></div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar" style="position:absolute;top:0;left:0;right:0;z-index:2;">
+          <span class="status-time light">9:41</span>
+          <div class="status-icons"><div class="status-dot light"></div><div class="status-dot light"></div><div class="status-dot light dim"></div></div>
+        </div>
+        <div class="splash">
+          <div class="splash-wordmark">menuapp</div>
+          <div class="splash-center">
+            <div class="splash-hed">Stop asking<br><span>"what's for dinner?"</span></div>
+            <div class="splash-sub">Pick recipes together. Vote, agree, eat well. No drama.</div>
+            <button class="btn-siwa-splash"><span class="apple-logo">&#xf8ff;</span> Sign in with Apple</button>
+            <button class="btn-try">Try it first →</button>
+            <div class="splash-legal">By continuing you agree to our Terms & Privacy Policy</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="conn-line"></div><div class="conn-arrow"></div><div class="conn-label">tap <em>"Try it first"</em></div></div>
+
+  <!-- S02: SWIPE TUTORIAL (mid-animation) -->
+  <div class="frame-col">
+    <div class="frame-label">Screen 02</div>
+    <div class="frame-name">Tutorial —<br><em>auto-demo in progress</em></div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><div class="status-dot"></div><div class="status-dot"></div><div class="status-dot dim"></div></div>
+        </div>
+        <div style="background:#F5F5F4;flex:1;display:flex;flex-direction:column;overflow:hidden;">
+          <div class="vote-header">
+            <div class="vote-week">This week</div>
+            <div class="vote-progress">
+              <div class="vp-dot active"></div>
+              <div class="vp-dot"></div><div class="vp-dot"></div><div class="vp-dot"></div>
+            </div>
+          </div>
+          <div class="card-stack">
+            <div class="vote-rail left"><span class="rail-label veto">Veto</span></div>
+            <div class="vote-rail right"><span class="rail-label approve">Approve</span></div>
+            <!-- back card -->
+            <div class="recipe-card back">
+              <div class="recipe-photo-bg photo-chicken"></div>
+              <div class="recipe-meta"><span class="tag-pill tag-cuisine">Asian</span><span class="tag-pill tag-time">30 min</span></div>
+            </div>
+            <!-- front card — mid auto-drag right (demo approve) -->
+            <div class="recipe-card front" style="transform:rotate(7deg) translateX(18px);">
+              <div class="recipe-photo-bg photo-pasta" style="position:relative;">
+                <div class="recipe-overlay-name">Cacio e Pepe</div>
+                <div class="verdict-approve show">Approve</div>
+              </div>
+              <div class="recipe-meta"><span class="tag-pill tag-cuisine">Italian</span><span class="tag-pill tag-time">25 min</span></div>
+            </div>
+          </div>
+          <!-- tutorial tooltip -->
+          <div style="padding:0 14px 14px;">
+            <div style="background:#fff;border-radius:12px;padding:10px 12px;border:1px solid #E7E5E4;display:flex;gap:8px;align-items:center;">
+              <div style="font-size:16px;">👆</div>
+              <div>
+                <div style="font-size:10px;font-weight:700;color:#1C1917;margin-bottom:1px;">Swipe to vote</div>
+                <div style="font-size:9px;color:#A8A29E;">Right = you're in. Left = hard pass.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="conn-line"></div><div class="conn-arrow"></div><div class="conn-label">demo ends<br><em>~2.5s</em></div></div>
+
+  <!-- S03: LIVE VOTING (2nd real card, static partner hint) -->
+  <div class="frame-col">
+    <div class="frame-label">Screen 03</div>
+    <div class="frame-name">Live voting —<br><em>2 cards in, solo</em></div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><div class="status-dot"></div><div class="status-dot"></div><div class="status-dot dim"></div></div>
+        </div>
+        <div style="background:#F5F5F4;flex:1;display:flex;flex-direction:column;overflow:hidden;">
+          <div class="vote-header">
+            <div class="vote-week">This week</div>
+            <div class="vote-progress">
+              <div class="vp-dot done"></div>
+              <div class="vp-dot active"></div>
+              <div class="vp-dot"></div><div class="vp-dot"></div>
+            </div>
+          </div>
+          <div class="card-stack">
+            <div class="vote-rail left"><span class="rail-label veto">Veto</span></div>
+            <div class="vote-rail right"><span class="rail-label approve">Approve</span></div>
+            <div class="recipe-card back">
+              <div class="recipe-photo-bg photo-tacos"></div>
+              <div class="recipe-meta"><span class="tag-pill tag-cuisine">Mexican</span></div>
+            </div>
+            <div class="recipe-card front">
+              <!-- partner hint — Option A -->
+              <div class="partner-hint">
+                <div class="ph-avatar"><div class="ph-avatar-q">?</div></div>
+                <div class="ph-label">Invite to vote</div>
+              </div>
+              <div class="recipe-photo-bg photo-salmon" style="position:relative;">
+                <div class="recipe-overlay-name">Miso-Glazed Salmon</div>
+              </div>
+              <div class="recipe-meta"><span class="tag-pill tag-cuisine">Japanese</span><span class="tag-pill tag-time">20 min</span></div>
+            </div>
+          </div>
+          <div style="padding:0 14px 14px;">
+            <div style="height:44px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- annotations row A -->
+<div class="annotations">
+  <div class="anno-col">
+    <div class="anno-block accent">
+      <div class="anno-hed">Two CTAs, one primary</div>
+      <div class="anno-body">"Try it first" is the secondary button but it's what most new users will tap — no commitment, no friction. SIWA is there for users already convinced. Both paths converge at the same recipe cards; the only difference is whether their votes are saved.</div>
+    </div>
+  </div>
+  <div class="anno-col" style="margin-left:60px;">
+    <div class="anno-block">
+      <div class="anno-hed">Tutorial timing</div>
+      <div class="anno-body">The 2.5s auto-demo runs immediately with no skip button. After the demo resolves, real cards begin. The tooltip disappears after the first real swipe. <strong>No explanation screens.</strong> The mechanic is self-evident from watching it.</div>
+    </div>
+  </div>
+  <div class="anno-col" style="margin-left:60px;">
+    <div class="anno-block purple">
+      <div class="anno-hed">Partner hint — Option A</div>
+      <div class="anno-body">Starting from card 2, every card shows a dimmed "?" avatar pill in the top-right corner: <strong>"Invite to vote."</strong> Persistent but quiet. Plants the idea without interrupting flow. The real persuasion comes on card 3.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ PART B: THE HOOK -->
+<div class="section-head" style="padding-top:44px;">
+  <div class="section-label">Part B — The Hook</div>
+  <div class="section-title">The ghost vote. The moment they want the full product.</div>
+  <div class="section-sub">Triggers after 3 cards voted. A ghost partner approves the top card — unprompted, in front of them.</div>
+</div>
+
+<div class="storyboard-scroll">
+<div class="storyboard">
+
+  <!-- S04: GHOST VOTE ANIMATION (mid-play) -->
+  <div class="frame-col">
+    <div class="frame-label">Screen 04</div>
+    <div class="frame-name"><em>Ghost partner votes</em> —<br>animation mid-play</div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><div class="status-dot"></div><div class="status-dot"></div><div class="status-dot dim"></div></div>
+        </div>
+        <div style="background:#F5F5F4;flex:1;display:flex;flex-direction:column;overflow:hidden;">
+          <div class="vote-header">
+            <div class="vote-week">This week</div>
+            <div class="vote-progress">
+              <div class="vp-dot done"></div><div class="vp-dot done"></div><div class="vp-dot done"></div>
+              <div class="vp-dot active"></div>
+            </div>
+          </div>
+          <div class="card-stack">
+            <div class="vote-rail left"><span class="rail-label veto">Veto</span></div>
+            <div class="vote-rail right"><span class="rail-label approve">Approve</span></div>
+            <!-- back card -->
+            <div class="recipe-card back">
+              <div class="recipe-photo-bg photo-tacos"></div>
+              <div class="recipe-meta"><span class="tag-pill tag-cuisine">Mexican</span></div>
+            </div>
+            <!-- ghost card — mid fly-off to the right -->
+            <div class="recipe-card ghost-mid">
+              <div class="ghost-tint"></div>
+              <div class="ghost-trail"></div>
+              <div class="ghost-avatar">C</div>
+              <div class="ghost-verdict">✓ Approved</div>
+              <div class="recipe-photo-bg photo-risotto" style="position:relative;">
+                <div class="recipe-overlay-name">Lemon Herb Risotto</div>
+              </div>
+              <div class="recipe-meta"><span class="tag-pill tag-cuisine">Italian</span><span class="tag-pill tag-time">35 min</span></div>
+            </div>
+          </div>
+          <!-- callout slides up during animation -->
+          <div style="position:relative;padding:0 10px 10px;">
+            <div class="ghost-callout" style="position:relative;bottom:auto;left:auto;right:auto;margin-top:0;">
+              <div class="gc-avatar">C</div>
+              <div class="gc-body">
+                <div class="gc-hed">Claire would've approved this</div>
+                <div class="gc-sub">Invite someone to vote on the same recipes and finalize together.</div>
+                <div class="gc-cta">Invite Claire →</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="conn-line"></div><div class="conn-arrow"></div><div class="conn-label">animation<br>settles</div></div>
+
+  <!-- S05: MENU PREVIEW — partial, locked -->
+  <div class="frame-col">
+    <div class="frame-label">Screen 05</div>
+    <div class="frame-name">Menu preview —<br><em>votes need saving</em></div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><div class="status-dot"></div><div class="status-dot"></div><div class="status-dot dim"></div></div>
+        </div>
+        <div class="menu-preview">
+          <div class="mp-header">
+            <div class="mp-eyebrow">Your week is taking shape</div>
+            <div class="mp-title">3 recipes approved</div>
+            <div class="mp-week-label">Week of Jul 14</div>
+          </div>
+          <div class="menu-card">
+            <div class="menu-recipe-row">
+              <div class="mrr-thumb-bg photo-pasta" style="border-radius:8px;"></div>
+              <div class="mrr-info">
+                <div class="mrr-name">Cacio e Pepe</div>
+                <div class="mrr-day">Monday</div>
+              </div>
+              <div class="mrr-vote"><div class="vote-pip approve"></div><div class="vote-pip empty"></div></div>
+            </div>
+            <div class="menu-recipe-row">
+              <div class="mrr-thumb-bg photo-salmon" style="border-radius:8px;"></div>
+              <div class="mrr-info">
+                <div class="mrr-name">Miso-Glazed Salmon</div>
+                <div class="mrr-day">Wednesday</div>
+              </div>
+              <div class="mrr-vote"><div class="vote-pip approve"></div><div class="vote-pip empty"></div></div>
+            </div>
+            <div class="menu-recipe-row">
+              <div class="mrr-thumb-bg photo-risotto" style="border-radius:8px;"></div>
+              <div class="mrr-info">
+                <div class="mrr-name">Lemon Herb Risotto</div>
+                <div class="mrr-day">Friday</div>
+              </div>
+              <div class="mrr-vote"><div class="vote-pip approve"></div><div class="vote-pip empty"></div></div>
+            </div>
+          </div>
+          <div class="mp-locked">
+            <div class="mp-lock-icon">🔒</div>
+            <div class="mp-lock-text"><strong>Sign in to save your votes</strong> and finalize this menu. Free for 7 days.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="conn-line"></div><div class="conn-arrow"></div><div class="conn-label">tap lock<br><em>or "save"</em></div></div>
+
+  <!-- S06: SAVE GATE -->
+  <div class="frame-col">
+    <div class="frame-label">Screen 06</div>
+    <div class="frame-name">Save gate —<br><em>sunk cost converts</em></div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="save-screen">
+          <div class="save-hero">
+            <div class="save-eyebrow">Don't lose your picks</div>
+            <div class="save-hed">Save your menu<br>to keep it</div>
+            <div class="save-sub">You've already built something good. Create a free account to save your votes and finalize your week.</div>
+            <div class="save-menu-preview">
+              <div class="smp-label">Your approved recipes</div>
+              <div class="smp-row"><div class="smp-dot"></div><div class="smp-name">Cacio e Pepe</div></div>
+              <div class="smp-row"><div class="smp-dot"></div><div class="smp-name">Miso-Glazed Salmon</div></div>
+              <div class="smp-row"><div class="smp-dot"></div><div class="smp-name">Lemon Herb Risotto</div></div>
+            </div>
+          </div>
+          <div class="save-footer">
+            <button class="btn-siwa-save"><span class="apple-logo" style="color:#000;">&#xf8ff;</span> Continue with Apple</button>
+            <button class="btn-email-save">Continue with email</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- annotations row B -->
+<div class="annotations" style="padding-bottom:8px;">
+  <div class="anno-col">
+    <div class="anno-block purple">
+      <div class="anno-hed">Ghost vote — animation spec</div>
+      <div class="anno-body">The ghost card sits underneath the top card at rest. After the 3rd real vote commits, a 600ms sequence plays: ghost card slides out from behind, auto-drags right (approve direction), green tint fades in, "✓ Approved" badge appears, card flies off. The callout slides up 200ms after the card exits. <strong>No user interaction required.</strong></div>
+    </div>
+  </div>
+  <div class="anno-col" style="margin-left:60px;">
+    <div class="anno-block accent">
+      <div class="anno-hed">The lock is a CTA, not a wall</div>
+      <div class="anno-body">The menu preview is fully visible — they can see exactly what they built. The lock only blocks saving and finalizing. This is intentional: showing the completed state creates desire. Locking an empty screen creates frustration.</div>
+    </div>
+  </div>
+  <div class="anno-col" style="margin-left:60px;">
+    <div class="anno-block ok">
+      <div class="anno-hed">Sunk cost framing</div>
+      <div class="anno-body">The save screen lists their actual voted recipes. "Don't lose your picks" speaks to loss aversion. Their work is shown back to them as something worth preserving — this is the most effective moment to ask for an account.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ PART C: CONVERSION -->
+<div class="section-head" style="padding-top:44px;">
+  <div class="section-label">Part C — Conversion & Landing</div>
+  <div class="section-title">Trial framing. Then home — with their menu already in progress.</div>
+</div>
+
+<div class="storyboard-scroll">
+<div class="storyboard">
+
+  <!-- S07: PAYWALL -->
+  <div class="frame-col">
+    <div class="frame-label">Screen 07</div>
+    <div class="frame-name">Trial offer —<br><em>first week free</em></div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="paywall-screen">
+          <div class="pw-header">
+            <div style="font-size:11px;font-weight:700;color:#1C1917;">menuapp</div>
+            <div class="pw-skip">Skip for now</div>
+          </div>
+          <div class="pw-body">
+            <div class="pw-eyebrow">Start free</div>
+            <div class="pw-hed">Everything you need to eat well every week</div>
+            <div class="pw-features">
+              <div class="pw-feat">
+                <div class="pw-feat-icon">🗳</div>
+                <div class="pw-feat-body"><strong>Swipe voting</strong> — both partners vote on the same recipe pool, automatically.</div>
+              </div>
+              <div class="pw-feat">
+                <div class="pw-feat-icon">📋</div>
+                <div class="pw-feat-body"><strong>Auto grocery list</strong> — finalized menu generates a combined shopping list instantly.</div>
+              </div>
+              <div class="pw-feat">
+                <div class="pw-feat-icon">🍳</div>
+                <div class="pw-feat-body"><strong>Recipe library</strong> — hundreds of tested recipes, updated weekly.</div>
+              </div>
+            </div>
+            <div class="pw-plan-row">
+              <div class="pw-plan">
+                <div class="pw-plan-price">$4.99</div>
+                <div class="pw-plan-period">per month</div>
+              </div>
+              <div class="pw-plan selected">
+                <div class="pw-plan-price">$39.99</div>
+                <div class="pw-plan-period">per year</div>
+                <div class="pw-plan-label">Save 33%</div>
+              </div>
+            </div>
+            <div class="pw-trial-badge">
+              <div class="pw-trial-text">✓ 7-day free trial — cancel anytime</div>
+            </div>
+          </div>
+          <div class="pw-footer">
+            <div class="btn-start-trial">Start free trial</div>
+            <div class="pw-legal">Billed annually after trial. Cancel in Settings at any time.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="conn-line"></div><div class="conn-arrow"></div><div class="conn-label">tap <em>"Start trial"</em></div></div>
+
+  <!-- S08: HOME — menu in progress -->
+  <div class="frame-col">
+    <div class="frame-label">Screen 08</div>
+    <div class="frame-name">Home — <em>menu live</em>,<br>invite prompt surfaced</div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><div class="status-dot"></div><div class="status-dot"></div><div class="status-dot dim"></div></div>
+        </div>
+        <div class="home-screen">
+          <div class="home-inner">
+            <div class="group-pill"><div class="av-sm">A</div> My meals</div>
+            <div class="home-hero-card">
+              <div class="hhc-eyebrow">Week of Jul 14 · In progress</div>
+              <div class="hhc-hed">3 recipes approved</div>
+              <div class="hhc-sub">1 more to hit your target of 4</div>
+            </div>
+            <div class="home-menu-row">
+              <div class="hmr-label">This week</div>
+              <div class="hmr-recipe"><div class="hmr-dot"></div><div class="hmr-name">Cacio e Pepe · Mon</div></div>
+              <div class="hmr-recipe"><div class="hmr-dot"></div><div class="hmr-name">Miso-Glazed Salmon · Wed</div></div>
+              <div class="hmr-recipe"><div class="hmr-dot"></div><div class="hmr-name">Lemon Herb Risotto · Fri</div></div>
+            </div>
+            <!-- persistent invite nudge -->
+            <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:12px;padding:10px 12px;display:flex;gap:8px;align-items:center;">
+              <div style="font-size:14px;">👫</div>
+              <div style="flex:1;">
+                <div style="font-size:10px;font-weight:700;color:#92400E;margin-bottom:1px;">Planning with someone?</div>
+                <div style="font-size:9px;color:#B45309;">Invite them to vote on the same recipes.</div>
+              </div>
+              <div style="font-size:9px;font-weight:700;color:#F97316;">Invite →</div>
+            </div>
+          </div>
+          <div class="tab-bar">
+            <div class="tab active"><div class="tab-icon"></div><div class="tab-lbl">Home</div></div>
+            <div class="tab"><div class="tab-icon"></div><div class="tab-lbl">Recipes</div></div>
+            <div class="tab"><div class="tab-icon"></div><div class="tab-lbl">Shop</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<div class="annotations" style="padding-bottom:8px;">
+  <div class="anno-col">
+    <div class="anno-block accent">
+      <div class="anno-hed">Annual pre-selected</div>
+      <div class="anno-body">The annual plan is selected by default. The savings badge ("Save 33%") makes switching to monthly feel like a downgrade. Monthly is there for price-sensitive users — it anchors the annual as the obvious choice.</div>
+    </div>
+  </div>
+  <div class="anno-col" style="margin-left:60px;">
+    <div class="anno-block ok">
+      <div class="anno-hed">Land mid-action, not on empty</div>
+      <div class="anno-body">Home shows their actual menu already in progress. They didn't arrive at a blank state — they arrived at work they recognize. The "3 recipes approved" hero card references the voting session they just finished. Continuity = confidence the app works.</div>
+    </div>
+  </div>
+  <div class="anno-col" style="margin-left:60px;">
+    <div class="anno-block warn">
+      <div class="anno-hed">Persistent invite nudge</div>
+      <div class="anno-body">The ghost vote planted the idea; now the home screen keeps it warm. The nudge is dismissible and lives in the home feed — not a modal. It stays until they either invite someone or explicitly dismiss it. Should not re-appear after dismissal.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CONVERSION DESIGN NOTES ═══ -->
+<div class="conversion-notes">
+  <div class="note-card">
+    <div class="note-hed">Recipe selection for onboarding</div>
+    <div class="note-body">The cards shown during onboarding must be your best-performing public recipes — highest approval rate in the database, filtered for visual appeal (good food photography). Showing a mediocre recipe during a user's first 60 seconds is conversion suicide. Consider a curated "onboarding pool" of 12–15 top-rated recipes that never changes without deliberate review.</div>
+  </div>
+  <div class="note-card">
+    <div class="note-hed">Ghost partner name</div>
+    <div class="note-body">The ghost avatar shows "C" for Claire in these mockups, but in production the name should be generic unless the user arrived via an invite link (in which case, use the inviter's actual name). Default: use a common first initial — "A", "C", "J" — that feels plausible without being unsettling. Do not use the user's own initial.</div>
+  </div>
+  <div class="note-card">
+    <div class="note-hed">Guest session persistence</div>
+    <div class="note-body">Votes cast before sign-in must survive the auth flow. Store them locally in <code>SharedPreferences</code> keyed by a device-scoped guest ID. On sign-in, migrate guest votes to the new user's account server-side. The user should never notice their votes were temporarily local — the menu preview they saw before signup must match exactly after.</div>
+  </div>
+  <div class="note-card">
+    <div class="note-hed">Skip-paywall path</div>
+    <div class="note-body">"Skip for now" on the paywall drops them to the home screen with a 7-day trial already started. The skip does not end the trial — it just defers the confirmation screen. This prevents users from bouncing off the paywall entirely. The trial is automatic on account creation; the paywall screen is just the reveal moment.</div>
+  </div>
+</div>
+
+</body>
+</html>
