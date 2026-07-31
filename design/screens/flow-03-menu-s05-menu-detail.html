@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MenuApp · 03-menu · s05-menu-detail</title>
+<meta name="viewport" content="width=220, initial-scale=1">
+<style>
+:root {
+  --canvas:#FAFAF8;--ink:#1C1917;--ink-2:#57534E;--ink-3:#A8A29E;--ink-4:#D6D3D1;
+  --line:#E7E5E4;--field:#F5F5F4;--accent:#F97316;--ok:#16A34A;--ok-bg:#DCFCE7;
+  --bezel:#2C2820;--bezel-2:#3D3530;--doc-bg:#FAFAF8;--anno-bg:#F0EFEC;
+  --serif:Georgia,'Times New Roman',serif;
+  --sans:-apple-system,'SF Pro Text','Helvetica Neue',system-ui,sans-serif;
+  --mono:ui-monospace,'SF Mono','Roboto Mono',monospace;
+}
+@media(prefers-color-scheme:dark){:root{--doc-bg:#1C1917;--anno-bg:#262220;--ink:#FAF9F7;--ink-2:#C4B8B0;--ink-3:#8C837D;--ink-4:#4A4540;--line:#3A3530;}}
+:root[data-theme="dark"]{--doc-bg:#1C1917;--anno-bg:#262220;--ink:#FAF9F7;--ink-2:#C4B8B0;--ink-3:#8C837D;--ink-4:#4A4540;--line:#3A3530;}
+:root[data-theme="light"]{--doc-bg:#FAFAF8;--anno-bg:#F0EFEC;--ink:#1C1917;--ink-2:#57534E;--ink-3:#A8A29E;--ink-4:#D6D3D1;--line:#E7E5E4;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{background:var(--doc-bg);color:var(--ink);font-family:var(--sans);font-size:14px;}
+body{min-height:100vh;}
+
+.doc-header{display:flex;align-items:baseline;justify-content:space-between;padding:20px 32px 16px;border-bottom:1px solid var(--line);}
+.doc-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-3);text-transform:uppercase;}
+.doc-title{font-family:var(--serif);font-size:22px;font-weight:normal;color:var(--ink);margin-top:2px;}
+.doc-meta{font-family:var(--mono);font-size:10px;color:var(--ink-3);text-align:right;line-height:1.6;}
+
+.storyboard-scroll{overflow-x:auto;padding:36px 32px 0;}
+.storyboard{display:flex;align-items:flex-start;gap:0;min-width:max-content;}
+.frame-col{display:flex;flex-direction:column;align-items:center;width:240px;}
+.frame-label{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px;}
+.frame-name{font-family:var(--serif);font-size:13px;color:var(--ink);margin-bottom:12px;text-align:center;}
+
+.connector{display:flex;flex-direction:column;align-items:center;justify-content:center;width:60px;padding-top:68px;flex-shrink:0;}
+.conn-line{width:36px;height:1px;border-top:1.5px dashed #D6D3D1;}
+.conn-arrow{width:0;height:0;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:5px solid #D6D3D1;margin-left:-1px;}
+.conn-label{margin-top:6px;font-family:var(--mono);font-size:8px;color:var(--ink-3);text-align:center;max-width:52px;line-height:1.4;}
+
+.phone{width:220px;height:472px;background:var(--bezel);border-radius:38px;padding:8px;box-shadow:0 0 0 1px var(--bezel-2),0 20px 60px rgba(0,0,0,.22),0 4px 12px rgba(0,0,0,.12);position:relative;flex-shrink:0;}
+.phone-screen{width:100%;height:100%;background:#FAFAF8;border-radius:31px;overflow:hidden;position:relative;display:flex;flex-direction:column;}
+.dynamic-island{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:78px;height:22px;background:var(--bezel);border-radius:20px;z-index:10;}
+.status-bar{height:44px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 16px 6px;flex-shrink:0;position:relative;z-index:1;}
+.status-time{font-size:11px;font-weight:600;color:#1C1917;letter-spacing:-.3px;}
+.status-icons{display:flex;align-items:center;gap:4px;}
+
+/* reusable UI */
+.btn-primary{background:#F97316;color:#fff;border:none;border-radius:12px;font-size:11px;font-weight:600;padding:10px 14px;width:100%;text-align:center;}
+.btn-green{background:#16A34A;color:#fff;border:none;border-radius:12px;font-size:11px;font-weight:600;padding:10px 14px;width:100%;text-align:center;}
+.btn-outline{background:transparent;color:#F97316;border:1.5px solid #F97316;border-radius:12px;font-size:10px;font-weight:600;padding:8px 14px;width:100%;text-align:center;}
+.group-pill{display:inline-flex;align-items:center;gap:3px;background:#F5F5F4;border:1px solid #E7E5E4;border-radius:20px;padding:3px 8px 3px 6px;font-size:9px;font-weight:600;color:#57534E;}
+.group-dot{width:14px;height:14px;background:#FED7AA;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;color:#C2570A;}
+
+/* tab bar */
+.tab-bar{height:68px;background:#fff;border-top:1px solid #E7E5E4;display:flex;align-items:center;justify-content:space-around;padding:0 12px 14px;flex-shrink:0;}
+.tab{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;}
+.tab-lbl{font-size:8.5px;font-weight:600;color:#A8A29E;}
+.tab.active .tab-lbl{color:#F97316;}
+
+/* bottom sheet overlay */
+.sheet-overlay{position:absolute;inset:0;background:rgba(0,0,0,.35);z-index:5;border-radius:31px;}
+.bottom-sheet{position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 31px 31px;z-index:6;display:flex;flex-direction:column;}
+.sheet-handle{width:36px;height:4px;background:#E7E5E4;border-radius:2px;margin:10px auto 0;}
+
+/* recipe list row in picker */
+.recipe-pick-row{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid #F5F5F4;}
+.recipe-pick-row:last-child{border-bottom:none;}
+.pick-thumb{width:38px;height:38px;border-radius:8px;flex-shrink:0;}
+.pick-name{font-size:10px;font-weight:600;color:#1C1917;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pick-sub{font-size:8.5px;color:#A8A29E;}
+.pick-add{width:24px;height:24px;background:#F97316;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.pick-added{width:24px;height:24px;background:#DCFCE7;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+/* done banner */
+.done-banner{background:#16A34A;border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:6px;margin:0 12px 8px;}
+.done-text{font-size:10px;font-weight:600;color:#fff;flex:1;}
+
+/* vote card */
+.vote-card{border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.12);background:#fff;flex-shrink:0;}
+.vote-photo{height:118px;position:relative;display:flex;align-items:flex-end;padding:10px 12px;}
+.vote-card-name{font-size:13px;font-weight:700;color:#fff;letter-spacing:-.2px;line-height:1.2;text-shadow:0 1px 3px rgba(0,0,0,.3);}
+.vote-buttons{display:flex;gap:10px;margin-top:10px;justify-content:center;}
+.vote-btn{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.1);}
+
+/* menu detail */
+.recipe-detail-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #E7E5E4;}
+.recipe-detail-row:last-child{border-bottom:none;}
+.detail-thumb{width:40px;height:40px;border-radius:10px;flex-shrink:0;}
+.detail-name{font-size:10.5px;font-weight:600;color:#1C1917;flex:1;}
+.detail-votes{display:flex;gap:3px;}
+.vote-chip{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.chip-ok{background:#DCFCE7;}
+.chip-no{background:#FEE2E2;}
+.chip-wait{background:#F5F5F4;}
+
+/* progress */
+.progress-row{padding:0 0 8px;flex-shrink:0;}
+.progress-label{font-size:9px;color:#A8A29E;margin-bottom:4px;display:flex;justify-content:space-between;}
+.progress-track{height:3px;background:#E7E5E4;border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;background:#F97316;border-radius:2px;}
+
+/* annotations */
+.annotations{display:flex;min-width:max-content;padding:0 32px;gap:60px;margin-top:0;}
+.anno-col{width:240px;flex-shrink:0;}
+.anno-block{background:var(--anno-bg);border-radius:10px;padding:12px 14px;margin-top:14px;border-left:2.5px solid var(--line);}
+.anno-block.accent{border-left-color:#F97316;}
+.anno-block.green{border-left-color:#16A34A;}
+.anno-block.warn{border-left-color:#D97706;}
+.anno-hed{font-family:var(--mono);font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:5px;}
+.anno-body{font-size:10.5px;color:var(--ink-2);line-height:1.55;}
+.anno-body strong{color:var(--ink);font-weight:600;}
+
+.design-notes{margin:48px 32px 56px;display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:760px;}
+.note-card{background:var(--anno-bg);border-radius:12px;padding:18px 20px;}
+.note-hed{font-family:var(--serif);font-size:14px;color:var(--ink);margin-bottom:6px;}
+.note-body{font-size:11px;color:var(--ink-2);line-height:1.6;}
+.note-card.full{grid-column:span 2;}
+.open-q{border-left:2.5px solid #D97706;padding-left:12px;}
+.open-q .note-hed{color:#D97706;}
+.section-divider{display:flex;align-items:center;gap:12px;padding:36px 32px 20px;}
+.section-divider-label{font-family:var(--serif);font-size:16px;color:var(--ink);white-space:nowrap;}
+.section-divider-line{flex:1;height:1px;background:var(--line);}
+
+/* status bar SVGs – shared shorthand */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 220px; height: 472px; overflow: hidden; background: #FAFAF8; }
+</style>
+</head>
+<body>
+<div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg width="13" height="9" viewBox="0 0 13 9" fill="none"><rect x="0" y="3" width="2.5" height="6" rx=".5" fill="#1C1917" opacity=".35"/><rect x="3.5" y="2" width="2.5" height="7" rx=".5" fill="#1C1917" opacity=".55"/><rect x="7" y=".5" width="2.5" height="8.5" rx=".5" fill="#1C1917" opacity=".8"/><rect x="10.5" y="0" width="2.5" height="9" rx=".5" fill="#1C1917"/></svg>
+            <svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x=".5" y=".5" width="18" height="9" rx="2.5" stroke="#1C1917" stroke-opacity=".35"/><rect x="1.5" y="1.5" width="14" height="7" rx="1.5" fill="#1C1917"/><path d="M19.5 3.5V6.5C20.3 6.2 21 5.5 21 5C21 4.5 20.3 3.8 19.5 3.5Z" fill="#1C1917" opacity=".4"/></svg>
+          </div>
+        </div>
+        <div style="flex:1;padding:0 16px;display:flex;flex-direction:column;overflow:hidden;">
+          <!-- nav row -->
+          <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:8px;">
+            <div style="font-size:9px;color:#F97316;">← House</div>
+            <div style="font-size:9px;color:#F97316;">+ Add recipe</div>
+          </div>
+          <!-- header -->
+          <div style="margin-bottom:8px;">
+            <div style="display:inline-flex;align-items:center;gap:4px;background:#FFF7ED;color:#C2570A;border-radius:20px;padding:3px 8px;font-size:8.5px;font-weight:700;margin-bottom:5px;">
+              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#C2570A" stroke-width="3" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Voting in progress
+            </div>
+            <div style="font-size:17px;font-weight:700;color:#1C1917;letter-spacing:-.3px;">Week of Jul 7</div>
+            <div style="font-size:9px;color:#A8A29E;">House · 4 recipes · 2 members</div>
+          </div>
+          <!-- member vote summary -->
+          <div style="background:#F5F5F4;border-radius:10px;padding:8px 10px;margin-bottom:10px;display:flex;gap:10px;">
+            <div style="text-align:center;flex:1;">
+              <div style="font-size:10px;font-weight:700;color:#16A34A;">4/4</div>
+              <div style="font-size:8px;color:#A8A29E;">Andrew</div>
+            </div>
+            <div style="width:1px;background:#E7E5E4;"></div>
+            <div style="text-align:center;flex:1;">
+              <div style="font-size:10px;font-weight:700;color:#F97316;">2/4</div>
+              <div style="font-size:8px;color:#A8A29E;">Claire</div>
+            </div>
+          </div>
+          <!-- recipe rows -->
+          <div style="font-size:8.5px;font-weight:600;color:#A8A29E;letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px;">Recipes</div>
+          <div style="flex:1;overflow:hidden;">
+            <div class="recipe-detail-row">
+              <div class="detail-thumb" style="background:linear-gradient(135deg,#FDE68A,#FB923C);"></div>
+              <div style="flex:1;min-width:0;"><div class="detail-name">Chicken Tikka Masala</div><div style="font-size:8.5px;color:#A8A29E;">520 cal</div></div>
+              <div class="detail-votes">
+                <div class="vote-chip chip-ok"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+                <div class="vote-chip chip-ok"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              </div>
+            </div>
+            <div class="recipe-detail-row">
+              <div class="detail-thumb" style="background:linear-gradient(135deg,#BBF7D0,#059669);"></div>
+              <div style="flex:1;min-width:0;"><div class="detail-name">Smash Burgers</div><div style="font-size:8.5px;color:#A8A29E;">680 cal</div></div>
+              <div class="detail-votes">
+                <div class="vote-chip chip-ok"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+                <div class="vote-chip chip-wait"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#D6D3D1" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="4"/></svg></div>
+              </div>
+            </div>
+            <div class="recipe-detail-row">
+              <div class="detail-thumb" style="background:linear-gradient(135deg,#BFDBFE,#3B82F6);"></div>
+              <div style="flex:1;min-width:0;"><div class="detail-name">Carne Asada Tacos</div><div style="font-size:8.5px;color:#A8A29E;">440 cal</div></div>
+              <div class="detail-votes">
+                <div class="vote-chip chip-no"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+                <div class="vote-chip chip-wait"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#D6D3D1" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="4"/></svg></div>
+              </div>
+            </div>
+            <div class="recipe-detail-row">
+              <div class="detail-thumb" style="background:linear-gradient(135deg,#FCE7F3,#DB2777);"></div>
+              <div style="flex:1;min-width:0;"><div class="detail-name">Pasta Primavera</div><div style="font-size:8.5px;color:#A8A29E;">580 cal</div></div>
+              <div class="detail-votes">
+                <div class="vote-chip chip-ok"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+                <div class="vote-chip chip-wait"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#D6D3D1" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="4"/></svg></div>
+              </div>
+            </div>
+          </div>
+          <!-- legend -->
+          <div style="display:flex;gap:10px;padding:8px 0 4px;border-top:1px solid #E7E5E4;margin-top:4px;">
+            <div style="display:flex;align-items:center;gap:3px;"><div class="vote-chip chip-ok" style="width:12px;height:12px;"><svg width="6" height="6" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:7.5px;color:#A8A29E;">Approved</span></div>
+            <div style="display:flex;align-items:center;gap:3px;"><div class="vote-chip chip-no" style="width:12px;height:12px;"><svg width="6" height="6" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="3" stroke-linecap="round"><line x1="15" y1="5" x2="5" y2="15"/><line x1="5" y1="5" x2="15" y2="15"/></svg></div><span style="font-size:7.5px;color:#A8A29E;">Rejected</span></div>
+            <div style="display:flex;align-items:center;gap:3px;"><div class="vote-chip chip-wait" style="width:12px;height:12px;"></div><span style="font-size:7.5px;color:#A8A29E;">Pending</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+</body>
+</html>

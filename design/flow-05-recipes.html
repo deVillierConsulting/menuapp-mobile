@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MenuApp · Flow 05 · Recipes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --canvas:#FAFAF8;--ink:#1C1917;--ink-2:#57534E;--ink-3:#A8A29E;--ink-4:#D6D3D1;
+  --line:#E7E5E4;--field:#F5F5F4;--accent:#F97316;--ok:#16A34A;
+  --bezel:#2C2820;--bezel-2:#3D3530;--doc-bg:#FAFAF8;--anno-bg:#F0EFEC;
+  --serif:Georgia,'Times New Roman',serif;
+  --sans:-apple-system,'SF Pro Text','Helvetica Neue',system-ui,sans-serif;
+  --mono:ui-monospace,'SF Mono','Roboto Mono',monospace;
+}
+@media(prefers-color-scheme:dark){:root{--doc-bg:#1C1917;--anno-bg:#262220;--ink:#FAF9F7;--ink-2:#C4B8B0;--ink-3:#8C837D;--ink-4:#4A4540;--line:#3A3530;}}
+:root[data-theme="dark"]{--doc-bg:#1C1917;--anno-bg:#262220;--ink:#FAF9F7;--ink-2:#C4B8B0;--ink-3:#8C837D;--ink-4:#4A4540;--line:#3A3530;}
+:root[data-theme="light"]{--doc-bg:#FAFAF8;--anno-bg:#F0EFEC;--ink:#1C1917;--ink-2:#57534E;--ink-3:#A8A29E;--ink-4:#D6D3D1;--line:#E7E5E4;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{background:var(--doc-bg);color:var(--ink);font-family:var(--sans);font-size:14px;}
+body{min-height:100vh;}
+
+.doc-header{display:flex;align-items:baseline;justify-content:space-between;padding:20px 32px 16px;border-bottom:1px solid var(--line);}
+.doc-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-3);text-transform:uppercase;}
+.doc-title{font-family:var(--serif);font-size:22px;font-weight:normal;color:var(--ink);margin-top:2px;}
+.doc-meta{font-family:var(--mono);font-size:10px;color:var(--ink-3);text-align:right;line-height:1.6;}
+
+.storyboard-scroll{overflow-x:auto;padding:36px 32px 0;}
+.storyboard{display:flex;align-items:flex-start;gap:0;min-width:max-content;}
+.frame-col{display:flex;flex-direction:column;align-items:center;width:240px;}
+.frame-label{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px;}
+.frame-name{font-family:var(--serif);font-size:13px;color:var(--ink);margin-bottom:12px;text-align:center;}
+
+.connector{display:flex;flex-direction:column;align-items:center;justify-content:center;width:60px;padding-top:68px;flex-shrink:0;}
+.conn-line{width:36px;height:1px;border-top:1.5px dashed #D6D3D1;}
+.conn-arrow{width:0;height:0;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:5px solid #D6D3D1;margin-left:-1px;}
+.conn-label{margin-top:6px;font-family:var(--mono);font-size:8px;color:var(--ink-3);text-align:center;max-width:52px;line-height:1.4;}
+
+.phone{width:220px;height:472px;background:var(--bezel);border-radius:38px;padding:8px;box-shadow:0 0 0 1px var(--bezel-2),0 20px 60px rgba(0,0,0,.22),0 4px 12px rgba(0,0,0,.12);position:relative;flex-shrink:0;}
+.phone-screen{width:100%;height:100%;background:#FAFAF8;border-radius:31px;overflow:hidden;position:relative;display:flex;flex-direction:column;}
+.dynamic-island{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:78px;height:22px;background:var(--bezel);border-radius:20px;z-index:10;}
+.status-bar{height:44px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 16px 6px;flex-shrink:0;}
+.status-time{font-size:11px;font-weight:600;color:#1C1917;letter-spacing:-.3px;}
+.status-icons{display:flex;align-items:center;gap:4px;}
+
+.tab-bar{height:68px;background:#fff;border-top:1px solid #E7E5E4;display:flex;align-items:center;justify-content:space-around;padding:0 12px 14px;flex-shrink:0;}
+.tab{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;}
+.tab-lbl{font-size:8.5px;font-weight:600;color:#A8A29E;}
+
+/* filter chips */
+.chip-row{display:flex;gap:5px;overflow:hidden;padding:0 14px 8px;}
+.chip{background:#F5F5F4;border:1.5px solid #E7E5E4;border-radius:20px;padding:4px 10px;font-size:9px;font-weight:600;color:#57534E;white-space:nowrap;}
+.chip.active{background:#FFF7ED;border-color:#FED7AA;color:#C2570A;}
+
+/* recipe card grid */
+.recipe-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 12px;}
+.recipe-card{border-radius:12px;overflow:hidden;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.08);}
+.recipe-card-photo{height:72px;position:relative;}
+.recipe-card-body{padding:6px 8px 8px;}
+.recipe-card-name{font-size:9.5px;font-weight:700;color:#1C1917;line-height:1.25;margin-bottom:2px;}
+.recipe-card-sub{font-size:8px;color:#A8A29E;}
+
+/* recipe list row */
+.recipe-list-row{display:flex;gap:10px;padding:8px 14px;border-bottom:1px solid #F5F5F4;align-items:center;}
+.recipe-list-thumb{width:48px;height:48px;border-radius:10px;flex-shrink:0;}
+.recipe-list-name{font-size:10.5px;font-weight:600;color:#1C1917;line-height:1.2;margin-bottom:2px;}
+.recipe-list-sub{font-size:8.5px;color:#A8A29E;}
+.recipe-list-badge{font-size:7.5px;font-weight:600;padding:2px 5px;border-radius:10px;white-space:nowrap;}
+
+/* detail screen */
+.detail-photo{height:160px;position:relative;flex-shrink:0;}
+.detail-body{flex:1;overflow:hidden;padding:10px 14px 0;display:flex;flex-direction:column;}
+.detail-title{font-size:16px;font-weight:700;color:#1C1917;letter-spacing:-.3px;line-height:1.2;margin-bottom:3px;}
+.detail-sub{font-size:9px;color:#A8A29E;margin-bottom:8px;}
+.stat-row{display:flex;gap:0;margin-bottom:8px;}
+.stat{flex:1;text-align:center;border-right:1px solid #E7E5E4;padding:5px 0;}
+.stat:last-child{border-right:none;}
+.stat-val{font-size:11px;font-weight:700;color:#1C1917;font-variant-numeric:tabular-nums;}
+.stat-lbl{font-size:7.5px;color:#A8A29E;margin-top:1px;}
+.tag{font-size:8px;font-weight:600;padding:2px 7px;border-radius:10px;background:#F5F5F4;color:#57534E;}
+.tag.cuisine{background:#F0FDFA;color:#0F766E;}
+.tag.diet{background:#FFF7ED;color:#C2570A;}
+
+/* ingredient list */
+.ing-row{display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;border-bottom:1px solid #F5F5F4;font-size:9.5px;}
+.ing-row:last-child{border-bottom:none;}
+.ing-name{color:#1C1917;}
+.ing-qty{color:#A8A29E;font-size:8.5px;}
+
+/* search bar */
+.search-bar{display:flex;align-items:center;gap:8px;background:#F5F5F4;border:1.5px solid #E7E5E4;border-radius:10px;padding:8px 10px;margin:0 14px 8px;}
+
+/* annotations */
+.annotations{display:flex;min-width:max-content;padding:0 32px;gap:60px;margin-top:0;}
+.anno-col{width:240px;flex-shrink:0;}
+.anno-block{background:var(--anno-bg);border-radius:10px;padding:12px 14px;margin-top:14px;border-left:2.5px solid var(--line);}
+.anno-block.accent{border-left-color:#F97316;}
+.anno-block.warn{border-left-color:#D97706;}
+.anno-hed{font-family:var(--mono);font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:5px;}
+.anno-body{font-size:10.5px;color:var(--ink-2);line-height:1.55;}
+.anno-body strong{color:var(--ink);font-weight:600;}
+
+.design-notes{margin:48px 32px 56px;display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:760px;}
+.note-card{background:var(--anno-bg);border-radius:12px;padding:18px 20px;}
+.note-hed{font-family:var(--serif);font-size:14px;color:var(--ink);margin-bottom:6px;}
+.note-body{font-size:11px;color:var(--ink-2);line-height:1.6;}
+.open-q{border-left:2.5px solid #D97706;padding-left:12px;}
+.open-q .note-hed{color:#D97706;}
+.section-divider{display:flex;align-items:center;gap:12px;padding:36px 32px 20px;}
+.section-divider-label{font-family:var(--serif);font-size:16px;color:var(--ink);white-space:nowrap;}
+.section-divider-line{flex:1;height:1px;background:var(--line);}
+</style>
+</head>
+<body>
+
+<header class="doc-header">
+  <div>
+    <div class="doc-eyebrow">MenuApp · Flow 05 of 06</div>
+    <h1 class="doc-title">Recipes — Browse, Search, Detail, Add to Menu</h1>
+  </div>
+  <div class="doc-meta">v2 IA Redesign<br>July 2026</div>
+</header>
+
+<div class="storyboard-scroll">
+<div class="storyboard">
+
+  <!-- ── S1: Recipe library browse ── -->
+  <div class="frame-col">
+    <div class="frame-label">Screen 01</div>
+    <div class="frame-name">Recipe Library — Browse</div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg width="13" height="9" viewBox="0 0 13 9" fill="none"><rect x="0" y="3" width="2.5" height="6" rx=".5" fill="#1C1917" opacity=".35"/><rect x="3.5" y="2" width="2.5" height="7" rx=".5" fill="#1C1917" opacity=".55"/><rect x="7" y=".5" width="2.5" height="8.5" rx=".5" fill="#1C1917" opacity=".8"/><rect x="10.5" y="0" width="2.5" height="9" rx=".5" fill="#1C1917"/></svg>
+            <svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x=".5" y=".5" width="18" height="9" rx="2.5" stroke="#1C1917" stroke-opacity=".35"/><rect x="1.5" y="1.5" width="14" height="7" rx="1.5" fill="#1C1917"/><path d="M19.5 3.5V6.5C20.3 6.2 21 5.5 21 5C21 4.5 20.3 3.8 19.5 3.5Z" fill="#1C1917" opacity=".4"/></svg>
+          </div>
+        </div>
+        <div style="padding:0 14px 6px;display:flex;align-items:baseline;justify-content:space-between;">
+          <div style="font-size:18px;font-weight:700;color:#1C1917;letter-spacing:-.3px;">Recipes</div>
+          <div style="font-size:9px;color:#F97316;">Submit ↗</div>
+        </div>
+        <!-- search -->
+        <div class="search-bar">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#A8A29E" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span style="font-size:10px;color:#A8A29E;">Search 200+ recipes…</span>
+        </div>
+        <!-- filter chips -->
+        <div class="chip-row">
+          <div class="chip active">All</div>
+          <div class="chip">Indian</div>
+          <div class="chip">Mexican</div>
+          <div class="chip">Italian</div>
+          <div class="chip">Quick</div>
+        </div>
+        <!-- Featured section -->
+        <div style="padding:0 14px 6px;font-size:9px;font-weight:700;color:#57534E;letter-spacing:.04em;text-transform:uppercase;">Featured this week</div>
+        <!-- Hero card -->
+        <div style="margin:0 14px 10px;border-radius:14px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.1);">
+          <div style="height:90px;background:linear-gradient(to bottom,transparent 20%,rgba(0,0,0,.5) 100%),linear-gradient(135deg,#FDE68A 0%,#FB923C 45%,#9A3412 100%);display:flex;align-items:flex-end;padding:10px 12px;">
+            <div>
+              <div style="font-size:12px;font-weight:700;color:#fff;letter-spacing:-.2px;text-shadow:0 1px 3px rgba(0,0,0,.25);">Chicken Tikka Masala</div>
+              <div style="font-size:8.5px;color:rgba(255,255,255,.8);">Indian · 520 cal · 45 min</div>
+            </div>
+          </div>
+        </div>
+        <!-- Grid -->
+        <div style="flex:1;overflow:hidden;padding:0 12px;">
+          <div class="recipe-grid">
+            <div class="recipe-card">
+              <div class="recipe-card-photo" style="background:linear-gradient(135deg,#BBF7D0,#059669);"></div>
+              <div class="recipe-card-body">
+                <div class="recipe-card-name">Smash Burgers</div>
+                <div class="recipe-card-sub">American · 680 cal</div>
+              </div>
+            </div>
+            <div class="recipe-card">
+              <div class="recipe-card-photo" style="background:linear-gradient(135deg,#BFDBFE,#3B82F6);"></div>
+              <div class="recipe-card-body">
+                <div class="recipe-card-name">Carne Asada Tacos</div>
+                <div class="recipe-card-sub">Mexican · 440 cal</div>
+              </div>
+            </div>
+            <div class="recipe-card">
+              <div class="recipe-card-photo" style="background:linear-gradient(135deg,#FCE7F3,#DB2777);"></div>
+              <div class="recipe-card-body">
+                <div class="recipe-card-name">Pasta Primavera</div>
+                <div class="recipe-card-sub">Italian · 580 cal</div>
+              </div>
+            </div>
+            <div class="recipe-card" style="opacity:.5;">
+              <div class="recipe-card-photo" style="background:#E7E5E4;"></div>
+              <div class="recipe-card-body">
+                <div class="recipe-card-name">Shrimp Pad Thai</div>
+                <div class="recipe-card-sub">Thai · 490 cal</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A8A29E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="tab-lbl">Home</span></div>
+          <div class="tab"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span class="tab-lbl" style="color:#F97316;">Recipes</span></div>
+          <div class="tab"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A8A29E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg><span class="tab-lbl">Shop</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Connector -->
+  <div class="connector">
+    <div style="display:flex;align-items:center"><div class="conn-line"></div><div class="conn-arrow"></div></div>
+    <div class="conn-label">tap search bar</div>
+  </div>
+
+  <!-- ── S2: Search results ── -->
+  <div class="frame-col">
+    <div class="frame-label">Screen 02</div>
+    <div class="frame-name">Search Results</div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg width="13" height="9" viewBox="0 0 13 9" fill="none"><rect x="0" y="3" width="2.5" height="6" rx=".5" fill="#1C1917" opacity=".35"/><rect x="3.5" y="2" width="2.5" height="7" rx=".5" fill="#1C1917" opacity=".55"/><rect x="7" y=".5" width="2.5" height="8.5" rx=".5" fill="#1C1917" opacity=".8"/><rect x="10.5" y="0" width="2.5" height="9" rx=".5" fill="#1C1917"/></svg>
+            <svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x=".5" y=".5" width="18" height="9" rx="2.5" stroke="#1C1917" stroke-opacity=".35"/><rect x="1.5" y="1.5" width="14" height="7" rx="1.5" fill="#1C1917"/><path d="M19.5 3.5V6.5C20.3 6.2 21 5.5 21 5C21 4.5 20.3 3.8 19.5 3.5Z" fill="#1C1917" opacity=".4"/></svg>
+          </div>
+        </div>
+        <!-- active search bar -->
+        <div style="display:flex;align-items:center;gap:8px;margin:0 14px 8px;background:#F5F5F4;border:1.5px solid #F97316;border-radius:10px;padding:8px 10px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span style="font-size:10px;color:#1C1917;flex:1;">pasta</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#A8A29E" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </div>
+        <div style="padding:0 14px 6px;font-size:9px;color:#A8A29E;">3 results for "pasta"</div>
+        <div style="flex:1;overflow:hidden;">
+          <div class="recipe-list-row">
+            <div class="recipe-list-thumb" style="background:linear-gradient(135deg,#FCE7F3,#DB2777);"></div>
+            <div style="flex:1;min-width:0;">
+              <div class="recipe-list-name">Pasta Primavera</div>
+              <div class="recipe-list-sub">Italian · 580 cal · 30 min</div>
+              <div style="display:flex;gap:4px;margin-top:3px;">
+                <span class="tag cuisine">Italian</span>
+                <span class="tag diet">Vegetarian</span>
+              </div>
+            </div>
+          </div>
+          <div class="recipe-list-row">
+            <div class="recipe-list-thumb" style="background:linear-gradient(135deg,#DDD6FE,#7C3AED);"></div>
+            <div style="flex:1;min-width:0;">
+              <div class="recipe-list-name">Pasta e Fagioli</div>
+              <div class="recipe-list-sub">Italian · 410 cal · 40 min</div>
+              <div style="display:flex;gap:4px;margin-top:3px;">
+                <span class="tag cuisine">Italian</span>
+              </div>
+            </div>
+          </div>
+          <div class="recipe-list-row">
+            <div class="recipe-list-thumb" style="background:linear-gradient(135deg,#CFFAFE,#0891B2);"></div>
+            <div style="flex:1;min-width:0;">
+              <div class="recipe-list-name">Creamy Lemon Pasta</div>
+              <div class="recipe-list-sub">Italian · 620 cal · 20 min</div>
+              <div style="display:flex;gap:4px;margin-top:3px;">
+                <span class="tag cuisine">Italian</span>
+                <span class="tag diet">Vegetarian</span>
+              </div>
+            </div>
+          </div>
+          <!-- no more results -->
+          <div style="padding:16px 14px;text-align:center;">
+            <div style="font-size:9.5px;color:#A8A29E;">Don't see what you want?</div>
+            <div style="font-size:9.5px;color:#F97316;margin-top:2px;">Submit a recipe ↗</div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A8A29E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="tab-lbl">Home</span></div>
+          <div class="tab"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span class="tab-lbl" style="color:#F97316;">Recipes</span></div>
+          <div class="tab"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A8A29E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg><span class="tab-lbl">Shop</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Connector -->
+  <div class="connector">
+    <div style="display:flex;align-items:center"><div class="conn-line"></div><div class="conn-arrow"></div></div>
+    <div class="conn-label">tap a recipe</div>
+  </div>
+
+  <!-- ── S3: Recipe detail ── -->
+  <div class="frame-col">
+    <div class="frame-label">Screen 03</div>
+    <div class="frame-name">Recipe Detail</div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar" style="position:absolute;top:0;left:0;right:0;z-index:2;">
+          <span class="status-time" style="color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.4);">9:41</span>
+          <div class="status-icons">
+            <svg width="13" height="9" viewBox="0 0 13 9" fill="none"><rect x="0" y="3" width="2.5" height="6" rx=".5" fill="white" opacity=".7"/><rect x="3.5" y="2" width="2.5" height="7" rx=".5" fill="white" opacity=".8"/><rect x="7" y=".5" width="2.5" height="8.5" rx=".5" fill="white" opacity=".9"/><rect x="10.5" y="0" width="2.5" height="9" rx=".5" fill="white"/></svg>
+            <svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x=".5" y=".5" width="18" height="9" rx="2.5" stroke="white" stroke-opacity=".5"/><rect x="1.5" y="1.5" width="14" height="7" rx="1.5" fill="white"/></svg>
+          </div>
+        </div>
+        <!-- hero photo -->
+        <div class="detail-photo" style="background:linear-gradient(to bottom,rgba(0,0,0,.1) 0%,rgba(0,0,0,.45) 100%),linear-gradient(135deg,#FCE7F3 0%,#DB2777 60%,#9D174D 100%);">
+          <!-- back + share -->
+          <div style="position:absolute;top:44px;left:0;right:0;display:flex;justify-content:space-between;padding:0 12px;">
+            <div style="width:28px;height:28px;background:rgba(0,0,0,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </div>
+            <div style="width:28px;height:28px;background:rgba(0,0,0,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            </div>
+          </div>
+          <div style="position:absolute;bottom:10px;left:12px;right:12px;">
+            <div style="font-size:16px;font-weight:700;color:#fff;letter-spacing:-.3px;text-shadow:0 1px 4px rgba(0,0,0,.3);">Pasta Primavera</div>
+          </div>
+        </div>
+        <div class="detail-body">
+          <!-- tags + sub -->
+          <div style="display:flex;gap:4px;margin-bottom:5px;flex-wrap:wrap;">
+            <span class="tag cuisine">Italian</span>
+            <span class="tag diet">Vegetarian</span>
+            <span class="tag diet">Gluten-free option</span>
+          </div>
+          <!-- stats -->
+          <div class="stat-row" style="background:#F5F5F4;border-radius:10px;margin-bottom:8px;">
+            <div class="stat"><div class="stat-val">580</div><div class="stat-lbl">cal</div></div>
+            <div class="stat"><div class="stat-val">30</div><div class="stat-lbl">min</div></div>
+            <div class="stat"><div class="stat-val">4</div><div class="stat-lbl">serves</div></div>
+            <div class="stat"><div class="stat-val">38g</div><div class="stat-lbl">protein</div></div>
+          </div>
+          <!-- segment tabs -->
+          <div style="display:flex;border-bottom:1.5px solid #E7E5E4;margin-bottom:8px;">
+            <div style="flex:1;text-align:center;padding-bottom:6px;font-size:9.5px;font-weight:700;color:#F97316;border-bottom:2px solid #F97316;margin-bottom:-1.5px;">Ingredients</div>
+            <div style="flex:1;text-align:center;padding-bottom:6px;font-size:9.5px;font-weight:600;color:#A8A29E;">Steps</div>
+            <div style="flex:1;text-align:center;padding-bottom:6px;font-size:9.5px;font-weight:600;color:#A8A29E;">Nutrition</div>
+          </div>
+          <!-- ingredients -->
+          <div style="flex:1;overflow:hidden;">
+            <div class="ing-row"><span class="ing-name">Penne pasta</span><span class="ing-qty">12 oz</span></div>
+            <div class="ing-row"><span class="ing-name">Zucchini</span><span class="ing-qty">2 medium</span></div>
+            <div class="ing-row"><span class="ing-name">Cherry tomatoes</span><span class="ing-qty">1 cup</span></div>
+            <div class="ing-row"><span class="ing-name">Parmesan, grated</span><span class="ing-qty">½ cup</span></div>
+            <div class="ing-row"><span class="ing-name">Olive oil</span><span class="ing-qty">3 tbsp</span></div>
+            <div class="ing-row" style="opacity:.4;"><span class="ing-name">+ 5 more ingredients</span><span class="ing-qty">↓ scroll</span></div>
+          </div>
+        </div>
+        <!-- sticky CTA -->
+        <div style="padding:8px 14px 10px;border-top:1px solid #E7E5E4;flex-shrink:0;">
+          <div style="background:#F97316;color:#fff;border-radius:12px;padding:10px;text-align:center;font-size:10.5px;font-weight:600;">Add to this week's menu</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Connector -->
+  <div class="connector">
+    <div style="display:flex;align-items:center"><div class="conn-line"></div><div class="conn-arrow"></div></div>
+    <div class="conn-label">tap "Steps" segment</div>
+  </div>
+
+  <!-- ── S4: Recipe steps ── -->
+  <div class="frame-col">
+    <div class="frame-label">Screen 04</div>
+    <div class="frame-name">Recipe Detail — Steps</div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar" style="position:absolute;top:0;left:0;right:0;z-index:2;">
+          <span class="status-time" style="color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.4);">9:41</span>
+          <div class="status-icons">
+            <svg width="13" height="9" viewBox="0 0 13 9" fill="none"><rect x="0" y="3" width="2.5" height="6" rx=".5" fill="white" opacity=".7"/><rect x="3.5" y="2" width="2.5" height="7" rx=".5" fill="white" opacity=".8"/><rect x="7" y=".5" width="2.5" height="8.5" rx=".5" fill="white" opacity=".9"/><rect x="10.5" y="0" width="2.5" height="9" rx=".5" fill="white"/></svg>
+          </div>
+        </div>
+        <div class="detail-photo" style="height:110px;background:linear-gradient(to bottom,rgba(0,0,0,.1) 0%,rgba(0,0,0,.5) 100%),linear-gradient(135deg,#FCE7F3 0%,#DB2777 60%,#9D174D 100%);">
+          <div style="position:absolute;top:44px;left:12px;">
+            <div style="width:28px;height:28px;background:rgba(0,0,0,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </div>
+          </div>
+          <div style="position:absolute;bottom:8px;left:12px;font-size:13px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.3);">Pasta Primavera</div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;padding:8px 14px 0;overflow:hidden;">
+          <!-- segment tabs -->
+          <div style="display:flex;border-bottom:1.5px solid #E7E5E4;margin-bottom:10px;">
+            <div style="flex:1;text-align:center;padding-bottom:6px;font-size:9.5px;font-weight:600;color:#A8A29E;">Ingredients</div>
+            <div style="flex:1;text-align:center;padding-bottom:6px;font-size:9.5px;font-weight:700;color:#F97316;border-bottom:2px solid #F97316;margin-bottom:-1.5px;">Steps</div>
+            <div style="flex:1;text-align:center;padding-bottom:6px;font-size:9.5px;font-weight:600;color:#A8A29E;">Nutrition</div>
+          </div>
+          <!-- steps -->
+          <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;gap:8px;">
+            <!-- step 1 (done) -->
+            <div style="display:flex;gap:8px;align-items:flex-start;opacity:.5;">
+              <div style="width:22px;height:22px;border-radius:50%;background:#16A34A;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div style="flex:1;">
+                <div style="font-size:8px;font-weight:700;color:#A8A29E;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">Step 1</div>
+                <div style="font-size:9.5px;color:#57534E;line-height:1.45;text-decoration:line-through;">Bring a large pot of salted water to a boil. Cook pasta until al dente, about 9 minutes.</div>
+              </div>
+            </div>
+            <!-- step 2 (active) -->
+            <div style="display:flex;gap:8px;align-items:flex-start;background:#FFF7ED;border-radius:10px;padding:8px;margin:-4px;">
+              <div style="width:22px;height:22px;border-radius:50%;background:#F97316;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">
+                <span style="font-size:10px;font-weight:700;color:white;">2</span>
+              </div>
+              <div style="flex:1;">
+                <div style="font-size:8px;font-weight:700;color:#C2570A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">Step 2 · Active</div>
+                <div style="font-size:9.5px;color:#1C1917;line-height:1.45;">Heat olive oil over medium-high. Add zucchini and sauté until tender, about 4 minutes. Add garlic, cook 30 seconds.</div>
+              </div>
+            </div>
+            <!-- step 3 -->
+            <div style="display:flex;gap:8px;align-items:flex-start;">
+              <div style="width:22px;height:22px;border-radius:50%;background:#E7E5E4;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">
+                <span style="font-size:10px;font-weight:700;color:#A8A29E;">3</span>
+              </div>
+              <div style="flex:1;">
+                <div style="font-size:8px;font-weight:700;color:#A8A29E;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">Step 3</div>
+                <div style="font-size:9.5px;color:#57534E;line-height:1.45;">Add cherry tomatoes and cook until they begin to burst, 3–4 minutes.</div>
+              </div>
+            </div>
+            <!-- more -->
+            <div style="font-size:8.5px;color:#A8A29E;text-align:center;padding-top:2px;">+ 4 more steps ↓</div>
+          </div>
+        </div>
+        <div style="padding:8px 14px 10px;border-top:1px solid #E7E5E4;flex-shrink:0;">
+          <div style="background:#F97316;color:#fff;border-radius:12px;padding:10px;text-align:center;font-size:10.5px;font-weight:600;">Add to this week's menu</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- Annotations -->
+<div class="annotations" style="margin-top:16px;">
+  <div class="anno-col">
+    <div class="anno-block accent">
+      <div class="anno-hed">Browse is grid, search is list</div>
+      <div class="anno-body">The browse view uses a 2-column photo grid — photos do the selling, you're scanning visually. The search results view switches to a list with tags and metadata — you're evaluating specific candidates, so you need more info per row.</div>
+    </div>
+    <div class="anno-block">
+      <div class="anno-hed">Featured section</div>
+      <div class="anno-body">The top hero card can be editorially curated (seasonal, trending by group votes, or random from high-rated recipes). For V1 this is just a random high-rated recipe. For V2 it could be personalized to the group's history.</div>
+    </div>
+  </div>
+  <div class="anno-col" style="margin-left:60px;">
+    <div class="anno-block">
+      <div class="anno-hed">Cuisine filter chips</div>
+      <div class="anno-body">Chips filter by cuisine tag. Multiple chips can be active simultaneously. The "Quick" chip filters by prep time &lt; 30 min — a non-cuisine filter mixed into the cuisine row. Consider separating these into a full filter sheet for V2 when the library hits 200+ recipes.</div>
+    </div>
+    <div class="anno-block warn">
+      <div class="anno-hed">"Submit a recipe" surface</div>
+      <div class="anno-body">The search empty state and the library header both have a "Submit ↗" link. This is the entry point for task #54 (web scraper). For now it can open a form or a URL — just don't dead-end the user when they don't find what they want.</div>
+    </div>
+  </div>
+  <div class="anno-col" style="margin-left:60px;">
+    <div class="anno-block accent">
+      <div class="anno-hed">Hero photo is primary</div>
+      <div class="anno-body">The recipe detail opens to the full-bleed photo and title. The photo is the first thing you see — it has to make you hungry before you read a word. The back button floats over the image as a semi-transparent pill, not a full nav bar, so the photo gets the full canvas.</div>
+    </div>
+    <div class="anno-block">
+      <div class="anno-hed">Segmented body: three views</div>
+      <div class="anno-body"><strong>Ingredients</strong> (default) → <strong>Steps</strong> → <strong>Nutrition</strong>. All three share the same photo header and "Add to menu" CTA. The segments scroll independently. Starting on Ingredients is the right default — that's the planning view. Steps is the cooking view.</div>
+    </div>
+  </div>
+  <div class="anno-col" style="margin-left:60px;">
+    <div class="anno-block">
+      <div class="anno-hed">Active step highlight</div>
+      <div class="anno-body">The current step gets a warm amber background and accent-colored step number. Completed steps get a green check and fade to 50% opacity — they don't disappear, you may want to refer back. Tapping a step marks it done/undone.</div>
+    </div>
+    <div class="anno-block warn">
+      <div class="anno-hed">Task #33: steps as focusable segments</div>
+      <div class="anno-body">The steps view is currently a text blob. The structured steps UI shown here (active step, tap-to-advance, strikethrough on done) is task #33. It requires a migration from TEXT to a JSONB steps array in the recipe table.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section-divider" style="padding-top:48px;">
+  <div class="section-divider-label">Design decisions</div>
+  <div class="section-divider-line"></div>
+</div>
+<div class="design-notes">
+  <div class="note-card">
+    <div class="note-hed">"Add to this week's menu" as the primary CTA</div>
+    <div class="note-body">The recipe detail screen has one job: help you decide if you want this recipe this week. The CTA is anchored at the bottom, always visible regardless of scroll position in the segmented content. Tapping it opens the recipe picker sheet in the context of the current group's active menu — or if no menu exists, prompts to create one.</div>
+  </div>
+  <div class="note-card">
+    <div class="note-hed">Recipe ownership is shared, not per-user</div>
+    <div class="note-body">All recipes in the library are visible to all users. There's no "my recipes" concept in V1 — the library is global. Recipes submitted via the web scraper (task #54) would initially be private to the submitter's group, then promoted to the global library after a review step. This avoids a two-tier library UX in V1 while leaving a path for V2.</div>
+  </div>
+  <div class="note-card open-q">
+    <div class="note-hed">Open: personalization on the browse view</div>
+    <div class="note-body">The browse grid currently shows all recipes sorted by… what? Alphabetical is terrible. Options: (a) highest voted across all groups, (b) most recently added, (c) randomized with a weekly seed so it feels fresh, (d) personalized based on group history. For V1, option (c) is easy to implement and doesn't require any ML — the seed ensures both partners see the same "random" order if they browse simultaneously.</div>
+  </div>
+  <div class="note-card open-q">
+    <div class="note-hed">Open: recipe photos in the library</div>
+    <div class="note-body">The gradient placeholders shown here are standbys. Real food photography is task #21 (AWS) + task #49 (data grooming). Without real photos, the browse grid loses most of its appeal — it becomes a text list with colored boxes. Getting real photos into the library is probably the single highest-impact visual improvement before TestFlight. Spoonacular import is the fastest path.</div>
+  </div>
+</div>
+
+</body>
+</html>

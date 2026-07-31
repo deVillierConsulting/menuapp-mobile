@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MenuApp · Flow 06 · Groups</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --canvas:#FAFAF8;--ink:#1C1917;--ink-2:#57534E;--ink-3:#A8A29E;--ink-4:#D6D3D1;
+  --line:#E7E5E4;--field:#F5F5F4;--accent:#F97316;--ok:#16A34A;--ok-bg:#DCFCE7;
+  --danger:#DC2626;--bezel:#2C2820;--bezel-2:#3D3530;--doc-bg:#FAFAF8;--anno-bg:#F0EFEC;
+  --serif:Georgia,'Times New Roman',serif;
+  --sans:-apple-system,'SF Pro Text','Helvetica Neue',system-ui,sans-serif;
+  --mono:ui-monospace,'SF Mono','Roboto Mono',monospace;
+}
+@media(prefers-color-scheme:dark){:root{--doc-bg:#1C1917;--anno-bg:#262220;--ink:#FAF9F7;--ink-2:#C4B8B0;--ink-3:#8C837D;--ink-4:#4A4540;--line:#3A3530;}}
+:root[data-theme="dark"]{--doc-bg:#1C1917;--anno-bg:#262220;--ink:#FAF9F7;--ink-2:#C4B8B0;--ink-3:#8C837D;--ink-4:#4A4540;--line:#3A3530;}
+:root[data-theme="light"]{--doc-bg:#FAFAF8;--anno-bg:#F0EFEC;--ink:#1C1917;--ink-2:#57534E;--ink-3:#A8A29E;--ink-4:#D6D3D1;--line:#E7E5E4;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{background:var(--doc-bg);color:var(--ink);font-family:var(--sans);font-size:14px;}
+body{min-height:100vh;}
+
+.doc-header{display:flex;align-items:baseline;justify-content:space-between;padding:20px 32px 16px;border-bottom:1px solid var(--line);}
+.doc-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-3);text-transform:uppercase;}
+.doc-title{font-family:var(--serif);font-size:22px;font-weight:normal;color:var(--ink);margin-top:2px;}
+.doc-meta{font-family:var(--mono);font-size:10px;color:var(--ink-3);text-align:right;line-height:1.6;}
+
+.storyboard-scroll{overflow-x:auto;padding:36px 32px 0;}
+.storyboard{display:flex;align-items:flex-start;gap:0;min-width:max-content;}
+.frame-col{display:flex;flex-direction:column;align-items:center;width:240px;}
+.frame-label{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px;}
+.frame-name{font-family:var(--serif);font-size:13px;color:var(--ink);margin-bottom:12px;text-align:center;line-height:1.3;}
+.frame-name em{font-style:normal;color:var(--accent);}
+
+.section-header{padding:28px 32px 8px;font-family:var(--serif);font-size:15px;color:var(--ink-3);}
+
+.connector{display:flex;flex-direction:column;align-items:center;justify-content:center;width:60px;padding-top:68px;flex-shrink:0;}
+.conn-line{width:36px;height:1px;border-top:1.5px dashed var(--ink-4);}
+.conn-arrow{width:0;height:0;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:5px solid var(--ink-4);margin-left:-1px;}
+.conn-label{margin-top:6px;font-family:var(--mono);font-size:8px;color:var(--ink-3);text-align:center;max-width:52px;line-height:1.4;}
+
+.phone{width:220px;height:472px;background:var(--bezel);border-radius:38px;padding:8px;box-shadow:0 0 0 1px var(--bezel-2),0 20px 60px rgba(0,0,0,.22),0 4px 12px rgba(0,0,0,.12);position:relative;flex-shrink:0;}
+.phone-screen{width:100%;height:100%;background:#FAFAF8;border-radius:31px;overflow:hidden;position:relative;display:flex;flex-direction:column;}
+.dynamic-island{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:78px;height:22px;background:var(--bezel);border-radius:20px;z-index:10;}
+.status-bar{height:44px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 16px 6px;flex-shrink:0;}
+.status-time{font-size:11px;font-weight:600;color:#1C1917;letter-spacing:-.3px;}
+.status-icons{display:flex;align-items:center;gap:4px;}
+
+.tab-bar{height:68px;background:#fff;border-top:1px solid #E7E5E4;display:flex;align-items:center;justify-content:space-around;padding:0 12px 14px;flex-shrink:0;}
+.tab{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;}
+.tab-lbl{font-size:8.5px;font-weight:600;color:#A8A29E;}
+
+/* form fields */
+.field-lbl{font-size:9px;font-weight:600;color:#57534E;margin-bottom:3px;}
+.field{background:#F5F5F4;border:1.5px solid #E7E5E4;border-radius:10px;padding:9px 12px;font-size:11px;color:#1C1917;width:100%;}
+.field.focused{border-color:#F97316;}
+.field.error{border-color:#DC2626;}
+.field-hint{font-size:8.5px;color:#A8A29E;margin-top:3px;}
+.field-error{font-size:8.5px;color:#DC2626;margin-top:3px;}
+
+/* buttons */
+.btn-primary{background:#F97316;color:#fff;border:none;border-radius:12px;font-size:11px;font-weight:600;padding:10px 14px;width:100%;text-align:center;}
+.btn-outline{background:transparent;color:#F97316;border:1.5px solid #F97316;border-radius:12px;font-size:10px;font-weight:600;padding:9px 14px;width:100%;text-align:center;}
+.btn-ghost{background:transparent;color:#A8A29E;font-size:10px;font-weight:600;padding:9px 14px;width:100%;text-align:center;}
+.btn-danger{background:#FEE2E2;color:#DC2626;border:none;border-radius:12px;font-size:10px;font-weight:600;padding:9px 14px;width:100%;text-align:center;}
+
+/* avatar row */
+.avatar-row{display:flex;gap:-4px;}
+.avatar{width:28px;height:28px;border-radius:50%;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;margin-left:-6px;}
+.avatar:first-child{margin-left:0;}
+
+/* member row */
+.member-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #F5F5F4;}
+.member-row:last-child{border-bottom:none;}
+.member-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
+.member-name{font-size:10.5px;font-weight:600;color:#1C1917;flex:1;}
+.member-role{font-size:8.5px;color:#A8A29E;}
+
+/* group-detail header */
+.group-hero{height:90px;position:relative;border-radius:14px;overflow:hidden;display:flex;align-items:flex-end;padding:10px 12px;margin:0 14px 10px;flex-shrink:0;}
+
+/* invite banner */
+.invite-banner{background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:12px;padding:10px 12px;margin:0 14px 8px;}
+
+/* history row */
+.history-row{display:flex;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid #F5F5F4;}
+.history-row:last-child{border-bottom:none;}
+.history-thumb-row{display:flex;}
+.history-thumb{width:24px;height:24px;border-radius:5px;border:1.5px solid #fff;margin-left:-6px;flex-shrink:0;}
+.history-thumb:first-child{margin-left:0;}
+.history-name{font-size:10px;font-weight:600;color:#1C1917;}
+.history-sub{font-size:8.5px;color:#A8A29E;}
+
+/* threshold setting */
+.threshold-row{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;}
+.threshold-lbl{font-size:10px;color:#1C1917;}
+.threshold-val{font-size:10px;font-weight:700;color:#F97316;}
+.stepper{display:flex;align-items:center;gap:8px;}
+.step-btn{width:24px;height:24px;border-radius:50%;background:#F5F5F4;display:flex;align-items:center;justify-content:center;}
+
+/* paywall */
+.paywall-card{background:#1C1917;border-radius:16px;padding:16px;margin:0 14px;}
+
+/* progress dots */
+.step-dots{display:flex;gap:5px;margin-bottom:16px;}
+.step-dot{width:20px;height:3px;background:#E7E5E4;border-radius:2px;}
+.step-dot.done{background:#F97316;}
+.step-dot.active{background:#F97316;}
+
+/* annotations */
+.annotations{display:flex;min-width:max-content;padding:0 32px;gap:60px;margin-top:0;}
+.anno-col{width:240px;flex-shrink:0;}
+.anno-block{background:var(--anno-bg);border-radius:10px;padding:12px 14px;margin-top:14px;border-left:2.5px solid var(--line);}
+.anno-block.accent{border-left-color:#F97316;}
+.anno-block.ok{border-left-color:#16A34A;}
+.anno-block.warn{border-left-color:#D97706;}
+.anno-block.danger{border-left-color:#DC2626;}
+.anno-hed{font-family:var(--mono);font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:5px;}
+.anno-body{font-size:10.5px;color:var(--ink-2);line-height:1.55;}
+.anno-body strong{color:var(--ink);font-weight:600;}
+
+.design-notes{margin:48px 32px 56px;display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:760px;}
+.note-card{background:var(--anno-bg);border-radius:12px;padding:18px 20px;}
+.note-hed{font-family:var(--serif);font-size:14px;color:var(--ink);margin-bottom:6px;}
+.note-body{font-size:11px;color:var(--ink-2);line-height:1.6;}
+.open-q{border-left:2.5px solid #D97706;padding-left:12px;}
+.open-q .note-hed{color:#D97706;}
+.section-divider{display:flex;align-items:center;gap:12px;padding:36px 32px 20px;}
+.section-divider-label{font-family:var(--serif);font-size:16px;color:var(--ink);white-space:nowrap;}
+.section-divider-line{flex:1;height:1px;background:var(--line);}
+</style>
+</head>
+<body>
+
+<header class="doc-header">
+  <div>
+    <div class="doc-eyebrow">MenuApp · Flow 06 of 06</div>
+    <h1 class="doc-title">Groups — Create, Invite, Manage, Settings</h1>
+  </div>
+  <div class="doc-meta">v2 IA Redesign<br>July 2026</div>
+</header>
+
+<!-- ══════════════════════════════════════════════
+     PART A · Create + Invite
+══════════════════════════════════════════════ -->
+<div class="section-header">Part A · Create Group &amp; Invite</div>
+
+<div class="storyboard-scroll">
+<div class="storyboard">
+
+  <!-- S1: Paywall / upsell -->
+  <div class="frame-col">
+    <div class="frame-label">Screen 01</div>
+    <div class="frame-name">Create Group — <em>Paywall</em></div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><svg width="13" height="9" viewBox="0 0 13 9" fill="none"><rect x="0" y="3" width="2.5" height="6" rx=".5" fill="#1C1917" opacity=".35"/><rect x="3.5" y="2" width="2.5" height="7" rx=".5" fill="#1C1917" opacity=".55"/><rect x="7" y=".5" width="2.5" height="8.5" rx=".5" fill="#1C1917" opacity=".8"/><rect x="10.5" y="0" width="2.5" height="9" rx=".5" fill="#1C1917"/></svg><svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x=".5" y=".5" width="18" height="9" rx="2.5" stroke="#1C1917" stroke-opacity=".35"/><rect x="1.5" y="1.5" width="13" height="7" rx="1.5" fill="#1C1917"/></svg></div></div>
+        <div style="flex:1;display:flex;flex-direction:column;padding:10px 14px;">
+          <div style="font-size:9px;color:#F97316;margin-bottom:14px;">← Back</div>
+          <!-- value card -->
+          <div class="paywall-card">
+            <div style="width:36px;height:36px;background:#F97316;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+            </div>
+            <div style="font-family:Georgia,serif;font-size:16px;color:#FAFAF8;margin-bottom:5px;line-height:1.2;">Plan meals together.</div>
+            <div style="font-size:9.5px;color:#A8A29E;line-height:1.6;margin-bottom:12px;">Pick recipes, vote on what sounds good, and skip the "what's for dinner?" conversation forever.</div>
+            <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:14px;">
+              <div style="display:flex;align-items:center;gap:6px;font-size:9.5px;color:#FAFAF8;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Shared weekly menu for your household</div>
+              <div style="display:flex;align-items:center;gap:6px;font-size:9.5px;color:#FAFAF8;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Swipe to vote — takes 2 minutes</div>
+              <div style="display:flex;align-items:center;gap:6px;font-size:9.5px;color:#FAFAF8;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Auto-generated grocery list</div>
+              <div style="display:flex;align-items:center;gap:6px;font-size:9.5px;color:#FAFAF8;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>200+ curated recipes to choose from</div>
+            </div>
+            <div style="background:#F97316;color:#fff;border-radius:10px;padding:10px;text-align:center;font-size:10.5px;font-weight:600;margin-bottom:6px;">Start free trial — 7 days</div>
+            <div style="font-size:8.5px;color:#57534E;text-align:center;">$4.99/mo after · Cancel anytime</div>
+          </div>
+          <div style="flex:1;"></div>
+          <div style="font-size:9px;color:#A8A29E;text-align:center;text-decoration:underline;text-decoration-color:#D6D3D1;">Restore purchase</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div style="display:flex;align-items:center"><div class="conn-line"></div><div class="conn-arrow"></div></div><div class="conn-label">subscribes</div></div>
+
+  <!-- S2: Create group form -->
+  <div class="frame-col">
+    <div class="frame-label">Screen 02</div>
+    <div class="frame-name">Create Group — <em>Form</em></div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><svg width="13" height="9" viewBox="0 0 13 9" fill="none"><rect x="0" y="3" width="2.5" height="6" rx=".5" fill="#1C1917" opacity=".35"/><rect x="3.5" y="2" width="2.5" height="7" rx=".5" fill="#1C1917" opacity=".55"/><rect x="7" y=".5" width="2.5" height="8.5" rx=".5" fill="#1C1917" opacity=".8"/><rect x="10.5" y="0" width="2.5" height="9" rx=".5" fill="#1C1917"/></svg><svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x=".5" y=".5" width="18" height="9" rx="2.5" stroke="#1C1917" stroke-opacity=".35"/><rect x="1.5" y="1.5" width="13" height="7" rx="1.5" fill="#1C1917"/></svg></div></div>
+        <div style="flex:1;padding:8px 16px 0;display:flex;flex-direction:column;gap:12px;">
+          <div style="font-size:9px;color:#F97316;">← Back</div>
+          <div>
+            <div style="font-size:17px;font-weight:700;color:#1C1917;letter-spacing:-.3px;margin-bottom:3px;">Name your group</div>
+            <div style="font-size:9.5px;color:#A8A29E;">Your household, partner, or family — whatever fits.</div>
+          </div>
+          <div>
+            <div class="field-lbl">Group name</div>
+            <div class="field focused">House</div>
+            <div class="field-hint">Keep it short — "House", "The Joneses", "Us"</div>
+          </div>
+          <div>
+            <div class="field-lbl">Meals per week</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="step-btn" style="width:32px;height:32px;background:#F5F5F4;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#57534E" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </div>
+              <div style="font-size:24px;font-weight:700;color:#1C1917;min-width:24px;text-align:center;font-variant-numeric:tabular-nums;">4</div>
+              <div class="step-btn" style="width:32px;height:32px;background:#F5F5F4;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#57534E" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </div>
+              <div style="font-size:9.5px;color:#A8A29E;flex:1;">meals planned each week</div>
+            </div>
+            <div class="field-hint">You can change this anytime in group settings.</div>
+          </div>
+          <div style="flex:1;"></div>
+        </div>
+        <div style="padding:10px 16px 14px;border-top:1px solid #E7E5E4;">
+          <div class="btn-primary">Create group →</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div style="display:flex;align-items:center"><div class="conn-line"></div><div class="conn-arrow"></div></div><div class="conn-label">group created</div></div>
+
+  <!-- S3: Invite screen -->
+  <div class="frame-col">
+    <div class="frame-label">Screen 03</div>
+    <div class="frame-name">Invite — <em>Share Link</em></div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><svg width="13" height="9" viewBox="0 0 13 9" fill="none"><rect x="0" y="3" width="2.5" height="6" rx=".5" fill="#1C1917" opacity=".35"/><rect x="3.5" y="2" width="2.5" height="7" rx=".5" fill="#1C1917" opacity=".55"/><rect x="7" y=".5" width="2.5" height="8.5" rx=".5" fill="#1C1917" opacity=".8"/><rect x="10.5" y="0" width="2.5" height="9" rx=".5" fill="#1C1917"/></svg><svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x=".5" y=".5" width="18" height="9" rx="2.5" stroke="#1C1917" stroke-opacity=".35"/><rect x="1.5" y="1.5" width="13" height="7" rx="1.5" fill="#1C1917"/></svg></div></div>
+        <div style="flex:1;padding:10px 16px 0;display:flex;flex-direction:column;gap:10px;">
+          <div style="font-size:17px;font-weight:700;color:#1C1917;letter-spacing:-.3px;">"House" is ready.</div>
+          <div style="font-size:10px;color:#A8A29E;line-height:1.5;">Invite your household — they'll join and can start voting on this week's menu.</div>
+          <!-- invite link card -->
+          <div style="background:#F5F5F4;border-radius:12px;padding:12px;">
+            <div style="font-size:8.5px;font-weight:700;color:#A8A29E;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Join link</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="flex:1;font-size:10px;color:#57534E;font-family:var(--mono);background:#fff;border-radius:6px;padding:6px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">menuapp.co/join/house-k7x2</div>
+              <div style="background:#F97316;color:#fff;border-radius:8px;padding:5px 10px;font-size:9px;font-weight:700;white-space:nowrap;">Copy</div>
+            </div>
+          </div>
+          <!-- share options -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div style="background:#F5F5F4;border-radius:10px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <div style="font-size:18px;">💬</div>
+              <div style="font-size:9px;font-weight:600;color:#57534E;">Messages</div>
+            </div>
+            <div style="background:#F5F5F4;border-radius:10px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <div style="font-size:18px;">📧</div>
+              <div style="font-size:9px;font-weight:600;color:#57534E;">Email</div>
+            </div>
+            <div style="background:#F5F5F4;border-radius:10px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <div style="font-size:18px;">🔗</div>
+              <div style="font-size:9px;font-weight:600;color:#57534E;">Share link</div>
+            </div>
+            <div style="background:#F5F5F4;border-radius:10px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <div style="font-size:18px;">📱</div>
+              <div style="font-size:9px;font-weight:600;color:#57534E;">QR code</div>
+            </div>
+          </div>
+          <div style="flex:1;"></div>
+          <div style="font-size:9.5px;color:#A8A29E;text-align:center;text-decoration:underline;text-decoration-color:#D6D3D1;padding-bottom:10px;">Skip for now — I'll invite later</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div style="display:flex;align-items:center"><div class="conn-line"></div><div class="conn-arrow"></div></div><div class="conn-label">partner taps join link</div></div>
+
+  <!-- S4: Recipient join screen -->
+  <div class="frame-col">
+    <div class="frame-label">Screen 04</div>
+    <div class="frame-name">Join Group — <em>Recipient View</em></div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><svg width="13" height="9" viewBox="0 0 13 9" fill="none"><rect x="0" y="3" width="2.5" height="6" rx=".5" fill="#1C1917" opacity=".35"/><rect x="3.5" y="2" width="2.5" height="7" rx=".5" fill="#1C1917" opacity=".55"/><rect x="7" y=".5" width="2.5" height="8.5" rx=".5" fill="#1C1917" opacity=".8"/><rect x="10.5" y="0" width="2.5" height="9" rx=".5" fill="#1C1917"/></svg><svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x=".5" y=".5" width="18" height="9" rx="2.5" stroke="#1C1917" stroke-opacity=".35"/><rect x="1.5" y="1.5" width="13" height="7" rx="1.5" fill="#1C1917"/></svg></div></div>
+        <div style="flex:1;padding:10px 16px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;">
+          <!-- group avatar -->
+          <div style="width:64px;height:64px;background:linear-gradient(135deg,#FED7AA,#F97316);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;">H</div>
+          <div>
+            <div style="font-size:17px;font-weight:700;color:#1C1917;letter-spacing:-.3px;margin-bottom:3px;">Andrew invited you to</div>
+            <div style="font-size:22px;font-weight:700;color:#F97316;letter-spacing:-.3px;">"House"</div>
+          </div>
+          <div style="font-size:10px;color:#A8A29E;max-width:160px;line-height:1.5;">Plan meals together and vote on what you actually want to eat.</div>
+          <!-- current member -->
+          <div style="background:#F5F5F4;border-radius:10px;padding:8px 12px;width:100%;">
+            <div style="font-size:8.5px;font-weight:600;color:#A8A29E;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;">Already in this group</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="member-avatar" style="background:#FED7AA;color:#C2570A;">A</div>
+              <div style="font-size:10px;font-weight:600;color:#1C1917;">Andrew deVillier</div>
+              <div style="font-size:8.5px;color:#A8A29E;margin-left:auto;">Owner</div>
+            </div>
+          </div>
+          <div style="width:100%;display:flex;flex-direction:column;gap:6px;">
+            <div class="btn-primary">Join "House" →</div>
+            <div class="btn-ghost">Not now</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- Annotations A -->
+<div class="annotations" style="margin-top:16px;">
+  <div class="anno-col">
+    <div class="anno-block warn"><div class="anno-hed">Paywall placement</div><div class="anno-body">Shown on "Create your first group →" tap, before the form. The upsell shows real value (voting, grocery list, 200+ recipes) before asking for money. <strong>7-day free trial</strong> lowers friction. V1 decision: free tier does not exist — subscribe or browse recipes only.</div></div>
+  </div>
+  <div class="anno-col" style="margin-left:60px;">
+    <div class="anno-block accent"><div class="anno-hed">Two fields only</div><div class="anno-body">Group name + meals per week. Nothing else. Emoji picker, group photo, dietary restrictions — all deferred. The threshold rule (task #30) triggers on the <em>second</em> member joining, not at creation.</div></div>
+  </div>
+  <div class="anno-col" style="margin-left:60px;">
+    <div class="anno-block"><div class="anno-hed">Four share surfaces</div><div class="anno-body">Messages, Email, Share link (iOS share sheet), QR code. The join link is a universal link — tapping it opens the app directly to the join screen if installed, or the App Store if not. Task #43.</div></div>
+    <div class="anno-block"><div class="anno-hed">Link expiry</div><div class="anno-body">Join links expire after 7 days or after first use, whichever comes first. The group settings screen has a "Generate new invite link" option for re-inviting. This prevents old links floating around.</div></div>
+  </div>
+  <div class="anno-col" style="margin-left:60px;">
+    <div class="anno-block"><div class="anno-hed">Recipient doesn't need to subscribe</div><div class="anno-body">The person accepting an invite is a member of an existing group — they don't need their own subscription. The subscription is per-group, owned by the creator. This is the right model: couples share one subscription, not two.</div></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PART B · Group Detail + Settings
+══════════════════════════════════════════════ -->
+<div class="section-header" style="margin-top:48px;">Part B · Group Detail &amp; Settings</div>
+
+<div class="storyboard-scroll" style="margin-top:0;">
+<div class="storyboard">
+
+  <!-- S5: Group detail -->
+  <div class="frame-col">
+    <div class="frame-label">Screen 05</div>
+    <div class="frame-name">Group Detail</div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><svg width="13" height="9" viewBox="0 0 13 9" fill="none"><rect x="0" y="3" width="2.5" height="6" rx=".5" fill="#1C1917" opacity=".35"/><rect x="3.5" y="2" width="2.5" height="7" rx=".5" fill="#1C1917" opacity=".55"/><rect x="7" y=".5" width="2.5" height="8.5" rx=".5" fill="#1C1917" opacity=".8"/><rect x="10.5" y="0" width="2.5" height="9" rx=".5" fill="#1C1917"/></svg><svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x=".5" y=".5" width="18" height="9" rx="2.5" stroke="#1C1917" stroke-opacity=".35"/><rect x="1.5" y="1.5" width="13" height="7" rx="1.5" fill="#1C1917"/></svg></div></div>
+        <div style="padding:0 14px 6px;display:flex;align-items:center;justify-content:space-between;">
+          <div style="font-size:9px;color:#F97316;">← Home</div>
+          <div style="font-size:9px;color:#F97316;">Settings ⚙</div>
+        </div>
+        <!-- hero -->
+        <div class="group-hero" style="background:linear-gradient(135deg,#FED7AA 0%,#FB923C 60%,#9A3412 100%);">
+          <div>
+            <div style="font-size:16px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.25);">House</div>
+            <div style="font-size:9px;color:rgba(255,255,255,.8);">2 members · 4 meals/week</div>
+          </div>
+          <div style="position:absolute;right:12px;bottom:10px;display:flex;">
+            <div class="member-avatar" style="background:#FED7AA;color:#C2570A;border:2px solid #fff;width:28px;height:28px;font-size:10px;">A</div>
+            <div class="member-avatar" style="background:#BBF7D0;color:#166534;border:2px solid #fff;width:28px;height:28px;font-size:10px;margin-left:-8px;">C</div>
+          </div>
+        </div>
+        <div style="flex:1;padding:0 14px;overflow:hidden;display:flex;flex-direction:column;">
+          <!-- invite nudge if only 1 member -->
+          <div class="invite-banner">
+            <div style="font-size:9.5px;font-weight:700;color:#C2570A;margin-bottom:2px;">Planning solo?</div>
+            <div style="font-size:9px;color:#92400E;margin-bottom:7px;">Invite someone to vote together — menus are more fun when both people weigh in.</div>
+            <div style="font-size:9.5px;color:#F97316;font-weight:600;">Invite a member →</div>
+          </div>
+          <!-- menu history -->
+          <div style="font-size:8.5px;font-weight:700;color:#A8A29E;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;margin-top:4px;">Past menus</div>
+          <div>
+            <div class="history-row">
+              <div class="history-thumb-row">
+                <div class="history-thumb" style="background:linear-gradient(135deg,#FDE68A,#FB923C);"></div>
+                <div class="history-thumb" style="background:linear-gradient(135deg,#FCE7F3,#DB2777);"></div>
+                <div class="history-thumb" style="background:linear-gradient(135deg,#DDD6FE,#7C3AED);"></div>
+                <div class="history-thumb" style="background:linear-gradient(135deg,#CFFAFE,#0891B2);"></div>
+              </div>
+              <div style="flex:1;margin-left:8px;">
+                <div class="history-name">Week of Jun 30</div>
+                <div class="history-sub">4 meals · Both voted</div>
+              </div>
+            </div>
+            <div class="history-row">
+              <div class="history-thumb-row">
+                <div class="history-thumb" style="background:linear-gradient(135deg,#BBF7D0,#059669);"></div>
+                <div class="history-thumb" style="background:linear-gradient(135deg,#BFDBFE,#3B82F6);"></div>
+                <div class="history-thumb" style="background:linear-gradient(135deg,#FDE68A,#FB923C);"></div>
+              </div>
+              <div style="flex:1;margin-left:8px;">
+                <div class="history-name">Week of Jun 23</div>
+                <div class="history-sub">3 meals · Both voted</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div style="display:flex;align-items:center"><div class="conn-line"></div><div class="conn-arrow"></div></div><div class="conn-label">tap Settings ⚙</div></div>
+
+  <!-- S6: Group settings -->
+  <div class="frame-col">
+    <div class="frame-label">Screen 06</div>
+    <div class="frame-name">Group Settings</div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><svg width="13" height="9" viewBox="0 0 13 9" fill="none"><rect x="0" y="3" width="2.5" height="6" rx=".5" fill="#1C1917" opacity=".35"/><rect x="3.5" y="2" width="2.5" height="7" rx=".5" fill="#1C1917" opacity=".55"/><rect x="7" y=".5" width="2.5" height="8.5" rx=".5" fill="#1C1917" opacity=".8"/><rect x="10.5" y="0" width="2.5" height="9" rx=".5" fill="#1C1917"/></svg><svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x=".5" y=".5" width="18" height="9" rx="2.5" stroke="#1C1917" stroke-opacity=".35"/><rect x="1.5" y="1.5" width="13" height="7" rx="1.5" fill="#1C1917"/></svg></div></div>
+        <div style="padding:0 14px 6px;display:flex;align-items:center;justify-content:space-between;">
+          <div style="font-size:9px;color:#F97316;">← House</div>
+          <div style="font-size:10px;font-weight:700;color:#1C1917;">Settings</div>
+          <div style="width:32px;"></div>
+        </div>
+        <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;">
+          <!-- members section -->
+          <div style="padding:8px 14px 4px;font-size:8.5px;font-weight:700;color:#A8A29E;text-transform:uppercase;letter-spacing:.05em;">Members</div>
+          <div style="padding:0 14px;">
+            <div class="member-row">
+              <div class="member-avatar" style="background:#FED7AA;color:#C2570A;">A</div>
+              <div style="flex:1;"><div class="member-name">Andrew deVillier</div><div class="member-role">Owner</div></div>
+              <div style="font-size:8.5px;color:#A8A29E;">you</div>
+            </div>
+            <div class="member-row">
+              <div class="member-avatar" style="background:#BBF7D0;color:#166534;">C</div>
+              <div style="flex:1;"><div class="member-name">Claire</div><div class="member-role">Member</div></div>
+              <div style="font-size:8.5px;color:#DC2626;">Remove</div>
+            </div>
+            <div style="padding:8px 0;font-size:9.5px;color:#F97316;font-weight:600;">+ Invite member</div>
+          </div>
+          <!-- preferences section -->
+          <div style="height:1px;background:#E7E5E4;margin:4px 14px;"></div>
+          <div style="padding:8px 14px 4px;font-size:8.5px;font-weight:700;color:#A8A29E;text-transform:uppercase;letter-spacing:.05em;">Preferences</div>
+          <div class="threshold-row">
+            <div>
+              <div class="threshold-lbl">Meals per week</div>
+              <div style="font-size:8.5px;color:#A8A29E;">Goal for the weekly menu</div>
+            </div>
+            <div class="stepper">
+              <div class="step-btn"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#57534E" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+              <div class="threshold-val">4</div>
+              <div class="step-btn"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#57534E" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+            </div>
+          </div>
+          <div class="threshold-row" style="border-top:1px solid #F5F5F4;">
+            <div>
+              <div class="threshold-lbl">Approval threshold</div>
+              <div style="font-size:8.5px;color:#A8A29E;">Votes needed to confirm a recipe</div>
+            </div>
+            <div class="stepper">
+              <div class="step-btn"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#57534E" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+              <div class="threshold-val">2</div>
+              <div class="step-btn"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#57534E" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+            </div>
+          </div>
+          <!-- danger zone -->
+          <div style="height:1px;background:#E7E5E4;margin:4px 14px;"></div>
+          <div style="padding:10px 14px;display:flex;flex-direction:column;gap:6px;">
+            <div class="btn-outline" style="font-size:9.5px;">Rename group</div>
+            <div class="btn-danger">Leave group</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div style="display:flex;align-items:center"><div class="conn-line"></div><div class="conn-arrow"></div></div><div class="conn-label">tap "Remove" on member</div></div>
+
+  <!-- S7: Remove member confirm -->
+  <div class="frame-col">
+    <div class="frame-label">Screen 07</div>
+    <div class="frame-name">Remove Member — <em>Confirm</em></div>
+    <div class="phone">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><svg width="13" height="9" viewBox="0 0 13 9" fill="none"><rect x="0" y="3" width="2.5" height="6" rx=".5" fill="#1C1917" opacity=".35"/><rect x="3.5" y="2" width="2.5" height="7" rx=".5" fill="#1C1917" opacity=".55"/><rect x="7" y=".5" width="2.5" height="8.5" rx=".5" fill="#1C1917" opacity=".8"/><rect x="10.5" y="0" width="2.5" height="9" rx=".5" fill="#1C1917"/></svg><svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x=".5" y=".5" width="18" height="9" rx="2.5" stroke="#1C1917" stroke-opacity=".35"/><rect x="1.5" y="1.5" width="13" height="7" rx="1.5" fill="#1C1917"/></svg></div></div>
+        <!-- native action sheet style -->
+        <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:10px 14px 14px;gap:8px;">
+          <div style="background:#F5F5F4;border-radius:14px;overflow:hidden;text-align:center;margin-bottom:2px;">
+            <div style="padding:14px 16px 10px;">
+              <div style="font-size:11px;font-weight:700;color:#1C1917;margin-bottom:3px;">Remove Claire?</div>
+              <div style="font-size:9.5px;color:#57534E;line-height:1.5;">Claire will lose access to "House" and won't be able to vote on future menus.</div>
+            </div>
+            <div style="height:1px;background:#E7E5E4;"></div>
+            <div style="padding:12px;color:#DC2626;font-size:11px;font-weight:600;">Remove from group</div>
+          </div>
+          <div style="background:#F5F5F4;border-radius:14px;padding:13px;text-align:center;font-size:11px;font-weight:600;color:#1C1917;">Cancel</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- Annotations B -->
+<div class="annotations" style="margin-top:16px;">
+  <div class="anno-col">
+    <div class="anno-block"><div class="anno-hed">Invite nudge on detail</div><div class="anno-body">If a group has only one member, the detail screen shows the "Planning solo?" banner above the history. Disappears once a second member joins. Not shown in the mock above — shown when Claire hasn't joined yet.</div></div>
+    <div class="anno-block"><div class="anno-hed">Menu history as social proof</div><div class="anno-body">Past menus with recipe thumbnail collages are the visual anchor of the group detail. They serve as a record and a reminder of what worked. Tapping a past menu shows a read-only version of the menu detail from flow-03.</div></div>
+  </div>
+  <div class="anno-col" style="margin-left:60px;">
+    <div class="anno-block accent"><div class="anno-hed">Threshold exposed in settings</div><div class="anno-body">Approval threshold (how many votes needed to confirm a recipe) is a group setting, not a global default. For a 2-person group it defaults to 2 (unanimous). For a 4-person group it defaults to 3 (majority). The owner can lower it — useful for larger households where unanimous agreement is unrealistic.</div></div>
+  </div>
+  <div class="anno-col" style="margin-left:60px;">
+    <div class="anno-block warn"><div class="anno-hed">Action sheet for destructive actions</div><div class="anno-body">Remove member and Leave group use iOS-native action sheet styling (not a modal or inline confirm). The confirm option is red; Cancel is always present and prominent. This matches the system pattern users expect for irreversible actions.</div></div>
+  </div>
+</div>
+
+<div class="section-divider" style="padding-top:48px;">
+  <div class="section-divider-label">Design decisions</div>
+  <div class="section-divider-line"></div>
+</div>
+<div class="design-notes">
+  <div class="note-card">
+    <div class="note-hed">Subscription is per-group, owned by creator</div>
+    <div class="note-body">The person who creates the group pays. Members who join via invite don't need a subscription of their own. This mirrors how most family plan products work and removes a significant barrier to adoption — Claire shouldn't need to enter her credit card to vote on dinner. For groups with a natural "organizer" (one partner, a parent in a family), this maps to social reality.</div>
+  </div>
+  <div class="note-card">
+    <div class="note-hed">Group management lives in settings, not a dedicated screen</div>
+    <div class="note-body">The Groups tab from v1 IA is gone. Groups are accessed via the group pill on the Home screen → group detail → settings. For V1 with its 1–2 group per user assumption, there's no need for a top-level groups list. If multi-group use grows (someone in a household group and a friend group), revisit — but don't design for that yet.</div>
+  </div>
+  <div class="note-card open-q">
+    <div class="note-hed">Open: free trial vs. free tier</div>
+    <div class="note-body">Current design: 7-day free trial, then $4.99/mo. Alternative: permanent free tier (1 group, read-only recipe library, no voting) with a paid upgrade. The free tier preserves discoverability but splits the product experience. The trial is cleaner and respects the product's core value — if voting and planning is the product, gating behind a trial is honest. Decide before TestFlight.</div>
+  </div>
+  <div class="note-card open-q">
+    <div class="note-hed">Open: what happens to the group when the owner cancels?</div>
+    <div class="note-body">If the subscriber cancels, the group becomes read-only: members can see history and the recipe library but can't create new menus or vote. The group is not deleted — resubscribing restores it fully. This is the least destructive policy and avoids punishing members for the owner's billing decision. The "leave group" option lets any member exit regardless of subscription status.</div>
+  </div>
+</div>
+
+</body>
+</html>
