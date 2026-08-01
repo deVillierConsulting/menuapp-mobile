@@ -64,6 +64,10 @@ class MenusDataSource {
     return MenuRecipe.fromJson(json as Map<String, dynamic>);
   }
 
+  Future<void> migrateGuestSession(List<Map<String, dynamic>> votes) async {
+    await _client.post('/menus/guest-migrate', {'votes': votes});
+  }
+
   Future<void> castVote({
     required int menuId,
     required int menuRecipeId,

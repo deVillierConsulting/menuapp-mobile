@@ -21,6 +21,11 @@ class _NavTab {
 
 const _tabs = [
   _NavTab(
+    icon: LucideIcons.house,
+    iconActive: LucideIcons.house,
+    label: 'Home',
+  ),
+  _NavTab(
     icon: LucideIcons.users,
     iconActive: LucideIcons.users,
     label: 'Groups',

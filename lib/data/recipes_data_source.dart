@@ -20,6 +20,11 @@ class RecipesDataSource {
     return Recipe.fromJson(json as Map<String, dynamic>);
   }
 
+  Future<List<Recipe>> listOnboardingRecipes() async {
+    final json = await _client.get('/recipes/onboarding') as List<dynamic>;
+    return json.map((e) => Recipe.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
   Future<List<Recipe>> listRecipes({int? cuisineId, int? tagId}) async {
     final params = [
       if (cuisineId != null) 'cuisine_id=$cuisineId',

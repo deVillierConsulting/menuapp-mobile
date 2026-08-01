@@ -522,5 +522,25 @@ body{min-height:100vh;}
   </div>
 </div>
 
+<div style="margin:0 32px 12px;padding-top:0;border-top:1px solid var(--line);"></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:24px 32px 56px;max-width:860px;">
+  <div class="note-card" style="border-left:3px solid #16A34A;">
+    <div class="note-hed" style="color:#16A34A;">✓ As Built — account button</div>
+    <div class="note-body">A 32×32 <code style="font-family:monospace;font-size:10px;">Icons.person_outline</code> circle button lives in the top-right of every top bar variant. Tapping it opens a bottom sheet showing the signed-in user's name, email, and a "Sign out" list tile. On the empty-state screens (<code style="font-family:monospace;font-size:10px;">_NoGroupView</code>, <code style="font-family:monospace;font-size:10px;">_NoMenuView</code>), the button floats in a Padding+Align at the top of a SafeArea column, with the content centered below in an Expanded.</div>
+  </div>
+  <div class="note-card" style="border-left:3px solid #16A34A;">
+    <div class="note-hed" style="color:#16A34A;">✓ As Built — voting screen background</div>
+    <div class="note-body">The home voting screen uses the same dark <code style="font-family:monospace;font-size:10px;">AppColors.ink (#1C1917)</code> background as the onboarding voting screen. The top bar (group name / week label) renders white-on-dark. Full-height cards with gradient photo overlays and ✕/✓ buttons, identical to the onboarding card stack.</div>
+  </div>
+  <div class="note-card" style="border-left:3px solid #16A34A;">
+    <div class="note-hed" style="color:#16A34A;">✓ As Built — zero states</div>
+    <div class="note-body"><code style="font-family:monospace;font-size:10px;">HomeNoGroup</code>: emoji + "Start planning meals" + "Go to Groups" CTA. <code style="font-family:monospace;font-size:10px;">HomeNoMenu</code>: emoji + "No menu this week" + "Create a menu" CTA. Both include the account button in the top-right so users can sign out if needed, even with no data.</div>
+  </div>
+  <div class="note-card" style="border-left:3px solid #16A34A;">
+    <div class="note-hed" style="color:#16A34A;">✓ As Built — multi-group selector</div>
+    <div class="note-body">When a user belongs to multiple groups with active menus, a horizontal pill-scrolling <code style="font-family:monospace;font-size:10px;">ListView</code> replaces the static group name. The active group pill is orange-filled; inactive are outlined. Tapping a pill calls <code style="font-family:monospace;font-size:10px;">HomeCubit.selectGroup()</code> and updates the card stack in place.</div>
+  </div>
+</div>
+
 </body>
 </html>

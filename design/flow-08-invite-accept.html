@@ -170,10 +170,10 @@ body { min-height: 100vh; }
 <div class="storyboard-scroll">
 <div class="storyboard">
 
-  <!-- S1: HOME — link tapped, sheet rises -->
+  <!-- S1: AS BUILT — full-screen join preview at /join/:token -->
   <div class="frame-col">
     <div class="frame-label">State 01</div>
-    <div class="frame-name">Link tapped →<br><em>join sheet appears</em></div>
+    <div class="frame-name">Link opens →<br><em>full-screen preview</em></div>
     <div class="phone">
       <div class="dynamic-island"></div>
       <div class="phone-screen">
@@ -181,42 +181,32 @@ body { min-height: 100vh; }
           <span class="status-time">9:41</span>
           <div class="status-icons"><div class="status-dot"></div><div class="status-dot"></div><div class="status-dot dim"></div></div>
         </div>
-        <!-- dimmed home bg -->
-        <div style="flex:1;background:#FAFAF8;position:relative;overflow:hidden;">
-          <!-- faint home content visible behind sheet -->
-          <div style="padding:8px 10px 0;">
-            <div class="home-group-pill"><div class="av av-a" style="width:14px;height:14px;font-size:7px;margin-left:0;">A</div> The Smiths</div>
-            <div class="home-hero">
-              <div class="home-hero-eyebrow">Week of Jul 14</div>
-              <div class="home-hero-hed">Ready to plan?</div>
-              <div class="home-hero-sub">Pick recipes, vote, done.</div>
+        <!-- Full-screen JoinGroupScreen (as built at /join/:token) -->
+        <div style="flex:1;background:#FAFAF8;display:flex;flex-direction:column;padding:16px 16px 24px;overflow:hidden;">
+          <!-- Group initial avatar -->
+          <div style="align-self:center;margin-top:20px;margin-bottom:12px;">
+            <div class="av av-a" style="width:60px;height:60px;font-size:22px;border-radius:20px;">S</div>
+          </div>
+          <!-- Header -->
+          <div style="text-align:center;margin-bottom:16px;">
+            <div style="font-size:8.5px;color:#A8A29E;margin-bottom:4px;">Invited by Claire</div>
+            <div style="font-size:16px;font-weight:800;color:#1C1917;letter-spacing:-.4px;margin-bottom:2px;">The Smiths</div>
+          </div>
+          <!-- Stats row -->
+          <div style="display:flex;justify-content:center;gap:24px;padding:12px 0;border-top:1px solid #E7E5E4;border-bottom:1px solid #E7E5E4;margin-bottom:20px;">
+            <div style="text-align:center;">
+              <div style="font-size:15px;font-weight:700;color:#1C1917;">2</div>
+              <div style="font-size:8px;color:#A8A29E;margin-top:1px;">members</div>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-size:15px;font-weight:700;color:#1C1917;">4</div>
+              <div style="font-size:8px;color:#A8A29E;margin-top:1px;">meals/wk</div>
             </div>
           </div>
-          <!-- overlay -->
-          <div style="position:absolute;inset:0;background:rgba(28,25,23,.5);border-radius:0;"></div>
-          <!-- bottom sheet -->
-          <div style="position:absolute;bottom:0;left:0;right:0;background:#FAFAF8;border-radius:20px 20px 0 0;padding:0 0 12px;">
-            <div class="sheet-handle"></div>
-            <div class="sheet-inner">
-              <div style="font-size:10px;font-weight:600;color:#A8A29E;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;">You've been invited</div>
-              <div class="group-preview">
-                <div class="gp-who">from Claire</div>
-                <div class="gp-name">The Smiths</div>
-                <div class="gp-avatars">
-                  <div class="av av-a">C</div>
-                  <div class="av av-plus">+1</div>
-                  <span class="gp-member-lbl">2 members</span>
-                </div>
-                <div class="gp-stat-row">
-                  <div class="gp-stat"><div class="gp-stat-val">4</div><div class="gp-stat-lbl">meals/wk</div></div>
-                  <div class="gp-stat"><div class="gp-stat-val">12</div><div class="gp-stat-lbl">recipes</div></div>
-                  <div class="gp-stat"><div class="gp-stat-val">2</div><div class="gp-stat-lbl">members</div></div>
-                </div>
-              </div>
-              <button class="btn btn-primary">Join The Smiths</button>
-              <button class="btn btn-ghost">Not now</button>
-            </div>
-          </div>
+          <div style="flex:1;"></div>
+          <!-- Action buttons -->
+          <button class="btn btn-primary" style="margin-bottom:8px;">Join The Smiths</button>
+          <button class="btn btn-ghost">Not now</button>
         </div>
       </div>
     </div>
@@ -224,10 +214,10 @@ body { min-height: 100vh; }
 
   <div class="connector"><div class="conn-line"></div><div class="conn-arrow"></div><div class="conn-label">tap <em>Join</em></div></div>
 
-  <!-- S2: SUCCESS -->
+  <!-- S2: AS BUILT — navigate directly to group screen (no celebration state) -->
   <div class="frame-col">
     <div class="frame-label">State 02</div>
-    <div class="frame-name">Joined —<br><em>brief celebration</em></div>
+    <div class="frame-name">Joined →<br><em>navigates to group</em></div>
     <div class="phone">
       <div class="dynamic-island"></div>
       <div class="phone-screen">
@@ -235,17 +225,32 @@ body { min-height: 100vh; }
           <span class="status-time">9:41</span>
           <div class="status-icons"><div class="status-dot"></div><div class="status-dot"></div><div class="status-dot dim"></div></div>
         </div>
-        <div class="success-hero">
-          <div class="success-ring"><div class="success-check">✓</div></div>
-          <div class="success-hed">You're in!</div>
-          <div class="success-sub">You've joined <strong>The Smiths</strong>. Claire will be notified.</div>
-          <div style="display:flex;gap:4px;margin-top:4px;">
-            <div class="av av-a" style="width:32px;height:32px;font-size:11px;">C</div>
-            <div class="av av-b" style="width:32px;height:32px;font-size:11px;margin-left:-8px;">A</div>
+        <!-- Groups tab, showing the group just joined -->
+        <div style="flex:1;background:#FAFAF8;padding:10px 12px 0;overflow:hidden;">
+          <div style="font-size:14px;font-weight:800;color:#1C1917;margin-bottom:10px;letter-spacing:-.3px;">The Smiths</div>
+          <div style="background:#fff;border-radius:12px;border:1px solid #E7E5E4;overflow:hidden;margin-bottom:8px;">
+            <div style="padding:8px 10px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #F5F5F4;">
+              <div class="av av-a" style="width:28px;height:28px;font-size:10px;">C</div>
+              <div>
+                <div style="font-size:10px;font-weight:600;color:#1C1917;">Claire</div>
+                <div style="font-size:8.5px;color:#A8A29E;">Admin</div>
+              </div>
+            </div>
+            <div style="padding:8px 10px;display:flex;align-items:center;gap:8px;">
+              <div class="av av-b" style="width:28px;height:28px;font-size:10px;">A</div>
+              <div>
+                <div style="font-size:10px;font-weight:600;color:#1C1917;">You</div>
+                <div style="font-size:8.5px;color:#A8A29E;">Member</div>
+              </div>
+            </div>
           </div>
+          <div style="font-size:9px;color:#16A34A;font-weight:600;text-align:center;padding:8px 0;">✓ You joined The Smiths</div>
         </div>
-        <div class="success-footer">
-          <button class="btn btn-primary">Go to The Smiths →</button>
+        <div class="tab-bar">
+          <div class="tab"><div class="tab-icon"></div><div class="tab-lbl">Home</div></div>
+          <div class="tab active"><div class="tab-icon" style="background:#F97316;border-radius:5px;"></div><div class="tab-lbl" style="color:#F97316;">Groups</div></div>
+          <div class="tab"><div class="tab-icon"></div><div class="tab-lbl">Recipes</div></div>
+          <div class="tab"><div class="tab-icon"></div><div class="tab-lbl">Shop</div></div>
         </div>
       </div>
     </div>
@@ -464,8 +469,28 @@ body { min-height: 100vh; }
     <div class="note-body">Tapping the link on a device without the app goes to a web landing page: group name, member avatars, "Download MenuApp to join." After install and first sign-in, the app checks for a pending invite token in the universal link and fires the join automatically. This requires Associated Domains entitlement + apple-app-site-association file on the server.</div>
   </div>
   <div class="note-card">
-    <div class="note-hed">Sheet vs. full screen</div>
-    <div class="note-body">The join flow uses a bottom sheet overlay rather than a full-screen push because the user is already in the app — a full-screen takeover feels like they've left somewhere. The sheet keeps home visible underneath, reinforcing that joining adds to what they already have rather than replacing it.</div>
+    <div class="note-hed">Sheet vs. full screen — original intent</div>
+    <div class="note-body">The original design used a bottom sheet overlay to keep the home screen visible underneath. This was revised during implementation — see "As Built" notes below.</div>
+  </div>
+</div>
+
+<div style="margin:0 32px 12px;padding-top:0;border-top:1px solid var(--line);"></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:24px 32px 56px;max-width:860px;">
+  <div class="note-card" style="border-left:3px solid #16A34A;">
+    <div class="note-hed" style="color:#16A34A;">✓ As Built — full-screen route</div>
+    <div class="note-body">Implemented as a dedicated route at <code style="font-family:var(--mono);font-size:10px;">/join/:token</code>, not a bottom sheet. The route is public (bypasses auth redirect), so unauthenticated users can see the group preview. On join success, <code style="font-family:var(--mono);font-size:10px;">context.go('/groups/:groupId')</code> replaces the join screen immediately — no celebration state.</div>
+  </div>
+  <div class="note-card" style="border-left:3px solid #16A34A;">
+    <div class="note-hed" style="color:#16A34A;">✓ As Built — URL scheme</div>
+    <div class="note-body">Using custom URL scheme <code style="font-family:var(--mono);font-size:10px;">menuapp://join/{token}</code> for now (registered in Info.plist). Universal links (<code style="font-family:var(--mono);font-size:10px;">menuapp.com/join/{token}</code>) require Associated Domains + apple-app-site-association on the production server — blocked on task #73.</div>
+  </div>
+  <div class="note-card" style="border-left:3px solid #16A34A;">
+    <div class="note-hed" style="color:#16A34A;">✓ As Built — error states</div>
+    <div class="note-body"><code style="font-family:var(--mono);font-size:10px;">InviteErrorKind</code> enum handles 4 cases: <strong>expired</strong> (410 → dismiss only), <strong>alreadyMember</strong> (409 → "Go to Groups" CTA), <strong>notFound</strong> (404 → dismiss), <strong>network</strong> (retry button). Each maps to a distinct error message in <code style="font-family:var(--mono);font-size:10px;">_ErrorView</code>.</div>
+  </div>
+  <div class="note-card" style="border-left:3px solid #16A34A;">
+    <div class="note-hed" style="color:#16A34A;">✓ As Built — invite sharing surface</div>
+    <div class="note-body">The share UI lives in <code style="font-family:var(--mono);font-size:10px;">group_members_screen.dart</code> as <code style="font-family:var(--mono);font-size:10px;">_InviteSection</code>. It auto-fetches (or creates) the invite on screen load, shows a copyable link pill, expiry time, a "Share invite" button (iOS share sheet via <code style="font-family:var(--mono);font-size:10px;">Share.share()</code>), and a refresh button.</div>
   </div>
 </div>
 

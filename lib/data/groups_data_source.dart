@@ -1,6 +1,7 @@
 import 'api_client.dart';
 import 'models/group.dart';
 import 'models/group_detail.dart';
+import 'models/group_invite.dart';
 import 'models/menu.dart';
 
 class GroupsDataSource {
@@ -36,5 +37,15 @@ class GroupsDataSource {
   Future<List<Menu>> getMenusForGroup(int groupId) async {
     final json = await _client.get('/menus/group/$groupId') as List<dynamic>;
     return json.map((e) => Menu.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<GroupInvite> getOrCreateInvite(int groupId) async {
+    final json = await _client.post('/groups/$groupId/invites', {});
+    return GroupInvite.fromJson(json as Map<String, dynamic>);
+  }
+
+  Future<GroupInvite> refreshInvite(int groupId) async {
+    final json = await _client.post('/groups/$groupId/invites/refresh', {});
+    return GroupInvite.fromJson(json as Map<String, dynamic>);
   }
 }
