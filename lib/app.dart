@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'cubits/auth/auth_cubit.dart';
@@ -36,6 +37,7 @@ class _MenuAppState extends State<MenuApp> {
 
   // Resolved once at startup before the router is built.
   late final Future<bool> _onboardingDoneFuture;
+  late final StreamSubscription<dynamic> _authReloadSub;
 
   // Built once after _onboardingDoneFuture resolves; never recreated.
   GoRouter? _router;
@@ -67,12 +69,18 @@ class _MenuAppState extends State<MenuApp> {
     ]).then((results) => results[0] as bool);
 
     // Reload data whenever the user signs in (or switches accounts).
-    _authCubit.stream.listen((state) {
+    _authReloadSub = _authCubit.stream.listen((state) {
       if (state is AuthAuthenticated) {
         _groupsCubit.loadGroups();
         _shopCubit.load();
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _authReloadSub.cancel();
+    super.dispose();
   }
 
   @override

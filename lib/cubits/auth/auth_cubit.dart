@@ -12,8 +12,15 @@ part 'auth_state.dart';
 class AuthCubit extends Cubit<AuthState> {
   final AuthDataSource _dataSource;
   final ApiClient _apiClient;
+  StreamSubscription<AuthState>? _authSub;
 
   AuthCubit(this._dataSource, this._apiClient) : super(const AuthLoading());
+
+  @override
+  Future<void> close() {
+    _authSub?.cancel();
+    return super.close();
+  }
 
   /// Called on app startup. Checks for an existing Supabase session, validates
   /// it with the backend, then subscribes to token refreshes so ApiClient always

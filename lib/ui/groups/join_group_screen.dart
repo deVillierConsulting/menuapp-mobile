@@ -250,11 +250,11 @@ class _ErrorView extends StatelessWidget {
             )
           else if (goToGroups)
             FilledButton(
-              onPressed: () => context.go('/groups'),
+              onPressed: () => context.go('/home'),
               style: FilledButton.styleFrom(
                   backgroundColor: AppColors.accent,
                   minimumSize: const Size.fromHeight(52)),
-              child: const Text('Go to Groups'),
+              child: const Text('Go home'),
             )
           else
             FilledButton(

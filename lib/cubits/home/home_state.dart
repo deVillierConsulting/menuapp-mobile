@@ -69,6 +69,22 @@ class HomeWaiting extends HomeState {
   List<Object?> get props => [menus, selected, detail];
 }
 
+/// Finalization is in-flight — disable the button, show a spinner.
+class HomeFinalizing extends HomeState {
+  final List<ActiveMenuSummary> menus;
+  final ActiveMenuSummary selected;
+  final MenuDetail detail;
+
+  const HomeFinalizing({
+    required this.menus,
+    required this.selected,
+    required this.detail,
+  });
+
+  @override
+  List<Object?> get props => [menus, selected, detail];
+}
+
 /// Menu is finalized.
 class HomeFinalized extends HomeState {
   final List<ActiveMenuSummary> menus;

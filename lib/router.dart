@@ -21,8 +21,8 @@ import 'data/shop_data_source.dart';
 import 'widgets/nav/app_shell.dart';
 import 'ui/auth/login_screen.dart';
 import 'ui/auth/register_screen.dart';
+import 'ui/account/account_screen.dart';
 import 'ui/groups/group_detail_screen.dart';
-import 'ui/groups/groups_screen.dart';
 import 'ui/groups/join_group_screen.dart';
 import 'ui/home/home_screen.dart';
 import 'ui/onboarding/onboarding_screen.dart';
@@ -125,13 +125,6 @@ GoRouter buildRouter({
           ]),
           StatefulShellBranch(routes: [
             GoRoute(
-              path: '/groups',
-              builder: (context, state) =>
-                  GroupsScreen(dataSource: groupsDataSource),
-            ),
-          ]),
-          StatefulShellBranch(routes: [
-            GoRoute(
               path: '/recipes',
               builder: (context, state) => BlocProvider(
                 create: (_) => RecipesCubit(dataSource: recipesDataSource),
@@ -151,6 +144,13 @@ GoRouter buildRouter({
         ],
       ),
 
+      GoRoute(
+        path: '/account',
+        builder: (context, state) => AccountScreen(
+          authCubit: authCubit,
+          groupsDataSource: groupsDataSource,
+        ),
+      ),
       GoRoute(
         path: '/groups/:id',
         builder: (context, state) {

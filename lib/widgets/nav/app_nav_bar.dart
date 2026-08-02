@@ -26,11 +26,6 @@ const _tabs = [
     label: 'Home',
   ),
   _NavTab(
-    icon: LucideIcons.users,
-    iconActive: LucideIcons.users,
-    label: 'Groups',
-  ),
-  _NavTab(
     icon: LucideIcons.bookOpen,
     iconActive: LucideIcons.bookOpen,
     label: 'Recipes',

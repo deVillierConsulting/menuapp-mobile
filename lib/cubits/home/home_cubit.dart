@@ -94,12 +94,19 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> finalizeMenu() async {
     final current = state;
     if (current is! HomeWaiting) return;
+    emit(HomeFinalizing(
+        menus: current.menus, selected: current.selected, detail: current.detail));
     try {
       await _menus.finalizeMenu(current.detail.menuId);
-      await _menus.generateGroceryList(current.detail.menuId);
-    } catch (_) {}
-    // Reload to get the authoritative finalized state from the server.
-    await _loadDetailFor(current.selected, current.menus);
+      // Grocery list generation is best-effort — failure doesn't block the user.
+      try {
+        await _menus.generateGroceryList(current.detail.menuId);
+      } catch (_) {}
+      // Reload to get the authoritative finalized state from the server.
+      await _loadDetailFor(current.selected, current.menus);
+    } catch (e) {
+      emit(HomeError(e.toString()));
+    }
   }
 
   // ── Private helpers ─────────────────────────────────────────────────────────

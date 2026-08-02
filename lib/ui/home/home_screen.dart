@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../cubits/auth/auth_cubit.dart';
 import '../../cubits/home/home_cubit.dart';
 import '../../cubits/home/home_state.dart';
 import '../../data/models/active_menu_summary.dart';
@@ -34,9 +33,13 @@ class _HomeScreenState extends State<HomeScreen> {
           HomeLoading() => const _LoadingView(),
           HomeNoGroup()  => const _NoGroupView(),
           HomeNoMenu()   => const _NoMenuView(),
-          HomeVoting()   => _VotingView(state: state),
-          HomeWaiting()  => _WaitingView(state: state),
-          HomeFinalized() => _FinalizedView(state: state),
+          HomeVoting()     => _VotingView(state: state),
+          HomeWaiting()    => _WaitingView(state: state, finalizing: false),
+          HomeFinalizing() => _WaitingView(
+              state: HomeWaiting(menus: state.menus, selected: state.selected, detail: state.detail),
+              finalizing: true,
+            ),
+          HomeFinalized()  => _FinalizedView(state: state),
           HomeError()    => _ErrorView(message: state.message),
           _ => const SizedBox.shrink(),
         },
@@ -120,10 +123,10 @@ class _NoGroupView extends StatelessWidget {
                     ),
                     const SizedBox(height: 28),
                     FilledButton(
-                      onPressed: () => context.go('/groups'),
+                      onPressed: () => context.push('/account'),
                       style: FilledButton.styleFrom(
                           backgroundColor: AppColors.accent),
-                      child: const Text('Go to Groups'),
+                      child: const Text('Set up a group'),
                     ),
                   ],
                 ),
@@ -172,7 +175,7 @@ class _NoMenuView extends StatelessWidget {
                     ),
                     const SizedBox(height: 28),
                     FilledButton(
-                      onPressed: () => context.go('/groups'),
+                      onPressed: () => context.push('/account'),
                       style: FilledButton.styleFrom(
                           backgroundColor: AppColors.accent),
                       child: const Text('Create a menu'),
@@ -224,7 +227,8 @@ class _VotingView extends StatelessWidget {
 
 class _WaitingView extends StatelessWidget {
   final HomeWaiting state;
-  const _WaitingView({required this.state});
+  final bool finalizing;
+  const _WaitingView({required this.state, required this.finalizing});
 
   @override
   Widget build(BuildContext context) {
@@ -253,12 +257,19 @@ class _WaitingView extends StatelessWidget {
             ),
             const SizedBox(height: 32),
             FilledButton(
-              onPressed: () => cubit.finalizeMenu(),
+              onPressed: finalizing ? null : () => cubit.finalizeMenu(),
               style: FilledButton.styleFrom(
                   backgroundColor: AppColors.ok,
                   minimumSize: const Size.fromHeight(52)),
-              child: const Text('Finalize menu',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              child: finalizing
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.white))
+                  : const Text('Finalize menu',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
             ),
             const SizedBox(height: 12),
             TextButton(
@@ -316,10 +327,9 @@ class _FinalizedRecipeList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final approved = detail.recipes
-        .where((r) => r.voteSummary.userVote == VoteValue.approve ||
-            r.voteSummary.approve > 0)
-        .toList();
+    // In a finalized menu the server has already determined which recipes made
+    // it — show all of them regardless of the current user's individual vote.
+    final approved = detail.recipes;
 
     if (approved.isEmpty) {
       return Center(
@@ -463,7 +473,7 @@ class _AccountButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => _showAccountSheet(context),
+      onTap: () => context.push('/account'),
       child: Container(
         width: 32,
         height: 32,
@@ -478,53 +488,3 @@ class _AccountButton extends StatelessWidget {
   }
 }
 
-void _showAccountSheet(BuildContext context) {
-  final authState = context.read<AuthCubit>().state;
-  final name = authState is AuthAuthenticated ? authState.userName : null;
-  final email = authState is AuthAuthenticated ? authState.email : null;
-
-  showModalBottomSheet<void>(
-    context: context,
-    shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-    builder: (ctx) => Padding(
-      padding: const EdgeInsets.fromLTRB(24, 20, 24, 40),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Container(
-              width: 36,
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppColors.line,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-          if (name != null) ...[
-            Text(name, style: AppTextStyles.bodyMedium),
-            if (email != null)
-              Text(email,
-                  style: AppTextStyles.caption.copyWith(color: AppColors.ink3)),
-            const SizedBox(height: 20),
-            const Divider(),
-            const SizedBox(height: 12),
-          ],
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.logout, color: AppColors.danger),
-            title: Text('Sign out',
-                style: AppTextStyles.body.copyWith(color: AppColors.danger)),
-            onTap: () {
-              Navigator.of(ctx).pop();
-              context.read<AuthCubit>().signOut();
-            },
-          ),
-        ],
-      ),
-    ),
-  );
-}

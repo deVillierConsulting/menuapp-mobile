@@ -70,7 +70,9 @@ class _SplashViewState extends State<_SplashView>
         vsync: this, duration: const Duration(milliseconds: 800));
     _fade = CurvedAnimation(parent: _ctrl, curve: Curves.easeIn);
     _ctrl.forward();
-    Future.delayed(const Duration(milliseconds: 1600), widget.onDone);
+    Future.delayed(const Duration(milliseconds: 1600), () {
+      if (mounted) widget.onDone();
+    });
   }
 
   @override
@@ -253,12 +255,15 @@ class _VotingViewState extends State<_VotingView> {
     final state = widget.state;
     final cubit = context.read<OnboardingCubit>();
 
-    // Wrap in a fake MenuRecipe shell so RecipeCardStack can accept Recipe.
+    // RecipeCardStack expects MenuRecipe objects. During onboarding no menu
+    // exists yet, so we wrap each Recipe in a shim that satisfies the type.
+    // The shim uses recipe.recipeId as the menuRecipeId because OnboardingCubit
+    // treats the ID it receives in castVote as a recipe ID, not a menu-recipe ID.
     final pendingMr = state.pending
-        .map((r) => _RecipeFacade(recipe: r))
+        .map((r) => _OnboardingMenuRecipe(recipe: r))
         .toList();
     final votedMr = state.voted
-        .map((r) => _RecipeFacade(recipe: r))
+        .map((r) => _OnboardingMenuRecipe(recipe: r))
         .toList();
 
     return Scaffold(
@@ -286,11 +291,11 @@ class _VotingViewState extends State<_VotingView> {
               ),
               const SizedBox(height: 12),
               Expanded(
-                child: _OnboardingCardStack(
+                child: RecipeCardStack(
                   pending: pendingMr,
                   voted: votedMr,
-                  onVote: (menuRecipeId, value) => cubit.castVote(
-                    menuRecipeId,
+                  onVote: (recipeId, value) => cubit.castVote(
+                    recipeId,
                     value == md.VoteValue.approve ? 'approve' : 'veto',
                   ),
                 ),
@@ -303,27 +308,17 @@ class _VotingViewState extends State<_VotingView> {
   }
 }
 
-// ── Fake MenuRecipe shell ────────────────────────────────────────────────────
-// RecipeCardStack and RecipeVoteCard expect MenuRecipe objects. During
-// onboarding we only have Recipe objects (no menu exists yet), so we wrap
-// each Recipe in a minimal shim that satisfies the interface.
-
-class _RecipeFacade extends md.MenuRecipe {
-  _RecipeFacade({required super.recipe})
+// ── Onboarding MenuRecipe shim ───────────────────────────────────────────────
+// RecipeCardStack expects MenuRecipe objects. During onboarding no menu exists,
+// so we shim each Recipe into the MenuRecipe type. menuRecipeId is set to
+// recipe.recipeId — OnboardingCubit.castVote receives it and treats it as such.
+class _OnboardingMenuRecipe extends md.MenuRecipe {
+  _OnboardingMenuRecipe({required super.recipe})
       : super(
           menuRecipeId: recipe.recipeId,
           addedAt: '',
           voteSummary: const md.VoteSummary(),
         );
-}
-
-// Passes Recipe-backed facades to RecipeCardStack unchanged.
-class _OnboardingCardStack extends RecipeCardStack {
-  const _OnboardingCardStack({
-    required super.pending,
-    required super.voted,
-    required super.onVote,
-  });
 }
 
 // ── Ghost vote overlay ────────────────────────────────────────────────────────
